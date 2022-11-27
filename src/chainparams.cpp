@@ -67,7 +67,7 @@ public:
         consensus.nSubsidyHalvingInterval = 301107;
         consensus.BIP16Height = 0; 
         consensus.BIP34Height = 0;
-        consensus.BIP34Hash = uint256();
+        consensus.BIP34Hash = uint256S("0x46ca17415c18e43f5292034ebf9bbd10de80a61fc6dc17180e6609f33d3b48f3");
         consensus.BIP65Height = 0; 
         consensus.BIP66Height = 0; 
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); 
@@ -92,10 +92,10 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT; 
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000200020");
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000136e15425");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0x46ca17415c18e43f5292034ebf9bbd10de80a61fc6dc17180e6609f33d3b48f3"); 
+        consensus.defaultAssumeValid = uint256S("0x209f38181db9771939a131651b650451a319566d010a6f82c553b357f42aa6b0"); 
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -121,8 +121,11 @@ public:
         // This is fine at runtime as we'll fall back to using them as a oneshot if they don't support the
         // service bits we want, but we should get them updated to support all service bits wanted by any
         // release ASAP to avoid it where possible.
-        vSeeds.emplace_back("118.189.201.104");
+
         vSeeds.emplace_back("node2.walletbuilders.com");
+        vSeeds.emplace_back("118.189.201.104");
+        vSeeds.emplace_back("seed01.altcoinbuilders.com");
+        vSeeds.emplace_back("seed02.altcoinbuilders.com");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,36);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
@@ -142,17 +145,24 @@ public:
         checkpointData = {
             {
                 {  0, uint256S("0x46ca17415c18e43f5292034ebf9bbd10de80a61fc6dc17180e6609f33d3b48f3")},
+                {  1, uint256S("0xc57e131b5a4e037b0ae4f6479464861b55bad6cdc934becd82fd78aa943cb731")},
+                {  10, uint256S("0xc11ad445b0d130cf4c76fca76c26fd58d08a0be1993206d1fabdf84da4032ee5")},
+                {  16, uint256S("0x85b9d245dc36364e19729250c5dcaa1019941833b4146cb5576d99d028208e48")},
+                {  45, uint256S("0x6f89572fd7463f191d90f3a9c47e2e4e6ca6222480ca55f3ba596ce56ee25690")},
+                {  101, uint256S("0xbc4383276f530a020085cc2ac9283050e6f681a9164aa9bc3fd2d0e7276b7621")},
+                {  578, uint256S("0x0ac60bc57de1e70e9246e43dac68b2e03bb07d8572decce24eb12ba37648cdf8")},
+                {  4072, uint256S("0x209f38181db9771939a131651b650451a319566d010a6f82c553b357f42aa6b0")},
             }
         };
 
         chainTxData = ChainTxData{
-            /* nTime    */ 1669136135,
-            /* nTxCount */ 0,
-            /* dTxRate  */ 0
+            /* nTime    */ 1669559791,
+            /* nTxCount */ 4073,
+            /* dTxRate  */ 0.00969754
         };
 
         /* disable fallback fee on mainnet */
-        m_fallback_fee_enabled = false;
+        m_fallback_fee_enabled = true;
     }
 };
 
