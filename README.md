@@ -28,7 +28,7 @@ Ferrite has no owner. The miners shall decide the fate of the network.
 Pseudonymous -
 Nobody knows who owns the mined coins, nor who sent the coins. Unless you identify as the owner of the public address, you maintain anonymity.
 
-Telegram group - ![qr_tmp](https://user-images.githubusercontent.com/101822992/204224387-c7f34c71-45b2-49b8-a00d-1fc48191280a.jpg)
+Telegram group - t.me/ferrite_core
 
 Technical specifications:
 Algorithm type: Scrypt, Proof of Work
