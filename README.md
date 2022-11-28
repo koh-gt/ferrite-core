@@ -28,6 +28,28 @@ Ferrite has no owner. The miners shall decide the fate of the network.
 Pseudonymous -
 Nobody knows who owns the mined coins, nor who sent the coins. Unless you identify as the owner of the public address, you maintain anonymity.
 
+Telegram group - ![qr_tmp](https://user-images.githubusercontent.com/101822992/204224387-c7f34c71-45b2-49b8-a00d-1fc48191280a.jpg)
+
+Technical specifications:
+Algorithm type: Scrypt, Proof of Work
+Ports: 9573 (RPC), 9574 (P2P)
+Block time: 1 minute
+Propogation time: 5 seconds (8.3% detached rate)
+Difficulty adjustment time: 60 minutes
+Block size: 3.8147 MiB
+Transaction capacity: 50/s (100/s with Segwit)
+Premine: No premine (If you count the genesis block, then it is 0.0001%, or 𝔽 100.00000000)
+
+Economic specifications:
+Block reward: 𝔽 100.00000000
+Maximum supply: 𝔽 60,221,399.95784500
+Premine: 𝔽 0.00000000
+Halving: 301,107 blocks
+Blocks with reward: 9,635,423 blocks (32 halvings -1)
+Halving time: 209 days
+Reward lifespan: 6691 days (18.33 years)
+
+
 ![ferrite-core-main-512px](https://user-images.githubusercontent.com/101822992/204157969-c910673a-44a3-42a8-be9c-957907c05b39.png)
 
 Additional information - 
