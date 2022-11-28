@@ -117,7 +117,7 @@ This means you cannot use a directory that located directly on the host Windows 
 
 Acquire the source in the usual way:
 
-    git clone https://github.com/ferrite-project/ferrite.git
+    git clone https://github.com/koh-gt/ferrite-core
 
 Then build using:
 
