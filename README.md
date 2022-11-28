@@ -32,24 +32,24 @@ Telegram group - t.me/ferrite_core
 ![qr_tmp_small](https://user-images.githubusercontent.com/101822992/204231333-a88dc2c6-f75b-4204-80ec-d64a931b6f7a.png)
 
 
-Technical specifications:
-Algorithm type: Scrypt, Proof of Work
-Ports: 9573 (RPC), 9574 (P2P)
-Block time: 1 minute
-Propogation time: 5 seconds (8.3% detached rate)
-Difficulty adjustment time: 60 minutes
-Block size: 3.8147 MiB
-Transaction capacity: 50/s (100/s with Segwit)
-Premine: No premine (If you count the genesis block, then it is 0.0001%, or 𝔽 100.00000000)
+Technical specifications: <br/>
+Algorithm type: Scrypt, Proof of Work <br/>
+Ports: 9573 (RPC), 9574 (P2P) <br/>
+Block time: 1 minute <br/>
+Propogation time: 5 seconds (8.3% detached rate) <br/>
+Difficulty adjustment time: 60 minutes <br/>
+Block size: 3.8147 MiB <br/>
+Transaction capacity: 50/s (100/s with Segwit) <br/>
+Premine: No premine (If you count the genesis block, then it is 0.0001%, or 𝔽 100.00000000) <br/>
 
-Economic specifications:
-Block reward: 𝔽 100.00000000
-Maximum supply: 𝔽 60,221,399.95784500
-Premine: 𝔽 0.00000000
-Halving: 301,107 blocks
-Blocks with reward: 9,635,423 blocks (32 halvings -1)
-Halving time: 209 days
-Reward lifespan: 6691 days (18.33 years)
+Economic specifications: <br/>
+Block reward: 𝔽 100.00000000 <br/>
+Maximum supply: 𝔽 60,221,399.95784500 <br/>
+Premine: 𝔽 0.00000000 <br/>
+Halving: 301,107 blocks <br/>
+Blocks with reward: 9,635,423 blocks (32 halvings -1) <br/>
+Halving time: 209 days <br/>
+Reward lifespan: 6691 days (18.33 years) <br/>
 
 
 ![ferrite-core-main-512px](https://user-images.githubusercontent.com/101822992/204157969-c910673a-44a3-42a8-be9c-957907c05b39.png)
