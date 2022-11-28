@@ -29,6 +29,7 @@ Pseudonymous -
 Nobody knows who owns the mined coins, nor who sent the coins. Unless you identify as the owner of the public address, you maintain anonymity.
 
 Telegram group - t.me/ferrite_core
+![qr_tmp_small](https://user-images.githubusercontent.com/101822992/204230194-3033d1f4-db50-4559-9656-0cf14662048d.jpg)
 
 Technical specifications:
 Algorithm type: Scrypt, Proof of Work
