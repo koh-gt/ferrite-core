@@ -103,6 +103,13 @@ Once the source code is ready the build steps are below:
     CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/
     make
 
+    common qt errors - numeric_limits is not a member of std
+    go to qbytearraymatcher.h
+    #include <stddef.h>
+    #include <limits.h>
+    #include <stdexcept>
+    #include <limits>
+
 ## Building for 32-bit Windows
 
 To build executables for Windows 32-bit, install the following dependencies:
@@ -135,6 +142,13 @@ Then build using:
 
     CONFIG_SITE=$PWD/depends/i686-w64-mingw32/share/config.site ./configure --prefix=/
     make
+    
+    common qt errors - numeric_limits is not a member of std
+    go to qbytearraymatcher.h
+    #include <stddef.h>
+    #include <limits.h>
+    #include <stdexcept>
+    #include <limits>
 
 ## Depends system
 
