@@ -93,6 +93,8 @@ Acquire the source in the usual way:
 
 Once the source code is ready the build steps are below:
 
+    sudo chmod +x -R ferrite-core-main
+
     PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
     cd depends
     make HOST=x86_64-w64-mingw32
@@ -120,7 +122,8 @@ Acquire the source in the usual way:
     git clone https://github.com/koh-gt/ferrite-core
 
 Then build using:
-
+    sudo chmod +x -R ferrite-core-main
+    
     PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
     cd depends
     make HOST=i686-w64-mingw32
