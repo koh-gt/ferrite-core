@@ -5,6 +5,9 @@
 
 ### Ferrite is a cryptocurrency that seeks to allow fast and free payments to anyone in the world.
 
+##   Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin/)
+## Telegram - [View Group](https://t.me/ferrite_core) 
+
 ## Features:
 ### 1 minute block time - 
 Transactions are received instantly and can be confirmed within minutes.
@@ -27,11 +30,6 @@ Ferrite has no owner. The miners shall decide the fate of the network.
 
 ### Pseudonymous -
 Nobody knows who owns the mined coins, nor who sent the coins. Unless you identify as the owner of the public address, you maintain anonymity.
-
-##   Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin/)
-## Telegram - [View Group](https://t.me/ferrite_core) 
-![qr_tmp_small](https://user-images.githubusercontent.com/101822992/204231333-a88dc2c6-f75b-4204-80ec-d64a931b6f7a.png)
-
 
 ## Ferrite coin specifications  
 ### Technical specifications: <br/>
