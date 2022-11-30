@@ -59,7 +59,7 @@ Reward lifespan: 6691 days (18.33 years) <br/>
 Why the name Ferrite Core? - The humble ferrite core is cheap and hidden from view. Most people have never heard about it, yet it is what allows our electric generators, switches and radio antennas to function. It has high magnetic permeability allowing for magnetic fields to pass through, yet has low electrical conductivity which reduces eddy current losses. Most importantly, the ferrite core possesses these properties while being cheap and safe to use. This makes the ferrite core suitable for being used as magnetic cores for electromagnet coils. 
 Similarly, I hope that Ferrite Core will be used for fast, low volume transactions as well as small amount remittances for the unbanked people in developing nations to avoid exuberant remittance costs. A low price will ensure that Ferrite coins and its fees stay affordable.
 
-There are so many coins out there, what makes this special? - Nothing. This coin is created for a social experiment and not for profit. Ultimately, Ferrite is just copied code, pre-generated code, and a few lines of edited code. Coins are mined out of thin air. Ferrite coins have zero intrinsic value.
+There are so many coins out there, what makes this special? - Nothing. This coin is created for a social experiment and not for profit. Ultimately, Ferrite is just copied code, pre-generated code, and lines of edited code. Ferrite coins, like other cryptocurrencies, have zero intrinsic value.
 
 High adoption rates need not be expensive, and high market cap is not the way to having high adoption.
 How many people are in cryptocurrency for its technological features rather than its profit potential?
