@@ -50,11 +50,11 @@ Halving: 301,107 blocks <br/>
 Blocks with reward: 9,635,423 blocks (32 halvings -1) <br/>
 Halving time: 209 days <br/>
 Reward lifespan: 6691 days (18.33 years) <br/>
+ 
+## Additional information - 
 
-### Coin art:  
 ![ferrite-core-main-512px](https://user-images.githubusercontent.com/101822992/204157969-c910673a-44a3-42a8-be9c-957907c05b39.png)
 
-## Additional information - 
 Why the name Ferrite Core? - The humble ferrite core is cheap and hidden from view. Most people have never heard about it, yet it is what allows our electric generators, switches and radio antennas to function. It has high magnetic permeability allowing for magnetic fields to pass through, yet has low electrical conductivity which reduces eddy current losses. Most importantly, the ferrite core possesses these properties while being cheap and safe to use. This makes the ferrite core suitable for being used as magnetic cores for electromagnet coils. 
 Similarly, I hope that Ferrite Core will be used for fast, low volume transactions as well as small amount remittances for the unbanked people in developing nations to avoid exuberant remittance costs. A low price will ensure that Ferrite coins and its fees stay affordable.
 
