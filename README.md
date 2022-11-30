@@ -1,9 +1,9 @@
 # ferrite-core
-Ferrite Core full node + wallet based on Bitcoin Core and Litecoin Core codebase.
+### Ferrite Core full node + wallet based on Bitcoin Core and Litecoin Core codebase.
 
 ![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
-Ferrite is a cryptocurrency that seeks to allow fast and free payments to anyone in the world.
+### Ferrite is a cryptocurrency that seeks to allow fast and free payments to anyone in the world.
 
 ## Features:
 ### 1 minute block time - 
@@ -28,7 +28,7 @@ Ferrite has no owner. The miners shall decide the fate of the network.
 ### Pseudonymous -
 Nobody knows who owns the mined coins, nor who sent the coins. Unless you identify as the owner of the public address, you maintain anonymity.
 
-## Telegram group - t.me/ferrite_core
+## Telegram group - [View Group](https://t.me/ferrite_core) 
 ![qr_tmp_small](https://user-images.githubusercontent.com/101822992/204231333-a88dc2c6-f75b-4204-80ec-d64a931b6f7a.png)
 
 
@@ -52,7 +52,7 @@ Blocks with reward: 9,635,423 blocks (32 halvings -1) <br/>
 Halving time: 209 days <br/>
 Reward lifespan: 6691 days (18.33 years) <br/>
 
-
+### Coin art:  
 ![ferrite-core-main-512px](https://user-images.githubusercontent.com/101822992/204157969-c910673a-44a3-42a8-be9c-957907c05b39.png)
 
 ## Additional information - 
