@@ -1,6 +1,6 @@
 # ferrite-core
 ### Ferrite Core full node + wallet based on Bitcoin Core and Litecoin Core codebase.
-## [**Download Latest**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.0/ferrite-qt.exe) - Ferrite Core Qt for Windows 64-bit
+## [**Download Wallet**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.0/ferrite-qt.exe) - Ferrite Core Qt for Windows 64-bit
 
 ![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
