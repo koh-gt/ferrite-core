@@ -47,11 +47,11 @@
     </message>
     <message>
         <source>These are your Ferrite addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
-        <translation>这些是你的莱特币支付地址。在发送之前，一定要核对金额和接收地址。</translation>
+        <translation>这些是你的铁氧币支付地址。在发送之前，一定要核对金额和接收地址。</translation>
     </message>
     <message>
         <source>These are your Ferrite addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
-        <translation>这些是您的莱特币接收地址。建议每个交易使用一个新的接收地址。</translation>
+        <translation>这些是您的铁氧币接收地址。建议每个交易使用一个新的接收地址。</translation>
     </message>
     <message>
         <source>Export Address List</source>
@@ -145,7 +145,7 @@
     </message>
     <message>
         <source>Warning: If you encrypt your wallet and lose your passphrase, you will &lt;b&gt;LOSE ALL OF YOUR FERRITES&lt;/b&gt;!</source>
-        <translation>注意：如果你加密了钱包，丢失了密码，您将&lt;b&gt;丢失所有的莱特币。</translation>
+        <translation>注意：如果你加密了钱包，丢失了密码，您将&lt;b&gt;丢失所有的铁氧币。</translation>
     </message>
     <message>
         <source>Are you sure you wish to encrypt your wallet?</source>
@@ -157,7 +157,7 @@
     </message>
     <message>
         <source>Your wallet is now encrypted. Remember that encrypting your wallet cannot fully protect your ferrites from being stolen by malware infecting your computer.</source>
-        <translation>您的钱包现在加密了。记住，加密您的钱包并不能完全保护您的莱特币不被恶意软件窃取。</translation>
+        <translation>您的钱包现在加密了。记住，加密您的钱包并不能完全保护您的铁氧币不被恶意软件窃取。</translation>
     </message>
     <message>
         <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
@@ -263,7 +263,7 @@
     </message>
     <message>
         <source>Send coins to a Ferrite address</source>
-        <translation>发送莱特币到一个莱特币地址</translation>
+        <translation>发送铁氧币到一个铁氧币地址</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -287,7 +287,7 @@
     </message>
     <message>
         <source>Ferrite</source>
-        <translation>莱特币</translation>
+        <translation>铁氧币</translation>
     </message>
     <message>
         <source>&amp;Send</source>
@@ -311,11 +311,11 @@
     </message>
     <message>
         <source>Sign messages with your Ferrite addresses to prove you own them</source>
-        <translation>用您的莱特币地址签名信息，以证明拥有它们</translation>
+        <translation>用您的铁氧币地址签名信息，以证明拥有它们</translation>
     </message>
     <message>
         <source>Verify messages to ensure they were signed with specified Ferrite addresses</source>
-        <translation>验证消息，确保它们是用指定的莱特币地址签名的</translation>
+        <translation>验证消息，确保它们是用指定的铁氧币地址签名的</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -335,7 +335,7 @@
     </message>
     <message>
         <source>Request payments (generates QR codes and ferrite: URIs)</source>
-        <translation>请求支付(生成二维码和莱特币链接)</translation>
+        <translation>请求支付(生成二维码和铁氧币链接)</translation>
     </message>
     <message>
         <source>Show the list of used sending addresses and labels</source>
@@ -351,7 +351,7 @@
     </message>
     <message numerus="yes">
         <source>%n active connection(s) to Ferrite network</source>
-        <translation><numerusform>%n 活动的莱特币网络连接</numerusform></translation>
+        <translation><numerusform>%n 活动的铁氧币网络连接</numerusform></translation>
     </message>
     <message>
         <source>%1 behind</source>
@@ -391,7 +391,7 @@
     </message>
     <message>
         <source>Show the %1 help message to get a list with possible Ferrite command-line options</source>
-        <translation>显示%1帮助消息以获得可能包含Ferrite命令行选项的列表</translation>
+        <translation>显示%1帮助消息以获得可能包含铁氧币命令行选项的列表</translation>
     </message>
     <message>
         <source>Open Wallet Failed</source>
@@ -431,11 +431,11 @@
     </message>
     <message>
         <source>HD key generation is &lt;b&gt;enabled&lt;/b&gt;</source>
-        <translation>HD密钥生成 &lt;b&gt;被允许&lt;/b&gt;</translation>
+        <translation>分层确定性密钥生成 &lt;b&gt;被允许&lt;/b&gt;</translation>
     </message>
     <message>
         <source>HD key generation is &lt;b&gt;disabled&lt;/b&gt;</source>
-        <translation>HD密钥生成 &lt;b&gt;被禁止&lt;/b&gt;</translation>
+        <translation>分层确定性密钥生成 &lt;b&gt;被禁止&lt;/b&gt;</translation>
     </message>
     <message>
         <source>Private key &lt;b&gt;disabled&lt;/b&gt;</source>
@@ -451,7 +451,7 @@
     </message>
     <message>
         <source>A fatal error occurred. Ferrite can no longer continue safely and will quit.</source>
-        <translation>发生了致命错误。莱特币无法继续安全运行，将退出。</translation>
+        <translation>发生了致命错误。铁氧币无法继续安全运行，将退出。</translation>
     </message>
 </context>
 <context>
@@ -521,7 +521,7 @@
     </message>
     <message>
         <source>The entered address "%1" is not a valid Ferrite address.</source>
-        <translation>输入的地址"%1"不是有效的莱特币地址。</translation>
+        <translation>输入的地址"%1"不是有效的铁氧币地址。</translation>
     </message>
     <message>
         <source>Could not unlock wallet.</source>
@@ -542,7 +542,7 @@
     </message>
     <message>
         <source>Ferrite</source>
-        <translation>莱特币</translation>
+        <translation>铁氧币</translation>
     </message>
     <message>
         <source>Error</source>
@@ -663,7 +663,7 @@
 
 Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis per kB" for a transaction size of 500 bytes (half of 1 kB) would ultimately yield a fee of only 50 satoshis.</source>
         <translation>指定交易虚拟大小的每kB(1,000字节)的自定义费用。
-注意:由于费用是按字节计算的，对于大小为500字节(1 kB的一半)的交易，“每kB 100 satoshis”的费用最终只会产生50 satoshis的费用。</translation>
+注意:由于费用是按字节计算的，对于大小为500字节(1 kB的一半)的交易，“每kB 100 原子”的费用最终只会产生50 原子的费用。</translation>
     </message>
     <message>
         <source>Send to multiple recipients at once</source>
@@ -675,7 +675,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>When there is less transaction volume than space in the blocks, miners as well as relaying nodes may enforce a minimum fee. Paying only this minimum fee is just fine, but be aware that this can result in a never confirming transaction once there is more demand for ferrite transactions than the network can process.</source>
-        <translation>当交易量小于块的空间时，矿工和中继节点可以强制执行最低费用。只付最低费用就可以了，但注意，一旦莱特币交易的需求超出网络的处理能力，就可能导致交易无法确认。</translation>
+        <translation>当交易量小于块的空间时，矿工和中继节点可以强制执行最低费用。只付最低费用就可以了，但注意，一旦铁氧币交易的需求超出网络的处理能力，就可能导致交易无法确认。</translation>
     </message>
     <message>
         <source>A too low fee might result in a never confirming transaction (read the tooltip)</source>
@@ -747,7 +747,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>Warning: Invalid Ferrite address</source>
-        <translation>警告：莱特币地址无效</translation>
+        <translation>警告：铁氧币地址无效</translation>
     </message>
     <message>
         <source>The address you selected for change is not part of this wallet. Any or all funds in your wallet may be sent to this address. Are you sure?</source>
@@ -770,11 +770,11 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>The Ferrite address to send the payment to</source>
-        <translation>支付到的莱特币地址</translation>
+        <translation>支付到的铁氧币地址</translation>
     </message>
     <message>
         <source>The fee will be deducted from the amount being sent. The recipient will receive less ferrites than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
-        <translation>手续费将从发出的总额中扣除。接受者收到的莱特币将少于你输入的金额字段。如果选择了多个接受者，手续费将平均分配。</translation>
+        <translation>手续费将从发出的总额中扣除。接受者收到的铁氧币将少于你输入的金额字段。如果选择了多个接受者，手续费将平均分配。</translation>
     </message>
     <message>
         <source>This is an unauthenticated payment request.</source>
@@ -786,7 +786,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 satoshis p
     </message>
     <message>
         <source>A message that was attached to the ferrite: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Ferrite network.</source>
-        <translation>附在莱特币上的消息:URI将与交易一起存储，供参考。注意：此信息不会通过莱特币网络发送。</translation>
+        <translation>附在铁氧币上的消息:URI将与交易一起存储，供参考。注意：此信息不会通过铁氧币网络发送。</translation>
     </message>
     <message>
         <source>Enter a label for this address to add it to your address book</source>
