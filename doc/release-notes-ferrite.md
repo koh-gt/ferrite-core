@@ -1,4 +1,4 @@
-Ferrite Core version 0.18.1 is now available from:
+Ferrite Core version 1.2.1 is now available from:
 
   <https://download.ferrite.org/ferrite-0.18.1/>
 
@@ -7,11 +7,8 @@ fixes and performance improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at GitHub:
 
-  <https://github.com/ferrite-project/ferrite/issues>
+  <https://github.com/koh-gt/ferrite-core/issues>
 
-To receive security and update notifications, please subscribe to:
-
-  <https://groups.google.com/forum/#!forum/ferrite-dev>
 
 How to Upgrade
 ==============
@@ -21,16 +18,6 @@ completely shut down (which might take a few minutes for older
 versions), then run the installer (on Windows) or just copy over
 `/Applications/Ferrite-Qt` (on Mac) or `ferrited`/`ferrite-qt` (on
 Linux).
-
-The first time you run version 0.15.0 or newer, your chainstate database
-will be converted to a new format, which will take anywhere from a few
-minutes to half an hour, depending on the speed of your machine.
-
-Note that the block database format also changed in version 0.8.0 and
-there is no automatic upgrade code from before version 0.8 to version
-0.15.0 or later. Upgrading directly from 0.7.x and earlier without
-redownloading the blockchain is not supported.  However, as usual, old
-wallet versions are still supported.
 
 Compatibility
 ==============
@@ -119,29 +106,29 @@ Wallet changes
 When creating a transaction with a fee above `-maxtxfee` (default 0.1 FEC),
 the RPC commands `walletcreatefundedpsbt` and  `fundrawtransaction` will now fail
 instead of rounding down the fee. Beware that the `feeRate` argument is specified
-in FEC per kilobyte, not litoshi per byte.
+in FEC per kilobyte, not atoms per byte.
 
 Documentation
 -------------
 
-- A new short [document](https://github.com/ferrite-project/ferrite/blob/master/doc/JSON-RPC-interface.md)
+- A new short [document](https://github.com/koh-gt/ferrite-core/blob/master/doc/JSON-RPC-interface.md)
   about the JSON-RPC interface describes cases where the results of an
   RPC might contain inconsistencies between data sourced from different
   subsystems, such as wallet state and mempool state.  A note is added
-  to the [REST interface documentation](https://github.com/ferrite-project/ferrite/blob/master/doc/REST-interface.md)
+  to the [REST interface documentation](https://github.com/koh-gt/ferrite-core/blob/master/doc/REST-interface.md)
   indicating that the same rules apply.
 
 - Further information is added to the [JSON-RPC
-  documentation](https://github.com/ferrite-project/ferrite/blob/master/doc/JSON-RPC-interface.md)
+  documentation](https://github.com/koh-gt/ferrite-core/blob/master/doc/JSON-RPC-interface.md)
   about how to secure this interface.
 
-- A new [document](https://github.com/ferrite-project/ferrite/blob/master/doc/ferrite-conf.md)
+- A new [document](https://github.com/koh-gt/ferrite-core/blob/master/doc/ferrite-conf.md)
   about the `ferrite.conf` file describes how to use it to configure
   Ferrite Core.
 
 - A new document introduces Ferrite Core's BIP174 [Partially-Signed
   Ferrite Transactions
-  (PSBT)](https://github.com/ferrite-project/ferrite/blob/master/doc/psbt.md)
+  (PSBT)](https://github.com/koh-gt/ferrite-core/blob/master/doc/psbt.md)
   interface, which is used to allow multiple programs to collaboratively
   work to create, sign, and broadcast new transactions.  This is useful
   for offline (cold storage) wallets, multisig wallets, coinjoin
@@ -149,7 +136,7 @@ Documentation
   to interact to generate a complete transaction.
 
 - The [output script
-  descriptor](https://github.com/ferrite-project/ferrite/blob/master/doc/descriptors.md)
+  descriptor](https://github.com/koh-gt/ferrite-core/blob/master/doc/descriptors.md)
   documentation has been updated with information about new features in
   this still-developing language for describing the output scripts that
   a wallet or other program wants to receive notifications for, such as
@@ -161,16 +148,9 @@ Documentation
 Build system changes
 --------------------
 
-- A new `--disable-bip70` option may be passed to `./configure` to
-  prevent Ferrite-Qt from being built with support for the BIP70 payment
-  protocol or from linking libssl.  As the payment protocol has exposed
-  Ferrite Core to libssl vulnerabilities in the past, builders who don't
-  need BIP70 support are encouraged to use this option to reduce their
-  exposure to future vulnerabilities.
-
 - The minimum required version of Qt (when building the GUI) has been
   increased from 5.2 to 5.5.1 (the [depends
-  system](https://github.com/ferrite-project/ferrite/blob/master/depends/README.md)
+  system](https://github.com/koh-gt/ferrite-core/blob/master/depends/README.md)
   provides 5.9.7)
 
 New RPCs
@@ -1128,3 +1108,4 @@ Thanks to everyone who directly contributed to this release:
 - voidmain
 - wbsmolen
 - xinxi
+- [The Ferrite Core Developers](https://github.com/koh-gt/ferrite-core/tree/master/doc/release-notes)
