@@ -20,6 +20,8 @@ namespace block_bench {
 // Litecoin uses block height 878439, hash 0babe680f55a55d54339511226755f0837261da89a4e78eba4d6436a63026df8
 // which contains 3808 transactions.
 
+// Ferrite has yet to have a block with more than 100 transactions. For now
+
 static void DeserializeBlockTest(benchmark::State& state)
 {
     CDataStream stream((const char*)block_bench::block413567,
