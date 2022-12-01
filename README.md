@@ -46,6 +46,7 @@ Premine: No premine (If you count the genesis block, then it is 0.0001%, or 𝔽
 
 ### Economic specifications: <br/>
 ### Circulating supply: 897,700 / 60,221,400 (1.49% of total) (2 Dec 2022)
+![mined02Dec2022](https://user-images.githubusercontent.com/101822992/205147837-6f688097-8e71-4f00-b216-3df6b71086c5.png)
 Block reward: 𝔽 100.00000000 <br/>
 Maximum supply: 𝔽 60,221,399.95784500 <br/>
 Premine: 𝔽 0.00000000 <br/>
