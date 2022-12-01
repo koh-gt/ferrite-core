@@ -93,6 +93,8 @@ Acquire the source in the usual way:
 
 Once the source code is ready the build steps are below:
 
+    sudo chmod +x -R ferrite-core-main
+
     PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
     cd depends
     make HOST=x86_64-w64-mingw32
@@ -100,6 +102,13 @@ Once the source code is ready the build steps are below:
     ./autogen.sh # not required when building from tarball
     CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/
     make
+
+    common qt errors - numeric_limits is not a member of std
+    go to qbytearraymatcher.h
+    #include <stddef.h>
+    #include <limits.h>
+    #include <stdexcept>
+    #include <limits>
 
 ## Building for 32-bit Windows
 
@@ -120,7 +129,8 @@ Acquire the source in the usual way:
     git clone https://github.com/koh-gt/ferrite-core
 
 Then build using:
-
+    sudo chmod +x -R ferrite-core-main
+    
     PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
     cd depends
     make HOST=i686-w64-mingw32
@@ -132,6 +142,13 @@ Then build using:
 
     CONFIG_SITE=$PWD/depends/i686-w64-mingw32/share/config.site ./configure --prefix=/
     make
+    
+    common qt errors - numeric_limits is not a member of std
+    go to qbytearraymatcher.h
+    #include <stddef.h>
+    #include <limits.h>
+    #include <stdexcept>
+    #include <limits>
 
 ## Depends system
 
