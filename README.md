@@ -69,3 +69,14 @@ There are so many coins out there, what makes this special? - Nothing. This coin
 
 High adoption rates need not be expensive, and high market cap is not the way to having high adoption.
 How many people are in cryptocurrency for its technological features rather than its profit potential?
+
+### Graphs
+This coin would either be very active or completely inactive in a year or two. For the sake of practicality the graphs will not extend beyond the time scope of 750 days. This should be enough to capture the first 3 halvings.  
+
+![ferritesupply](https://user-images.githubusercontent.com/101822992/205370763-abb5c3d3-3ede-4363-8659-9dfd69a92f7a.PNG)  
+
+![ferriteinflation](https://user-images.githubusercontent.com/101822992/205370821-1312f75c-9f41-4431-9f00-5b7ddee5bf3d.PNG)
+
+
+
+
