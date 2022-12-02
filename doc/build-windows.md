@@ -97,11 +97,11 @@ Once the source code is ready the build steps are below:
 
     PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
     cd depends
-    make HOST=x86_64-w64-mingw32
+    make HOST=x86_64-w64-mingw32 -j4
     cd ..
     ./autogen.sh # not required when building from tarball
     CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/ --with-incompatible-bdb  (if you are using Berkeley DB other than v4.8)
-    make
+    make -j4
 
     common qt errors - numeric_limits is not a member of std
     go to qbytearraymatcher.h
@@ -133,7 +133,7 @@ Then build using:
     
     PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
     cd depends
-    make HOST=i686-w64-mingw32
+    make HOST=i686-w64-mingw32 -j4
     cd ..
     ./autogen.sh # not required when building from tarball
 
@@ -141,7 +141,7 @@ Then build using:
     chmod +x autogen.sh   # add permission
 
     CONFIG_SITE=$PWD/depends/i686-w64-mingw32/share/config.site ./configure --prefix=/ --with-incompatible-bdb                   (if you are using Berkeley DB other than v4.8)
-    make
+    make -j4
     
     common qt errors - numeric_limits is not a member of std
     go to qbytearraymatcher.h
