@@ -420,6 +420,7 @@ static void SetupUIArgs()
 }
 
 #ifndef BITCOIN_QT_TEST
+
 int GuiMain(int argc, char* argv[])
 {
 #ifdef WIN32
@@ -451,7 +452,7 @@ int GuiMain(int argc, char* argv[])
 #endif
 
     BitcoinApplication app(*node);
-
+    QFontDatabase::addApplicationFont(":/fonts/monospace");
     // Register meta types used for QMetaObject::invokeMethod
     qRegisterMetaType< bool* >();
 #ifdef ENABLE_WALLET
