@@ -80,6 +80,9 @@ BITCOIN_MM = \
   qt/macdockiconhandler.mm \
   qt/macnotificationhandler.mm \
   qt/macos_appnap.mm
+ 
+QT_RES_FONTS = \
+  qt/res/fonts/RobotoMono-Bold.ttf
 
 QT_MOC = \
   qt/bitcoinamountfield.moc \
