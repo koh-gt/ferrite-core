@@ -1,6 +1,6 @@
 # ferrite-core
 ### Ferrite Core full node + wallet based on Bitcoin Core and Litecoin Core codebase.
-## [**Download Wallet 1.2.0**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.0/ferrite-qt.exe) - Windows x64
+## [**Download Wallet 1.2.1**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.1/ferrite-qt.exe) - Windows x64
 
 ![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
@@ -32,9 +32,12 @@ Ferrite has no owner. The miners shall decide the fate of the network.
 ### Pseudonymous -
 Nobody knows who owns the mined coins, nor who sent the coins. Unless you identify as the owner of the public address, you maintain anonymity.
 
+### Scrypt Algorithm -  
+Reuse obsolete Litecoin and Dogecoin miners to mine Ferrite. Originally designed to be ASIC resistant. 
+
 ## Ferrite coin specifications  
 ### Technical specifications: <br/>
-### Current Block Height: **8,978** (2 Dec 2022)
+### Current Block Height: **9,933** (3 Dec 2022)
 Algorithm type: Scrypt, Proof of Work <br/>
 Ports: 9573 (RPC), 9574 (P2P) <br/>
 Block time: 1 minute <br/>
@@ -45,7 +48,7 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine (If you count the genesis block, then it is 0.0001%, or 𝔽 100.00000000) <br/>
 
 ### Economic specifications: <br/>
-### Circulating supply: **897,700 / 60,221,400 (1.49% of total)** (2 Dec 2022)
+### Circulating supply: **993,200 / 60,221,400 (1.65% of total)** (3 Dec 2022)  
 Block reward: 𝔽 100.00000000 <br/>
 Maximum supply: 𝔽 60,221,399.95784500 <br/>
 Premine: 𝔽 0.00000000 <br/>
