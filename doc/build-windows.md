@@ -100,7 +100,7 @@ Once the source code is ready the build steps are below:
     make HOST=x86_64-w64-mingw32
     cd ..
     ./autogen.sh # not required when building from tarball
-    CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/
+    CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/ --with-incompatible-bdb  (if you are using Berkeley DB other than v4.8)
     make
 
     common qt errors - numeric_limits is not a member of std
@@ -140,7 +140,7 @@ Then build using:
     # if autogen.sh does not work due to permissions
     chmod +x autogen.sh   # add permission
 
-    CONFIG_SITE=$PWD/depends/i686-w64-mingw32/share/config.site ./configure --prefix=/
+    CONFIG_SITE=$PWD/depends/i686-w64-mingw32/share/config.site ./configure --prefix=/ --with-incompatible-bdb                   (if you are using Berkeley DB other than v4.8)
     make
     
     common qt errors - numeric_limits is not a member of std
