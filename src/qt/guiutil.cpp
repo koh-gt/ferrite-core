@@ -45,14 +45,25 @@
 #include <QFont>
 #include <QFontDatabase>
 #include <QFontMetrics>
+#include <QGuiApplication>
+#include <QJsonObject>
 #include <QKeyEvent>
 #include <QLineEdit>
+#include <QList>
+#include <QLocale>
+#include <QMenu>
 #include <QMouseEvent>
+#include <QPluginLoader>
 #include <QProgressDialog>
 #include <QSettings>
+#include <QShortcut>
+#include <QSize>
+#include <QString>
+#include <QTextDoc
 #include <QTextDocument> // for Qt::mightBeRichText
 #include <QThread>
 #include <QUrlQuery>
+#include <QtGlobal>
 
 #if defined(Q_OS_MAC)
 #pragma GCC diagnostic push
@@ -76,7 +87,7 @@ QString dateTimeStr(qint64 nTime)
     return dateTimeStr(QDateTime::fromTime_t((qint32)nTime));
 }
 
-QFont fixedPitchFont()
+QFont fixedPitchFont(bool use_embedded_font)
 {
     if (use_embedded_font) {
         return {"Roboto Mono"};
