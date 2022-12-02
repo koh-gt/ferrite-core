@@ -43,6 +43,7 @@
 
 #include <boost/thread.hpp>
 
+#include <QFontDatabase>
 #include <QApplication>
 #include <QDebug>
 #include <QLibraryInfo>
