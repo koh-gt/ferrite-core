@@ -158,6 +158,12 @@ void OptionsModel::Init(bool resetSettings)
         addOverriddenOption("-lang");
 
     language = settings.value("language").toString();
+    
+    if (!settings.contains("UseEmbeddedMonospacedFont")) {
+    settings.setValue("UseEmbeddedMonospacedFont", "true");
+    }
+    m_use_embedded_monospaced_font = settings.value("UseEmbeddedMonospacedFont").toBool();
+    Q_EMIT useEmbeddedMonospacedFontChanged(m_use_embedded_monospaced_font);
 }
 
 /** Helper function to copy contents from one QSettings to another.
@@ -292,6 +298,8 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return settings.value("language");
         case CoinControlFeatures:
             return fCoinControlFeatures;
+        case UseEmbeddedMonospacedFont:
+            return m_use_embedded_monospaced_font;
         case Prune:
             return settings.value("bPrune");
         case PruneSize:
@@ -414,6 +422,11 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
                 settings.setValue("language", value);
                 setRestartRequired(true);
             }
+            break;
+        case UseEmbeddedMonospacedFont:
+            m_use_embedded_monospaced_font = value.toBool();
+            settings.setValue("UseEmbeddedMonospacedFont", m_use_embedded_monospaced_font);
+            Q_EMIT useEmbeddedMonospacedFontChanged(m_use_embedded_monospaced_font);
             break;
         case CoinControlFeatures:
             fCoinControlFeatures = value.toBool();
