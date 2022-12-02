@@ -19,7 +19,7 @@ To Build
 
 ```bash
 ./autogen.sh
-./configure
+./configure --with-incompatible-bdb                   (if you are using Berkeley DB other than v4.8)
 make
 make install # optional
 ```
