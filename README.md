@@ -53,9 +53,9 @@ Block reward: 𝔽 100.00000000 <br/>
 Maximum supply: 𝔽 60,221,399.95784500 <br/>
 Premine: 𝔽 0.00000000 <br/>
 Halving: 301,107 blocks <br/>
-Blocks with reward: 9,635,423 blocks (32 halvings -1) <br/>
+Blocks with reward: 9,936,530 blocks (32 halvings -1) <br/>
 Halving time: 209 days <br/>
-Reward lifespan: 6691 days (18.33 years) <br/>
+Reward lifespan: 6897 days (18.89 years) <br/>
  
 ## Additional information - 
 
