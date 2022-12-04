@@ -14,6 +14,7 @@
 #include <cassert>
 #include <cstdio>
 
+#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
 
