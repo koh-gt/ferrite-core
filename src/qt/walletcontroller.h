@@ -8,19 +8,13 @@
 #include <qt/walletmodel.h>
 #include <sync.h>
 
-#include <map>
+#include <list>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include <QMessageBox>
 #include <QMutex>
-#include <QProgressDialog>
 #include <QThread>
-#include <QTimer>
-#include <QString>
-
-class AskPassphraseDialog;
 
 class OptionsModel;
 class PlatformStyle;
@@ -30,11 +24,7 @@ class Handler;
 class Node;
 } // namespace interfaces
 
-class AskPassphraseDialog;
-class CreateWalletActivity;
-class CreateWalletDialog;
 class OpenWalletActivity;
-class WalletControllerActivity;
 
 /**
  * Controller between interfaces::Node, WalletModel instances and the GUI.
@@ -50,14 +40,14 @@ public:
     WalletController(interfaces::Node& node, const PlatformStyle* platform_style, OptionsModel* options_model, QObject* parent);
     ~WalletController();
 
-     WalletModel* getOrCreateWallet(std::unique_ptr<interfaces::Wallet> wallet);
+    std::vector<WalletModel*> getWallets() const;
+    std::vector<std::string> getWalletsAvailableToOpen() const;
 
-    //! Returns all wallet names in the wallet dir mapped to whether the wallet
-    //! is loaded.
-    std::map<std::string, bool> listWalletDir() const;
-
+    OpenWalletActivity* openWallet(const std::string& name, QWidget* parent = nullptr);
     void closeWallet(WalletModel* wallet_model, QWidget* parent = nullptr);
-    void closeAllWallets(QWidget* parent = nullptr);
+
+private Q_SLOTS:
+    void addWallet(WalletModel* wallet_model);
 
 Q_SIGNALS:
     void walletAdded(WalletModel* wallet_model);
@@ -66,9 +56,7 @@ Q_SIGNALS:
     void coinsSent(WalletModel* wallet_model, SendCoinsRecipient recipient, QByteArray transaction);
 
 private:
-    QThread* const m_activity_thread;
-    QObject* const m_activity_worker;
-    
+    QThread m_activity_thread;
     interfaces::Node& m_node;
     const PlatformStyle* const m_platform_style;
     OptionsModel* const m_options_model;
@@ -77,58 +65,7 @@ private:
     std::unique_ptr<interfaces::Handler> m_handler_load_wallet;
 
     friend class OpenWalletActivity;
-    friend class WalletControllerActivity;
 };
-
-class WalletControllerActivity : public QObject
-{
-    Q_OBJECT
-
-public:
-    WalletControllerActivity(WalletController* wallet_controller, QWidget* parent_widget);
-    virtual ~WalletControllerActivity();
-
-Q_SIGNALS:
-    void finished();
-
-protected:
-    interfaces::Node& node() const { return m_wallet_controller->m_node; }
-    QObject* worker() const { return m_wallet_controller->m_activity_worker; }
-
-    void showProgressDialog(const QString& label_text);
-
-    WalletController* const m_wallet_controller;
-    QWidget* const m_parent_widget;
-    QProgressDialog* m_progress_dialog{nullptr};
-    WalletModel* m_wallet_model{nullptr};
-    std::string m_error_message;
-    std::string m_warning_message;
-};
-
-
-class CreateWalletActivity : public WalletControllerActivity
-{
-    Q_OBJECT
-
-public:
-    CreateWalletActivity(WalletController* wallet_controller, QWidget* parent_widget);
-    virtual ~CreateWalletActivity();
-
-    void create();
-
-Q_SIGNALS:
-    void created(WalletModel* wallet_model);
-
-private:
-    void askPassphrase();
-    void createWallet();
-    void finish();
-
-    SecureString m_passphrase;
-    CreateWalletDialog* m_create_wallet_dialog{nullptr};
-    AskPassphraseDialog* m_passphrase_dialog{nullptr};
-};
-
 
 class OpenWalletActivity : public QObject
 {
