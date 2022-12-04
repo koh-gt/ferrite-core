@@ -17,6 +17,7 @@ the usage of the absolute path.
 To Build
 ---------------------
 sudo chmod +x -R ferrite-core-main
+cd ferrite-core-main
 ```bash
 ./autogen.sh
 ./configure --with-incompatible-bdb                   (if you are using Berkeley DB other than v4.8)
