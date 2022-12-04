@@ -8,6 +8,7 @@
 
 #include <qt/createwalletdialog.h>
 #include <qt/forms/ui_createwalletdialog.h>
+#include <QPushButton>
 
 #include <QPushButton>
 
