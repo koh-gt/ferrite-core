@@ -26,7 +26,11 @@ class Handler;
 class Node;
 } // namespace interfaces
 
+class AskPassphraseDialog;
+class CreateWalletActivity;
+class CreateWalletDialog;
 class OpenWalletActivity;
+class WalletControllerActivity;
 
 /**
  * Controller between interfaces::Node, WalletModel instances and the GUI.
