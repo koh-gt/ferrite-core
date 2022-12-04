@@ -18,6 +18,7 @@
 #include <QMap>
 #include <QPoint>
 #include <QSystemTrayIcon>
+#include <QPushButton>
 
 #ifdef Q_OS_MAC
 #include <qt/macos_appnap.h>
