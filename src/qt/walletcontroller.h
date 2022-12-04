@@ -65,7 +65,34 @@ private:
     std::unique_ptr<interfaces::Handler> m_handler_load_wallet;
 
     friend class OpenWalletActivity;
+    friend class WalletControllerActivity;
 };
+
+class WalletControllerActivity : public QObject
+{
+    Q_OBJECT
+
+public:
+    WalletControllerActivity(WalletController* wallet_controller, QWidget* parent_widget);
+    virtual ~WalletControllerActivity();
+
+Q_SIGNALS:
+    void finished();
+
+protected:
+    interfaces::Node& node() const { return m_wallet_controller->m_node; }
+    QObject* worker() const { return m_wallet_controller->m_activity_worker; }
+
+    void showProgressDialog(const QString& label_text);
+
+    WalletController* const m_wallet_controller;
+    QWidget* const m_parent_widget;
+    QProgressDialog* m_progress_dialog{nullptr};
+    WalletModel* m_wallet_model{nullptr};
+    std::string m_error_message;
+    std::string m_warning_message;
+};
+
 
 class CreateWalletActivity : public WalletControllerActivity
 {
@@ -89,6 +116,7 @@ private:
     CreateWalletDialog* m_create_wallet_dialog{nullptr};
     AskPassphraseDialog* m_passphrase_dialog{nullptr};
 };
+
 
 class OpenWalletActivity : public QObject
 {
