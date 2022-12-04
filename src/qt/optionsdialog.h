@@ -7,6 +7,7 @@
 
 #include <QDialog>
 #include <QValidator>
+#include <QPushButton>
 
 class OptionsModel;
 class QValidatedLineEdit;
