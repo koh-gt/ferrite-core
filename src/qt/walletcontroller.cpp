@@ -21,7 +21,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QWindow>
-   const PlatformStyle *platformStyle;
+const PlatformStyle *platformStyle;
 WalletController::WalletController(interfaces::Node& node, const PlatformStyle* platform_style, OptionsModel* options_model, QObject* parent)
     : QObject(parent)
     , m_activity_thread(new QThread(this))
@@ -51,11 +51,7 @@ WalletController::~WalletController()
     delete m_activity_worker;
 }
 
-std::vector<WalletModel*> WalletController::getOpenWallets() const
-{
-    QMutexLocker locker(&m_mutex);
-    return m_wallets;
-}
+
 
 std::map<std::string, bool> WalletController::listWalletDir() const
 {
