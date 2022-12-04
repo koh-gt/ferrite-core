@@ -57,6 +57,7 @@ Q_SIGNALS:
 
 private:
     QThread m_activity_thread;
+    QObject* const m_activity_worker;
     interfaces::Node& m_node;
     const PlatformStyle* const m_platform_style;
     OptionsModel* const m_options_model;
