@@ -130,7 +130,7 @@ Acquire the source in the usual way:
 
 Then build using:
     sudo chmod +x -R ferrite-core-main
-    
+    cd ferrite-core-main
     PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
     cd depends
     make HOST=i686-w64-mingw32 -j4
