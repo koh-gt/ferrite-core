@@ -6,6 +6,8 @@
 #define BITCOIN_QT_ASKPASSPHRASEDIALOG_H
 
 #include <QDialog>
+    class AskPassphraseDialog;
+}
 
 class WalletModel;
 
