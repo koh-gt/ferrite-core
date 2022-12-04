@@ -17,7 +17,7 @@
 #include <QThread>
 
 class AskPassphraseDialog;
-
+class ClientModel;
 class OptionsModel;
 class PlatformStyle;
 
