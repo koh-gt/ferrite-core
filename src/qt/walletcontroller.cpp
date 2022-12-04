@@ -21,7 +21,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QWindow>
-
+   const PlatformStyle *platformStyle;
 WalletController::WalletController(interfaces::Node& node, const PlatformStyle* platform_style, OptionsModel* options_model, QObject* parent)
     : QObject(parent)
     , m_activity_thread(new QThread(this))
