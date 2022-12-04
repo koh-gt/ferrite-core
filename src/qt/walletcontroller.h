@@ -16,6 +16,8 @@
 #include <QMutex>
 #include <QThread>
 
+class AskPassphraseDialog;
+
 class OptionsModel;
 class PlatformStyle;
 
