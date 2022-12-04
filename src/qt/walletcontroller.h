@@ -62,8 +62,9 @@ Q_SIGNALS:
     void coinsSent(WalletModel* wallet_model, SendCoinsRecipient recipient, QByteArray transaction);
 
 private:
-    QThread m_activity_thread;
+    QThread* const m_activity_thread;
     QObject* const m_activity_worker;
+    ClientModel& m_client_model;
     interfaces::Node& m_node;
     const PlatformStyle* const m_platform_style;
     OptionsModel* const m_options_model;
