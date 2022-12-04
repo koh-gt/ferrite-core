@@ -8,13 +8,17 @@
 #include <qt/walletmodel.h>
 #include <sync.h>
 
-#include <list>
+#include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <QMessageBox>
 #include <QMutex>
+#include <QProgressDialog>
 #include <QThread>
+#include <QTimer>
+#include <QString>
 
 class AskPassphraseDialog;
 
@@ -46,14 +50,14 @@ public:
     WalletController(interfaces::Node& node, const PlatformStyle* platform_style, OptionsModel* options_model, QObject* parent);
     ~WalletController();
 
-    std::vector<WalletModel*> getWallets() const;
-    std::vector<std::string> getWalletsAvailableToOpen() const;
+     WalletModel* getOrCreateWallet(std::unique_ptr<interfaces::Wallet> wallet);
 
-    OpenWalletActivity* openWallet(const std::string& name, QWidget* parent = nullptr);
+    //! Returns all wallet names in the wallet dir mapped to whether the wallet
+    //! is loaded.
+    std::map<std::string, bool> listWalletDir() const;
+
     void closeWallet(WalletModel* wallet_model, QWidget* parent = nullptr);
-
-private Q_SLOTS:
-    void addWallet(WalletModel* wallet_model);
+    void closeAllWallets(QWidget* parent = nullptr);
 
 Q_SIGNALS:
     void walletAdded(WalletModel* wallet_model);
