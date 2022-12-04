@@ -31,10 +31,7 @@ WalletFrame::WalletFrame(const PlatformStyle *_platformStyle, BitcoinGUI *_gui) 
     walletStack = new QStackedWidget(this);
     walletFrameLayout->setContentsMargins(0,0,0,0);
     walletFrameLayout->addWidget(walletStack);
-
-    QLabel *noWallet = new QLabel(tr("No wallet has been loaded."));
-    noWallet->setAlignment(Qt::AlignCenter);
-        
+    
     // hbox for no wallet
     QGroupBox* no_wallet_group = new QGroupBox(walletStack);
     QVBoxLayout* no_wallet_layout = new QVBoxLayout(no_wallet_group);
