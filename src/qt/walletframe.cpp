@@ -34,6 +34,14 @@ WalletFrame::WalletFrame(const PlatformStyle *_platformStyle, BitcoinGUI *_gui) 
     QLabel *noWallet = new QLabel(tr("No wallet has been loaded."));
     noWallet->setAlignment(Qt::AlignCenter);
         
+    // hbox for no wallet
+    QGroupBox* no_wallet_group = new QGroupBox(walletStack);
+    QVBoxLayout* no_wallet_layout = new QVBoxLayout(no_wallet_group);
+
+    QLabel *noWallet = new QLabel(tr("No wallet has been loaded.\nGo to File > Open Wallet to load a wallet.\n- OR -"));
+    noWallet->setAlignment(Qt::AlignCenter);
+    no_wallet_layout->addWidget(noWallet, 0, Qt::AlignHCenter | Qt::AlignBottom);    
+        
     // A button for create wallet dialog
     QPushButton* create_wallet_button = new QPushButton(tr("Create a new wallet"), walletStack);
     connect(create_wallet_button, &QPushButton::clicked, this, &WalletFrame::createWalletButtonClicked);
