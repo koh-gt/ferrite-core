@@ -8,6 +8,9 @@
 #include <qt/bitcoingui.h>
 #include <qt/walletview.h>
 
+#include <qt/createwalletdialog.h>
+#include <qt/walletcontroller.h>
+
 #include <cassert>
 #include <cstdio>
 
@@ -28,7 +31,14 @@ WalletFrame::WalletFrame(const PlatformStyle *_platformStyle, BitcoinGUI *_gui) 
 
     QLabel *noWallet = new QLabel(tr("No wallet has been loaded."));
     noWallet->setAlignment(Qt::AlignCenter);
-    walletStack->addWidget(noWallet);
+        
+    // A button for create wallet dialog
+    QPushButton* create_wallet_button = new QPushButton(tr("Create a new wallet"), walletStack);
+    connect(create_wallet_button, &QPushButton::clicked, this, &WalletFrame::createWalletButtonClicked);
+    no_wallet_layout->addWidget(create_wallet_button, 0, Qt::AlignHCenter | Qt::AlignTop);
+    no_wallet_group->setLayout(no_wallet_layout);
+
+    walletStack->addWidget(no_wallet_group);
 }
 
 WalletFrame::~WalletFrame()
