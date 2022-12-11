@@ -35,9 +35,9 @@ Nobody knows who owns the mined coins, nor who sent the coins. Unless you identi
 ### Scrypt Algorithm -  
 Reuse obsolete Litecoin and Dogecoin miners to mine Ferrite. Originally designed to be ASIC resistant. 
 
-## Ferrite coin specifications - Day 20
+## Ferrite coin specifications - Day 21
 ### Technical specifications: <br/>
-### Current Block Height: **20,533 / 301,107 (6.82% to Halving 1)** (11 Dec 2022)
+### Current Block Height: **21,833 / 301,107 (7.25% to Halving 1)** (12 Dec 2022)
 
 Algorithm type: Scrypt, Proof of Work <br/>
 Ports: 9573 (RPC), 9574 (P2P) <br/>
@@ -50,7 +50,7 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine (If you count the genesis block, then it is 0.0001%, or 𝔽 100.00000000) <br/>
 
 ### Economic specifications: <br/>
-### Circulating supply: **𝔽 2,053,200 / 60,221,400 (3.41% of total)** (11 Dec 2022)  
+### Circulating supply: **𝔽 2,183,200 / 60,221,400 (3.63% of total)** (11 Dec 2022)  
 Block reward: 𝔽 100 <br/>
 Current Block reward:  𝔽 100 <br/>
 Maximum supply: 𝔽 60,221,400 <br/>
