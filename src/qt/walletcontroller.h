@@ -67,29 +67,6 @@ private:
     friend class OpenWalletActivity;
 };
 
-class CreateWalletActivity : public WalletControllerActivity
-{
-    Q_OBJECT
-
-public:
-    CreateWalletActivity(WalletController* wallet_controller, QWidget* parent_widget);
-    virtual ~CreateWalletActivity();
-
-    void create();
-
-Q_SIGNALS:
-    void created(WalletModel* wallet_model);
-
-private:
-    void askPassphrase();
-    void createWallet();
-    void finish();
-
-    SecureString m_passphrase;
-    CreateWalletDialog* m_create_wallet_dialog{nullptr};
-    AskPassphraseDialog* m_passphrase_dialog{nullptr};
-};
-
 class OpenWalletActivity : public QObject
 {
     Q_OBJECT
