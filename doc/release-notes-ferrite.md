@@ -1,6 +1,6 @@
-Ferrite Core version 1.2.1 is now available from:
+Ferrite Core version 1.2.2 is now available from:
 
-  <https://download.ferrite.org/ferrite-0.18.1/>
+  [ferrite.org](https://github.com/koh-gt/ferrite-core)
 
 This is a major version release, including new features, various bug
 fixes and performance improvements, as well as updated translations.
