@@ -1,6 +1,7 @@
 # ferrite-core
 ### Ferrite Core full node + wallet based on Bitcoin Core and Litecoin Core codebase.
-## [**Download Wallet 1.2.1**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.1/ferrite-qt.exe) - Windows x64
+## [**Download Wallet 1.2.2**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.2/ferrite-qt.exe) - Windows x64
+## [**Download Miner**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.2/ferrite-solo-miner.zip)
 
 ![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
@@ -8,6 +9,7 @@
 
 ##   Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin/)
 ## Telegram - [View Group](https://t.me/ferrite_core) 
+### ASIC Renting - [1](https://www.miningrigrentals.com/) [2](https://www.nicehash.com/) [3](https://www.betterhash.net/) 
 
 ## Features:
 ### 1 minute block time - 
@@ -37,7 +39,7 @@ Reuse obsolete Litecoin and Dogecoin miners to mine Ferrite. Originally designed
 
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
-### Current Block Height: **24,156 / 301,107 (8.02% to Halving 1)** (23 Dec 2022)
+### Current Block Height: **24,326 / 301,107 (8.08% to Halving 1)** (24 Dec 2022) Merry Christmas!
 
 Algorithm type: Scrypt, Proof of Work <br/>
 Ports: 9573 (RPC), 9574 (P2P) <br/>
@@ -50,7 +52,7 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine (If you count the genesis block, then it is 0.0001%, or 𝔽 100.00000000) <br/>
 
 ### Economic specifications: <br/>
-### Circulating supply: **𝔽 2,415,500 / 60,221,400 (4.01% of total)** (23 Dec 2022)  
+### Circulating supply: **𝔽 2,432,500 / 60,221,400 (4.04% of total)** (24 Dec 2022)  
 Block reward: 𝔽 100 <br/>
 Current Block reward:  𝔽 100 <br/>
 Maximum supply: 𝔽 60,221,400 <br/>
