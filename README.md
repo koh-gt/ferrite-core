@@ -6,7 +6,8 @@
 ### [**Download Miner**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.2/ferrite-pool-miner.7z)
 or [Rent ASIC miners](https://github.com/koh-gt/ferrite-core/wiki/Rent-an-ASIC-miner)
 
-### [Mining pools list](https://github.com/koh-gt/ferrite-core/wiki/Mining-Pools-List)
+### [Mining pools list](https://github.com/koh-gt/ferrite-core/wiki/Mining-Pools-List)  
+
 
 ![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
