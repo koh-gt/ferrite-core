@@ -8,10 +8,10 @@ or [Rent ASIC miners](https://github.com/koh-gt/ferrite-core/wiki/Rent-an-ASIC-m
 
 ### [Mining pools list](https://github.com/koh-gt/ferrite-core/wiki/Mining-Pools-List)  
 
+### Ferrite is a cryptocurrency that seeks to enable fast and free payments.  <br>
 
 ![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
-### Ferrite is a cryptocurrency that seeks to allow fast and free payments to anyone in the world.
 
 ##   Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin/)
 ## Telegram - [View Group](https://t.me/ferrite_core) 
