@@ -5,7 +5,7 @@
 
 ![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
-### Ferrite is a cryptocurrency that seeks to allow fast and free payments to anyone in the world.
+### Ferrite is a cryptocurrency that seeks to allow fast and free payments.
 
 ##   Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin/)
 ## Telegram - [View Group](https://t.me/ferrite_core) 
@@ -60,6 +60,12 @@ Maximum supply: 𝔽 60,221,400 <br/>
 Blocks with reward: 10,237,637 blocks (33 halvings -1) <br/>
 Halving timespan: 209 days <br/>
 Reward lifespan: 7109 days (19.48 years) <br/>
+
+### Reward distribution table:
+             Halving 0 (before ~Aug 2023) : 50.0% of total supply    ~    𝔽 30,110,700 
+          Halving 1 (Aug 2023 - Mar 2024) : 25.0% of total supply    ~    𝔽 15,055,350 
+          Halving 2 (Apr 2024 - Dec 2024) : 12.5% of total supply    ~    𝔽  7,527,675
+    All remaining blocks (after Dec 2024) : 12.5% of total supply    ~    𝔽  7,527,675
  
 ## Additional information - 
 
