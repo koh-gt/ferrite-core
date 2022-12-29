@@ -124,6 +124,7 @@ public:
 
         vSeeds.emplace_back("node2.walletbuilders.com");
         vSeeds.emplace_back("118.189.201.104");
+        vSeeds.emplace_back("31.125.159.200");
         vSeeds.emplace_back("seed01.altcoinbuilders.com");
         vSeeds.emplace_back("seed02.altcoinbuilders.com");
 
@@ -152,13 +153,15 @@ public:
                 {  101, uint256S("0xbc4383276f530a020085cc2ac9283050e6f681a9164aa9bc3fd2d0e7276b7621")},
                 {  578, uint256S("0x0ac60bc57de1e70e9246e43dac68b2e03bb07d8572decce24eb12ba37648cdf8")},
                 {  4072, uint256S("0x209f38181db9771939a131651b650451a319566d010a6f82c553b357f42aa6b0")},
+                {  10000, uint256S("0xf5da0fabe25733a186805366c0fdede73e2454e782083676e7627b8ec991ef9b")},
+                {  30000, uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95")},
             }
         };
 
         chainTxData = ChainTxData{
-            /* nTime    */ 1669559791,
-            /* nTxCount */ 4073,
-            /* dTxRate  */ 0.00969754
+            /* nTime    */ 1672348199,
+            /* nTxCount */ 33565,
+            /* dTxRate  */ 0.01046170
         };
 
         /* disable fallback fee on mainnet */
