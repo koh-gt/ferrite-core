@@ -125,6 +125,7 @@ public:
         vSeeds.emplace_back("node2.walletbuilders.com");
         vSeeds.emplace_back("118.189.201.104");
         vSeeds.emplace_back("31.125.159.200");
+        vSeeds.emplace_back("188.165.227.178");
         vSeeds.emplace_back("seed01.altcoinbuilders.com");
         vSeeds.emplace_back("seed02.altcoinbuilders.com");
 
