@@ -1212,11 +1212,37 @@ std::string CopyrightHolders(const std::string& strPrefix)
     std::string strCopyrightHolders = strPrefix + copyright_devs;
 
     // Make sure Bitcoin Core copyright is not removed by accident
+    // updated for 2023
+    /*
+        if (copyright_devs.find("Bitcoin Core") == std::string::npos) {
+            std::string strYear = strPrefix;
+            strYear.replace(strYear.find("2022"), sizeof("2022")-1, "2011-2022");
+            strCopyrightHolders += "\n" + strYear + "The Litecoin Core developers";
+            strYear.replace(strYear.find("2011-2022"), sizeof("2011-2022")-1, "2009-2022");
+            strCopyrightHolders += "\n" + strYear + "The Bitcoin Core developers";
+        }
+    */
+    // Output
+    /* 
+        Copyright (C) 2022-2023 The Ferrite Core developers
+        Copyright (C) 2011-2022-2023 The Litecoin Core developers
+        Copyright (C) 2009-2022-2023 The Bitcoin Core developers
+    */
+    // For year 2024
+    /*
+        if (copyright_devs.find("Bitcoin Core") == std::string::npos) {
+        std::string strYear = strPrefix;
+        strYear.replace(strYear.find("2022-2024"), sizeof("2022-2024")-1, "2011-2024");
+        strCopyrightHolders += "\n" + strYear + "The Litecoin Core developers";
+        strYear.replace(strYear.find("2011-2024"), sizeof("2011-2024")-1, "2009-2024");
+        strCopyrightHolders += "\n" + strYear + "The Bitcoin Core developers";
+    }
+    */
     if (copyright_devs.find("Bitcoin Core") == std::string::npos) {
         std::string strYear = strPrefix;
-        strYear.replace(strYear.find("2022"), sizeof("2022")-1, "2011-2022");
+        strYear.replace(strYear.find("2022-2023"), sizeof("2022-2023")-1, "2011-2023");
         strCopyrightHolders += "\n" + strYear + "The Litecoin Core developers";
-        strYear.replace(strYear.find("2011-2022"), sizeof("2011-2022")-1, "2009-2022");
+        strYear.replace(strYear.find("2011-2023"), sizeof("2011-2023")-1, "2009-2023");
         strCopyrightHolders += "\n" + strYear + "The Bitcoin Core developers";
     }
     return strCopyrightHolders;
