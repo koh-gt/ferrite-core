@@ -60,7 +60,7 @@ Premine: No premine <br/>
 Effective Premine: 𝔽 57,300.00000000 (0.10% of total)  
 
 ### Economic specifications: <br/>
-### Circulating supply: **𝔽 5,018,700 / 60,221,400 (7.92% of total)** (13 Jan 2023)  
+### Circulating supply: **𝔽 5,018,700 / 60,221,400 (8.33% of total)** (13 Jan 2023)  
 Block reward: 𝔽 100 <br/>
 Current Block reward:  𝔽 100 <br/>
 Maximum supply: 𝔽 60,221,400 <br/>
