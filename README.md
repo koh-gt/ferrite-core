@@ -55,7 +55,8 @@ Halving time: 301,107 blocks <br/>
 Propogation time: 5 seconds (8.3% detached rate) <br/>
 Block size: 3.8147 MiB <br/>
 Transaction capacity: 50/s (100/s with Segwit) <br/>
-Premine: No premine (If you count the genesis block, then it is 0.0001%, or 𝔽 100.00000000) <br/>
+Premine: No premine <br/>
+Effective Premine: 𝔽 57,300.00000000 (0.10% of total)  
 
 ### Economic specifications: <br/>
 ### Circulating supply: **𝔽 4,769,800 / 60,221,400 (7.92% of total)** (12 Jan 2023)  
