@@ -126,7 +126,6 @@ public:
         vSeeds.emplace_back("188.165.227.178");  // spools.online
         vSeeds.emplace_back("207.244.243.35");   // luckydogpool.com
         vSeeds.emplace_back("155.133.26.223");   // zeusminingpool.com
-        vSeeds.emplace_back("89.252.188.59");   // cminer.org
         vSeeds.emplace_back("node2.walletbuilders.com");     // node2.walletbuilders.com
         vSeeds.emplace_back("seed01.altcoinbuilders.com");  // Tyler Anderson's pool
         vSeeds.emplace_back("seed02.altcoinbuilders.com");  // backup node
