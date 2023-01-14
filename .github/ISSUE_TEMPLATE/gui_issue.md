@@ -8,4 +8,4 @@ assignees: ''
 ---
 
 Any report, issue or feature request applicable to Ferrite Core should be reported at
-https://github.com/bitcoin/bitcoin/issues/
+https://github.com/koh-gt/ferrite-core/issues/
