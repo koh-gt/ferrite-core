@@ -57,8 +57,6 @@ Propogation time: 5 seconds (8.3% detached rate) <br/>
 Block size: 3.8147 MiB <br/>
 Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
-Effective Premine: 𝔽 57,300.00000000 (0.10% of total)
-For testing genesis block, difficulty adjustment in the first 8 hours.
 
 ### Economic specifications: <br/>
 ### Circulating supply: **𝔽 5,297,000 / 60,221,400 (8.80% of total)** (16 Jan 2023)  
