@@ -56,6 +56,7 @@ public:
      */
     enum Unit
     {
+        kBTC,
         BTC,
         mBTC,
         uBTC,
