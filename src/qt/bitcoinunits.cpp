@@ -18,6 +18,7 @@ BitcoinUnits::BitcoinUnits(QObject *parent):
 QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits()
 {
     QList<BitcoinUnits::Unit> unitlist;
+    unitlist.append(kBTC);
     unitlist.append(BTC);
     unitlist.append(mBTC);
     unitlist.append(uBTC);
@@ -29,6 +30,7 @@ bool BitcoinUnits::valid(int unit)
 {
     switch(unit)
     {
+    case kBTC:
     case BTC:
     case mBTC:
     case uBTC:
@@ -43,6 +45,7 @@ QString BitcoinUnits::longName(int unit)
 {
     switch(unit)
     {
+    case kBTC: return QString("kFEC");
     case BTC: return QString("FEC");
     case mBTC: return QString("mFEC");
     case uBTC: return QString("µFEC");
@@ -65,6 +68,7 @@ QString BitcoinUnits::description(int unit)
 {
     switch(unit)
     {
+    case kBTC: return QString("Kilo-Ferrites (1" THIN_SP_UTF8 "000)");
     case BTC: return QString("Ferrites");
     case mBTC: return QString("Milli-Ferrites (1 / 1" THIN_SP_UTF8 "000)");
     case uBTC: return QString("Micro-Ferrites (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
@@ -77,6 +81,7 @@ qint64 BitcoinUnits::factor(int unit)
 {
     switch(unit)
     {
+    case kBTC: return 100000000000;
     case BTC: return 100000000;
     case mBTC: return 100000;
     case uBTC: return 100;
@@ -89,6 +94,7 @@ int BitcoinUnits::decimals(int unit)
 {
     switch(unit)
     {
+    case kBTC: return 11;
     case BTC: return 8;
     case mBTC: return 5;
     case uBTC: return 2;
