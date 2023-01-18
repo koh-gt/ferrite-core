@@ -105,7 +105,8 @@ Once the source code is ready the build steps are below:
     make deploy
 
     common qt errors - numeric_limits is not a member of std
-    go to qbytearraymatcher.h
+    go to qbytearraymatcher.h 
+    /ferrite-core-main/depends/work/build/i686-w64-mingw32/qt/5.9.7-30b9272ce7f/qtbase/src/corelib/tools/qbytearraymatcher.h
     #include <stddef.h>
     #include <limits.h>
     #include <stdexcept>
