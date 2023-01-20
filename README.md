@@ -1,6 +1,6 @@
 # ferrite-core
 ### Ferrite Core full node + wallet based on Bitcoin Core and Litecoin Core codebase.
-## [**Download Installer 1.2.3**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.3/ferrite-1.2.3-win64-setup.exe) - Windows x64
+## [**Download Installer 1.2.4**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.4/ferrite-1.2.4-win64-setup.exe) - Windows x64
 [Quick setup guide](https://github.com/koh-gt/ferrite-core/wiki/Getting-Started)
 
 ### [**Download Miner**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.3/ferrite-pool-miner.7z) or [Rent ASIC miners](https://github.com/koh-gt/ferrite-core/wiki/Rent-an-ASIC-miner)
@@ -44,7 +44,7 @@ Reuse obsolete Litecoin and Dogecoin miners to mine Ferrite. Originally designed
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **56060** (18 Jan 2023)
+### Current Block Height: **57931** (21 Jan 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107
 
@@ -59,7 +59,7 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-### Circulating supply: **𝔽 5,606,000 / 60,221,400 (9.31% of total)** (16 Jan 2023)  
+### Circulating supply: **𝔽 5,793,100 / 60,221,400 (9.62% of total)** (21 Jan 2023)  
 Block reward: 𝔽 100 <br/>
 Current Block reward:  𝔽 100 <br/>
 Maximum supply: 𝔽 60,221,400 <br/>
