@@ -12,8 +12,12 @@
 ![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
 
-##   Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin/)
 ## Telegram - [View Group](https://t.me/ferrite_core) 
+##   Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin)
+##  Discord - [View Group](https://discord.gg/qKgF5xhS5p)
+
+## Block Explorer - [View](http://explorer.ferritecoin.org)
+## Website Mining Calculator - [View](http://www.ferritecoin.org)
 
 ## Features:
 ### 1 minute block time - 
@@ -44,7 +48,7 @@ Reuse obsolete Litecoin and Dogecoin miners to mine Ferrite. Originally designed
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **57931** (21 Jan 2023)
+### Current Block Height: **59626** (22 Jan 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107
 
@@ -59,7 +63,7 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-### Circulating supply: **𝔽 5,793,100 / 60,221,400 (9.62% of total)** (21 Jan 2023)  
+### Circulating supply: **𝔽 5,962,600 / 60,221,400 (9.90% of total)** (22 Jan 2023)  
 Block reward: 𝔽 100 <br/>
 Current Block reward:  𝔽 100 <br/>
 Maximum supply: 𝔽 60,221,400 <br/>
