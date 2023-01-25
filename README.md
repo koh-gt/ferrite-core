@@ -29,9 +29,9 @@ If mining hashrate spikes, difficulty will quickly rise to limit supply.
 If mining hashrate plummets, difficulty will quickly drop to encourage mining.
 
 ### Limited supply - 
-A maximum of 100 FEC (Ferrite coins) are mined in a block. 
-This number will halve every 301107 blocks, or about 8 months considering block propagation time.
-There will be no more than 60,221,400 FEC. 1e+16 times smaller than Avogadro's number!
+A maximum of $100$ FEC (Ferrite coins) are mined in a block. 
+This number will halve every $301107$ blocks, or about 8 months considering block propagation time.
+There will be no more than $60,221,400$ FEC. $10^16$ times smaller than Avogadro's number!
 
 ### Transparency - 
 No pre-mine - Linux Executables are uploaded on public Telegram and Discord groups as early as block 120 (2 hours), with full migration to Github by block 3000 (50 hours).
@@ -63,10 +63,10 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-### Circulating supply: **`𝔽 6,257,400 / 60,221,400` (`10.39%` of total)** (25 Jan 2023)  
+### Circulating supply: **`𝔽 6,257,400 / 60,221,400` (10.39% of total)** (25 Jan 2023)  
 Block reward: 𝔽 100 <br/>
-Current Block reward:  `𝔽 100` <br/>
-Maximum supply: `𝔽 60,221,400` <br/>
+Current Block reward:  𝔽 100 <br/>
+Maximum supply: 𝔽 60,221,400 <br/>
 Blocks with reward: 10,237,637 blocks (33 halvings -1) <br/>
 Halving timespan: 209 days <br/>
 Reward lifespan: 7109 days (19.48 years) <br/>
