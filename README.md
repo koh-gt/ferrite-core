@@ -48,7 +48,7 @@ Reuse obsolete Litecoin and Dogecoin miners to mine Ferrite. Originally designed
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **59841** (23 Jan 2023)
+### Current Block Height: **`62574`** (25 Jan 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107
 
@@ -63,10 +63,10 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-### Circulating supply: **𝔽 5,984,100 / 60,221,400 (9.94% of total)** (23 Jan 2023)  
+### Circulating supply: **`𝔽 6,257,400 / 60,221,400` (`10.39%` of total)** (25 Jan 2023)  
 Block reward: 𝔽 100 <br/>
-Current Block reward:  𝔽 100 <br/>
-Maximum supply: 𝔽 60,221,400 <br/>
+Current Block reward:  `𝔽 100` <br/>
+Maximum supply: `𝔽 60,221,400` <br/>
 Blocks with reward: 10,237,637 blocks (33 halvings -1) <br/>
 Halving timespan: 209 days <br/>
 Reward lifespan: 7109 days (19.48 years) <br/>
@@ -86,6 +86,10 @@ How many people are in cryptocurrency for its technological features rather than
 
 ### Graphs
 This coin would either be very active or completely inactive in a year or two. For the sake of practicality the graphs will not extend beyond the time scope of 750 days. This should be enough to capture the first 3 halvings.  
+
+The total coin supply per halving epoch can be found using this equation.
+
+$$\sum_{i=0}^{33}301,107\left(\frac{100}{2^i}\right)\approx60,221,400$$
 
 ![ferritesupplyXXL](https://user-images.githubusercontent.com/101822992/213925868-ff4a3d07-0231-476b-aae9-ff2b6e7c92fb.PNG)
 
