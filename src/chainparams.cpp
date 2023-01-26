@@ -92,10 +92,10 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT; 
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000003f1caaf8e7d1f");
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000025004406a93795");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95"); 
+        consensus.defaultAssumeValid = uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286"); 
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -127,12 +127,10 @@ public:
         vSeeds.emplace_back("207.244.243.35");   // luckydogpool.com      
         vSeeds.emplace_back("144.91.107.170");   // coinxpool.com
         vSeeds.emplace_back("31.125.159.200");   // findblocks.net
-        vSeeds.emplace_back("155.133.26.223");   // zeusminingpool.com
         vSeeds.emplace_back("node2.walletbuilders.com");     // node2.walletbuilders.com
         vSeeds.emplace_back("155.138.247.235");    // miningmypool.com
         vSeeds.emplace_back("89.252.188.59");   // cminer.org
         vSeeds.emplace_back("seed01.altcoinbuilders.com");  // Tyler Anderson's pool
-        vSeeds.emplace_back("seed02.altcoinbuilders.com");  // backup node
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,36);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
@@ -161,13 +159,14 @@ public:
                 {  4072, uint256S("0x209f38181db9771939a131651b650451a319566d010a6f82c553b357f42aa6b0")},
                 {  10000, uint256S("0xf5da0fabe25733a186805366c0fdede73e2454e782083676e7627b8ec991ef9b")},
                 {  30000, uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95")},
+                {  60000, uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286")},
             }
         };
 
         chainTxData = ChainTxData{
-            /* nTime    */ 1672348199,
-            /* nTxCount */ 33565,
-            /* dTxRate  */ 0.01046170
+            /* nTime    */ 1674730012,
+            /* nTxCount */ 67650,
+            /* dTxRate  */ 0.01153600
         };
 
         /* disable fallback fee on mainnet */
