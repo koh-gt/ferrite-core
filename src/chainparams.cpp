@@ -174,7 +174,7 @@ public:
 };
 
 /**
- * Testnet - Testing for halving functionality
+ * Testnet - testing only - worthless coins - can be changed anytime
  */
 class CTestNetParams : public CChainParams {
 public:
@@ -208,10 +208,10 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT; 
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000020020");
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000200020");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0x7a9f43d6e86eefa66e2b79918b2235c9362106f3d9f11f37f7a33450ceae73c1"); 
+        consensus.defaultAssumeValid = uint256S("e06abe3c558ee9d6772775ae9fd4718711d3d91e3b57898fb3f33acf32a27303"); 
 
         pchMessageStart[0] = 0xba;
         pchMessageStart[1] = 0x76;
@@ -250,6 +250,8 @@ public:
         checkpointData = {
             {
                 {0, uint256S("7a9f43d6e86eefa66e2b79918b2235c9362106f3d9f11f37f7a33450ceae73c1")},
+                {1, uint256S("4b3f1001db78127b1281a89eea0ed72189a1b77100bc4170adca29bf35f6b0b9")},
+                {10, uint256S("e06abe3c558ee9d6772775ae9fd4718711d3d91e3b57898fb3f33acf32a27303")},
             }
         };
 
@@ -265,7 +267,7 @@ public:
 };
 
 /**
- * Regression test
+ * Regression test - zero difficulty mining - instamine
  */
 class CRegTestParams : public CChainParams {
 public:
