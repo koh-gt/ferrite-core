@@ -186,7 +186,7 @@ public:
         consensus.BIP34Hash = uint256();
         consensus.BIP65Height = 76; 
         consensus.BIP66Height = 76; 
-        consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan =  10 * 60;
         consensus.nPowTargetSpacing = 1 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
@@ -216,7 +216,7 @@ public:
         pchMessageStart[0] = 0xba;
         pchMessageStart[1] = 0x76;
         pchMessageStart[2] = 0xab;
-        pchMessageStart[3] = 0x8b;
+        pchMessageStart[3] = 0x8a;
         nDefaultPort = 19574;
         nPruneAfterHeight = 1000;
         m_assumed_blockchain_size = 2;
