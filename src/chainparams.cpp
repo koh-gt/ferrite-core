@@ -126,11 +126,10 @@ public:
         vSeeds.emplace_back("188.165.227.178");  // spools.online
         vSeeds.emplace_back("207.244.243.35");   // luckydogpool.com      
         vSeeds.emplace_back("144.91.107.170");   // coinxpool.com
+        vSeeds.emplace_back("155.133.26.223");   // zeusminingpool.com
         vSeeds.emplace_back("31.125.159.200");   // findblocks.net
-        vSeeds.emplace_back("node2.walletbuilders.com");     // node2.walletbuilders.com
         vSeeds.emplace_back("155.138.247.235");    // miningmypool.com
-        vSeeds.emplace_back("89.252.188.59");   // cminer.org
-        vSeeds.emplace_back("seed01.altcoinbuilders.com");  // Tyler Anderson's pool
+        vSeeds.emplace_back("node2.walletbuilders.com");     // node2.walletbuilders.com
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,36);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
@@ -175,7 +174,7 @@ public:
 };
 
 /**
- * Testnet (v3)
+ * Testnet - Testing for halving functionality
  */
 class CTestNetParams : public CChainParams {
 public:
@@ -187,11 +186,11 @@ public:
         consensus.BIP34Hash = uint256();
         consensus.BIP65Height = 76; 
         consensus.BIP66Height = 76; 
-        consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+        consensus.powLimit = uint256S("00ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan =  10 * 60;
         consensus.nPowTargetSpacing = 1 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
-        consensus.fPowNoRetargeting = false;
+        consensus.fPowNoRetargeting = true;
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -209,7 +208,7 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT; 
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000200020");
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000020020");
 
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0x7a9f43d6e86eefa66e2b79918b2235c9362106f3d9f11f37f7a33450ceae73c1"); 
@@ -217,7 +216,7 @@ public:
         pchMessageStart[0] = 0xba;
         pchMessageStart[1] = 0x76;
         pchMessageStart[2] = 0xab;
-        pchMessageStart[3] = 0x8a;
+        pchMessageStart[3] = 0x8b;
         nDefaultPort = 19574;
         nPruneAfterHeight = 1000;
         m_assumed_blockchain_size = 2;
@@ -230,6 +229,8 @@ public:
 
         vFixedSeeds.clear();
         vSeeds.clear();
+        
+        vSeeds.emplace_back("118.189.201.104");  // node1.ferritecoin.org
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
