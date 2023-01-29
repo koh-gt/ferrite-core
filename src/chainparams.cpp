@@ -126,11 +126,10 @@ public:
         vSeeds.emplace_back("188.165.227.178");  // spools.online
         vSeeds.emplace_back("207.244.243.35");   // luckydogpool.com      
         vSeeds.emplace_back("144.91.107.170");   // coinxpool.com
+        vSeeds.emplace_back("155.133.26.223");   // zeusminingpool.com
         vSeeds.emplace_back("31.125.159.200");   // findblocks.net
-        vSeeds.emplace_back("node2.walletbuilders.com");     // node2.walletbuilders.com
         vSeeds.emplace_back("155.138.247.235");    // miningmypool.com
-        vSeeds.emplace_back("89.252.188.59");   // cminer.org
-        vSeeds.emplace_back("seed01.altcoinbuilders.com");  // Tyler Anderson's pool
+        vSeeds.emplace_back("node2.walletbuilders.com");     // node2.walletbuilders.com
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,36);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
@@ -175,7 +174,7 @@ public:
 };
 
 /**
- * Testnet (v3)
+ * Testnet - testing only - worthless coins - can be changed anytime
  */
 class CTestNetParams : public CChainParams {
 public:
@@ -191,7 +190,7 @@ public:
         consensus.nPowTargetTimespan =  10 * 60;
         consensus.nPowTargetSpacing = 1 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
-        consensus.fPowNoRetargeting = false;
+        consensus.fPowNoRetargeting = true;
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
         consensus.nMinerConfirmationWindow = 2016; // nPowTargetTimespan / nPowTargetSpacing
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -212,7 +211,7 @@ public:
         consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000200020");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0x7a9f43d6e86eefa66e2b79918b2235c9362106f3d9f11f37f7a33450ceae73c1"); 
+        consensus.defaultAssumeValid = uint256S("e06abe3c558ee9d6772775ae9fd4718711d3d91e3b57898fb3f33acf32a27303"); 
 
         pchMessageStart[0] = 0xba;
         pchMessageStart[1] = 0x76;
@@ -230,6 +229,8 @@ public:
 
         vFixedSeeds.clear();
         vSeeds.clear();
+        
+        vSeeds.emplace_back("118.189.201.104");  // node1.ferritecoin.org
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
@@ -249,6 +250,8 @@ public:
         checkpointData = {
             {
                 {0, uint256S("7a9f43d6e86eefa66e2b79918b2235c9362106f3d9f11f37f7a33450ceae73c1")},
+                {1, uint256S("4b3f1001db78127b1281a89eea0ed72189a1b77100bc4170adca29bf35f6b0b9")},
+                {10, uint256S("e06abe3c558ee9d6772775ae9fd4718711d3d91e3b57898fb3f33acf32a27303")},
             }
         };
 
@@ -264,7 +267,7 @@ public:
 };
 
 /**
- * Regression test
+ * Regression test - zero difficulty mining - instamine
  */
 class CRegTestParams : public CChainParams {
 public:
