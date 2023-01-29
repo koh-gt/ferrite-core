@@ -65,9 +65,9 @@ Premine: No premine <br/>
 ### Economic specifications: <br/>
 ### Circulating supply:  
 
-**$$\rfrac{𝔽\ 6,787,700\ }{\ 60,221,400}$$** 
+**$$𝔽\ 6,787,700\ /\ 60,221,400$$** 
 
-**` 11.27% of total `** 
+**$$ 11.27% of total $$** 
 (30 Jan 2023)  
 Block reward: 𝔽 100 <br/>
 Current Block reward:  𝔽 100 <br/>
