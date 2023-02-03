@@ -89,12 +89,13 @@ This means you cannot use a directory that is located directly on the host Windo
 
 Acquire the source in the usual way:
 
-    git clone https://github.com/ferrite-project/ferrite.git
+    git clone https://github.com/koh-gt/ferrite-core.git
+    cd ferrite-core
 
 Once the source code is ready the build steps are below:
 
-    sudo chmod +x -R ferrite-core-main
-    cd ferrite-core-main
+    sudo chmod +x -R ferrite-main
+    cd ferrite-main
     PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
     cd depends
     make HOST=x86_64-w64-mingw32 -j4
@@ -131,8 +132,8 @@ Acquire the source in the usual way:
     git clone https://github.com/koh-gt/ferrite-core
 
 Then build using:
-    sudo chmod +x -R ferrite-core-main
-    cd ferrite-core-main
+    sudo chmod +x -R ferrite-main
+    cd ferrite-main
     PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
     cd depends
     make HOST=i686-w64-mingw32 -j4
