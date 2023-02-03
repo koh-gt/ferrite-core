@@ -66,6 +66,7 @@ Premine: No premine <br/>
 ### Circulating supply:  **$$𝔽\ 7,322,300\ /\ 60,221,400$$** 
 
 **`12.16% of total`** 
+![](https://progress-bar.dev/12)
 (3 Feb 2023)  
 Block reward: 𝔽 100 <br/>
 Current Block reward:  𝔽 100 <br/>
