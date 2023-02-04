@@ -12,7 +12,7 @@
  * for both bitcoind and bitcoin-qt, to make it harder for attackers to
  * target servers or GUI users specifically.
  */
-const std::string CLIENT_NAME("LitecoinCore");
+const std::string CLIENT_NAME("FerriteCore");
 
 
 #ifdef HAVE_BUILD_INFO
@@ -25,7 +25,7 @@ const std::string CLIENT_NAME("LitecoinCore");
 #endif
 
 //! git will put "#define GIT_COMMIT_ID ..." on the next line inside archives. 
-#define GIT_COMMIT_ID "32a108600d43772ce3202ddd3419dc17105c3b9c"
+#define GIT_COMMIT_ID ""
 
 #ifdef BUILD_GIT_TAG
     #define BUILD_DESC BUILD_GIT_TAG
