@@ -6,7 +6,8 @@
 
 ### [**Download Miner**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.3/ferrite-pool-miner.7z) or [Rent ASIC miners](https://github.com/koh-gt/ferrite-core/wiki/Rent-an-ASIC-miner)
 
-### [Mining pools list](https://github.com/koh-gt/ferrite-core/wiki/Mining-Pools-List)  
+### [Mining pools list](https://github.com/koh-gt/ferrite-core/wiki/Mining-Pools-List) 
+### [Trade Ferrite coin](https://github.com/koh-gt/ferrite-core/wiki/Trading-Exchanges)
 
 ### Ferrite is a cryptocurrency that seeks to enable fast and free payments.  <br>
 
