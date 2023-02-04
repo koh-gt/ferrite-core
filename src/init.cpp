@@ -602,7 +602,24 @@ std::string LicenseInfo()
     const std::string URL_WEBSITE = "<http://www.ferritecoin.org>";
     const std::string URL_BLOCK_EXPLORER = "<http://explorer.ferritecoin.org>";
 
-    return CopyrightHolders(strprintf(_("Copyright (C) %i-%i").translated, 2022, COPYRIGHT_YEAR) + " ");
+    return CopyrightHolders(strprintf(_("Copyright (C) %i-%i").translated, 2022, COPYRIGHT_YEAR) + " ") +
+           strprintf(_("\nCopyright (C) %i-%i The Litecoin Core developers").translated, 2011, COPYRIGHT_YEAR) +
+           strprintf(_("\nCopyright (C) %i-%i The Bitcoin Core developers").translated, 2009, COPYRIGHT_YEAR) +
+           
+           strprintf(_(" \n\nPlease contribute if you find %s useful. "
+                       "Visit %s for further information about the software.").translated,
+               PACKAGE_NAME, URL_WEBSITE) +
+
+           strprintf(_("\nThe source code is available from %s.").translated,
+               URL_SOURCE_CODE) +
+
+           strprintf(_("\nThe block explorer is available from %s.").translated,
+               URL_BLOCK_EXPLORER) +
+
+           
+           _("\n\nThis is experimental software.").translated +
+           strprintf(_("\nDistributed under the MIT software license, see the accompanying file %s or %s").translated, "COPYING", "<https://opensource.org/licenses/MIT>") +
+           strprintf(_("\n\nThis product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit %s and cryptographic software written by Eric Young and UPnP software written by Thomas Bernard.").translated, "<https://opensource.org/licenses/MIT>");
 }
 
 /*

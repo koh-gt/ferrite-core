@@ -3,7 +3,7 @@ Unauthenticated REST Interface
 
 The REST API can be enabled with the `-rest` option.
 
-The interface runs on the same port as the JSON-RPC interface, by default port 9332 for mainnet, port 19332 for testnet,
+The interface runs on the same port as the JSON-RPC interface, by default port 9573 for mainnet, port 19573 for testnet,
 and port 19443 for regtest.
 
 REST Interface consistency guarantees
@@ -125,4 +125,4 @@ Only supports JSON as output format.
 
 Risks
 -------------
-Running a web browser on the same node with a REST enabled litecoind can be a risk. Accessing prepared XSS websites could read out tx/block data of your node by placing links like `<script src="http://127.0.0.1:9332/rest/tx/1234567890.json">` which might break the nodes privacy.
+Running a web browser on the same node with a REST enabled litecoind can be a risk. Accessing prepared XSS websites could read out tx/block data of your node by placing links like `<script src="http://127.0.0.1:9573/rest/tx/1234567890.json">` which might break the nodes privacy.
