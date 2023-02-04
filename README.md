@@ -1,5 +1,6 @@
 # ferrite-core
-### Ferrite Core full node + wallet based on Bitcoin Core and Litecoin Core codebase.
+### Ferrite Core full node + wallet based on Bitcoin Core and new Litecoin Core 21.0 codebase.
+### v2 currently in development stage, unstable.
 ## [**Download Installer 1.2.4**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.4/ferrite-1.2.4-win64-setup.exe) - Windows x64
 [Quick setup guide](https://github.com/koh-gt/ferrite-core/wiki/Getting-Started)
 
