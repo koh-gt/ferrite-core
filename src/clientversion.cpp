@@ -36,7 +36,8 @@ const std::string CLIENT_NAME("FerriteCore");
     #ifdef BUILD_GIT_COMMIT
         #define BUILD_SUFFIX "-" BUILD_GIT_COMMIT
     #elif defined(GIT_COMMIT_ID)
-        #define BUILD_SUFFIX "-g" GIT_COMMIT_ID
+        #define BUILD_SUFFIX "" GIT_COMMIT_ID
+        // #define BUILD_SUFFIX "-g" GIT_COMMIT_ID
     #else
         #define BUILD_SUFFIX "-unk"
     #endif
