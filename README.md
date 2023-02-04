@@ -1,85 +1,99 @@
-Litecoin Core integration/staging tree
-=====================================
+# ferrite-core
+### Ferrite Core full node + wallet based on Bitcoin Core and Litecoin Core codebase.
+## [**Download Installer 1.2.4**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.4/ferrite-1.2.4-win64-setup.exe) - Windows x64
+[Quick setup guide](https://github.com/koh-gt/ferrite-core/wiki/Getting-Started)
 
-[![Build Status](https://travis-ci.org/litecoin-project/litecoin.svg?branch=master)](https://travis-ci.org/litecoin-project/litecoin)
+### [**Download Miner**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.3/ferrite-pool-miner.7z) or [Rent ASIC miners](https://github.com/koh-gt/ferrite-core/wiki/Rent-an-ASIC-miner)
 
-https://litecoin.org
+### [Mining pools list](https://github.com/koh-gt/ferrite-core/wiki/Mining-Pools-List)  
 
-What is Litecoin?
-----------------
+### Ferrite is a cryptocurrency that seeks to enable fast and free payments.  <br>
 
-Litecoin is an experimental digital currency that enables instant payments to
-anyone, anywhere in the world. Litecoin uses peer-to-peer technology to operate
-with no central authority: managing transactions and issuing money are carried
-out collectively by the network. Litecoin Core is the name of open source
-software which enables the use of this currency.
+![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
-For more information, as well as an immediately useable, binary version of
-the Litecoin Core software, see [https://litecoin.org](https://litecoin.org).
 
-License
--------
+## Telegram - [View Group](https://t.me/ferrite_core) 
+##   Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin)
+##  Discord - [View Group](https://discord.gg/qKgF5xhS5p)
 
-Litecoin Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
-information or see https://opensource.org/licenses/MIT.
+## Block Explorer - [View](http://explorer.ferritecoin.org)
+## Website Mining Calculator - [View](http://www.ferritecoin.org)
 
-Development Process
--------------------
+## Features:
+### 1 minute block time - 
+Transactions are received instantly and can be confirmed within minutes.
 
-The `master` branch is regularly built (see `doc/build-*.md` for instructions) and tested, but it is not guaranteed to be
-completely stable. [Tags](https://github.com/litecoin-project/litecoin/tags) are created
-regularly from release branches to indicate new official, stable release versions of Litecoin Core.
+### 1 hour difficulty adjustment time - 
+Difficulty adjusts in 60 blocks, allowing for dynamic difficulty adaptation.
+If mining hashrate spikes, difficulty will quickly rise to limit supply.
+If mining hashrate plummets, difficulty will quickly drop to encourage mining.
 
-The https://github.com/litecoin-project/gui repository is used exclusively for the
-development of the GUI. Its master branch is identical in all monotree
-repositories. Release branches and tags do not exist, so please do not fork
-that repository unless it is for development reasons.
+### Limited supply - 
+A maximum of $100$ FEC (Ferrite coins) are mined in a block. 
+This number will halve every $301107$ blocks, or about 8 months considering block propagation time.
+There will be no more than $60,221,400$ FEC. $10^{16}$ times smaller than Avogadro's number!
 
-The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md)
-and useful hints for developers can be found in [doc/developer-notes.md](doc/developer-notes.md).
+### Transparency - 
+No pre-mine - Linux Executables are uploaded on public Telegram and Discord groups as early as block 120 (2 hours), with full migration to Github by block 3000 (50 hours).
 
-The developer [mailing list](https://groups.google.com/forum/#!forum/litecoin-dev)
-should be used to discuss complicated or controversial changes before working
-on a patch set.
+### Decentralised - 
+Ferrite has no owner. The miners shall decide the fate of the network.
 
-Developer IRC can be found on Freenode at #litecoin-dev.
+### Pseudonymous -
+Nobody knows who owns the mined coins, nor who sent the coins. Unless you identify as the owner of the public address, you maintain anonymity.
 
-Testing
--------
+### Scrypt Algorithm -  
+Reuse obsolete Litecoin and Dogecoin miners to mine Ferrite. Originally designed to be ASIC resistant. 
 
-Testing and code review is the bottleneck for development; we get more pull
-requests than we can review and test on short notice. Please be patient and help out by testing
-other people's pull requests, and remember this is a security-critical project where any mistake might cost people
-lots of money.
+## Ferrite coin specifications
+### Technical specifications: <br/>
+### Start Date: 22 Nov 2022
+### Current Block Height: **`73223`** (3 Feb 2023)
+### Halving Epoch: **0**
+### Next halving block: 301107 (~ Jul 2023)
 
-### Automated Testing
+Algorithm type: Scrypt, Proof of Work <br/>
+Ports: 9573 (RPC), 9574 (P2P) <br/>
+Block time: 1 minute <br/>
+Difficulty adjustment time: 1 block or 1 hour <br/>
+Halving time: 301,107 blocks <br/>
+Propogation time: 5 seconds (8.3% detached rate) <br/>
+Block size: 3.8147 MiB <br/>
+Transaction capacity: 50/s (100/s with Segwit) <br/>
+Premine: No premine <br/>
 
-Developers are strongly encouraged to write [unit tests](src/test/README.md) for new code, and to
-submit new unit tests for old code. Unit tests can be compiled and run
-(assuming they weren't disabled in configure) with: `make check`. Further details on running
-and extending unit tests can be found in [/src/test/README.md](/src/test/README.md).
+### Economic specifications: <br/>
+### Circulating supply:  **$$𝔽\ 7,322,300\ /\ 60,221,400$$** 
 
-There are also [regression and integration tests](/test), written
-in Python, that are run automatically on the build server.
-These tests can be run (if the [test dependencies](/test) are installed) with: `test/functional/test_runner.py`
+![](https://geps.dev/progress/12?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)  
+Block reward: 𝔽 100 <br/>
+Current Block reward:  𝔽 100 <br/>
+Maximum supply: 𝔽 60,221,400 <br/>
+Blocks with reward: 10,237,637 blocks (33 halvings -1) <br/>
+Halving timespan: 209 days <br/>
+Reward lifespan: 7109 days (19.48 years) <br/>
+ 
+## Additional information - 
 
-The Travis CI system makes sure that every pull request is built for Windows, Linux, and macOS, and that unit/sanity tests are run automatically.
+![ferrite-core-main-512px](https://user-images.githubusercontent.com/101822992/204157969-c910673a-44a3-42a8-be9c-957907c05b39.png)
 
-### Manual Quality Assurance (QA) Testing
+Why the name Ferrite Core? - The humble ferrite core is cheap and hidden from view. Most people have never heard about it, yet it is what allows our electric generators, switches and radio antennas to function. It has high magnetic permeability allowing for magnetic fields to pass through, yet has low electrical conductivity which reduces eddy current losses. Most importantly, the ferrite core possesses these properties while being cheap and safe to use. This makes the ferrite core suitable for being used as magnetic cores for electromagnet coils. 
+Similarly, I hope that Ferrite Core will be used for fast, low volume transactions as well as small amount remittances for the unbanked people in developing nations to avoid exuberant remittance costs. A low price will ensure that Ferrite coins and its fees stay affordable.  
+The Ferrite coin logo is the IEEE-315 circuit diagram symbol for a ferrite bead.
 
-Changes should be tested by somebody other than the developer who wrote the
-code. This is especially important for large or high-risk changes. It is useful
-to add a test plan to the pull request description if testing the changes is
-not straightforward.
+There are so many coins out there, what makes this special? - Nothing. This coin is created for a social experiment and not for profit. Ultimately, Ferrite is just copied code, pre-generated code, and lines of edited code. Ferrite coins, like other cryptocurrencies, have zero intrinsic value.
 
-Translations
-------------
+High adoption rates need not be expensive, and high market cap is not the way to having high adoption.
+How many people are in cryptocurrency for its technological features rather than its profit potential?
 
-We only accept translation fixes that are submitted through [Bitcoin Core's Transifex page](https://www.transifex.com/projects/p/bitcoin/).
-Translations are converted to Litecoin periodically.
+### Graphs
+This coin would either be very active or completely inactive in a year or two. For the sake of practicality the graphs will not extend beyond the time scope of 750 days. This should be enough to capture the first 3 halvings.  
 
-Translations are periodically pulled from Transifex and merged into the git repository. See the
-[translation process](doc/translation_process.md) for details on how this works.
+The total coin supply per halving epoch can be found using this equation.
 
-**Important**: We do not accept translation changes as GitHub pull requests because the next
-pull from Transifex would automatically overwrite them again.
+$$\sum_{i=0}^{33}301,107\left(\frac{100}{2^i}\right)\approx60,221,400$$
+
+![ferritesupplyXXLgithub_black](https://user-images.githubusercontent.com/101822992/215062635-76796fb1-f7d3-4772-b82e-d681592f5655.PNG)
+
+![ferriteinflationXXLgithub_black](https://user-images.githubusercontent.com/101822992/215062666-67b845c6-97fc-42b7-a527-463cc87976bc.PNG)
+
