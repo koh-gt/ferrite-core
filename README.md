@@ -48,7 +48,7 @@ Reuse obsolete Litecoin and Dogecoin miners to mine Ferrite. Originally designed
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **`73223`** (3 Feb 2023)
+### Current Block Height: **`74431`** (5 Feb 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Jul 2023)
 
@@ -63,7 +63,7 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-### Circulating supply:  **$$𝔽\ 7,322,300\ /\ 60,221,400$$** 
+### Circulating supply:  **$$𝔽\ 7,443,100\ /\ 60,221,400$$** 
 
 ![](https://geps.dev/progress/12?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)  
 Block reward: 𝔽 100 <br/>
