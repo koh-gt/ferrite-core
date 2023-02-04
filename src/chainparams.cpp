@@ -80,7 +80,7 @@ public:
         consensus.nPowTargetSpacing = 1 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 8; // 75% of 10
+        consensus.nRuleChangeActivationThreshold = 39; // 97.5% of 40 to count as consensus
         consensus.nMinerConfirmationWindow = 40; // nPowTargetTimespan / nPowTargetSpacing * 4
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
@@ -89,12 +89,16 @@ public:
         // Deployment of Taproot (BIPs 340-342)
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].bit = 2;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nStartHeight = 200000; // Jun 2023 (before halving 1)
+        // If 39 of 40 blocks in a window are mined with Taproot support after block 200000, then Taproot will be activated
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeoutHeight = 700000; // Jun 2024 (1 year later, after halving 2)
+        // Taproot will be automatically activated after block 700000.
 
         // Deployment of MWEB (LIP-0002, LIP-0003, and LIP-0004)
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].bit = 4;
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 200000; // Jun 2023 (before halving 1)
-        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 700000; // Jun 2024 (1 year later, after halving 2)
+        // If 39 of 40 blocks in a window are mined with MWEB support after block 200000, then MWEB will be activated
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 1200000; // Jun 2025 (2 years later, just before halving 4)
+        // MWEB will be automatically activated after block 1200000.
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000025004406a93795");
