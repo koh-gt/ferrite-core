@@ -88,22 +88,22 @@ TESTS =
 BENCHMARKS =
 
 if BUILD_BITCOIND
-  bin_PROGRAMS += litecoind
+  bin_PROGRAMS += ferrited
 endif
 
 if BUILD_BITCOIN_NODE
-  bin_PROGRAMS += litecoin-node
+  bin_PROGRAMS += ferrite-node
 endif
 
 if BUILD_BITCOIN_CLI
-  bin_PROGRAMS += litecoin-cli
+  bin_PROGRAMS += ferrite-cli
 endif
 if BUILD_BITCOIN_TX
-  bin_PROGRAMS += litecoin-tx
+  bin_PROGRAMS += ferrite-tx
 endif
 if ENABLE_WALLET
 if BUILD_BITCOIN_WALLET
-  bin_PROGRAMS += litecoin-wallet
+  bin_PROGRAMS += ferrite-wallet
 endif
 endif
 
