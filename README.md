@@ -1,9 +1,10 @@
 # ferrite-core
 ### Ferrite Core full node + wallet based on Bitcoin Core and Litecoin Core codebase.
-## [**Download Installer 1.2.4**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.4/ferrite-1.2.4-win64-setup.exe) - Windows x64
+## [**Download Installer 1.3.0**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.4/ferrite-1.3.0-win64-setup.exe) - Windows x64
+[All downloads 1.3.0](https://github.com/koh-gt/ferrite-core/releases/download/v1.3.0)
 [Quick setup guide](https://github.com/koh-gt/ferrite-core/wiki/Getting-Started)
 
-### [**Download Miner**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.3/ferrite-pool-miner.7z) or [Rent ASIC miners](https://github.com/koh-gt/ferrite-core/wiki/Rent-an-ASIC-miner)
+### [**Download Miner**](https://github.com/koh-gt/ferrite-core/releases/download/v1.3.0) or [Rent ASIC miners](https://github.com/koh-gt/ferrite-core/wiki/Rent-an-ASIC-miner)
 
 ### [Mining pools list](https://github.com/koh-gt/ferrite-core/wiki/Mining-Pools-List)  
 
