@@ -63,7 +63,7 @@ ReceiveCoinsDialog::ReceiveCoinsDialog(const PlatformStyle *_platformStyle, QWid
 
     connect(ui->clearButton, &QPushButton::clicked, this, &ReceiveCoinsDialog::clear);
 
-    connect(ui->useBech32, &QCheckBox::clicked, this, &ReceiveCoinsDialog::useBech32Clicked);
+    connect(ui->useLegacyAddress, &QCheckBox::clicked, this, &ReceiveCoinsDialog::useLegacyAddressClicked);
     connect(ui->useMWEB, &QCheckBox::clicked, this, &ReceiveCoinsDialog::useMWEBClicked);
 }
 
@@ -95,10 +95,10 @@ void ReceiveCoinsDialog::setModel(WalletModel *_model)
         // Last 2 columns are set by the columnResizingFixer, when the table geometry is ready.
         columnResizingFixer = new GUIUtil::TableViewLastColumnResizingFixer(tableView, AMOUNT_MINIMUM_COLUMN_WIDTH, DATE_COLUMN_WIDTH, this);
 
-        if (model->wallet().getDefaultAddressType() == OutputType::BECH32) {
-            ui->useBech32->setCheckState(Qt::Checked);
+        if (model->wallet().getDefaultAddressType() != OutputType::BECH32) {
+            ui->useLegacyAddress->setCheckState(Qt::Checked);
         } else {
-            ui->useBech32->setCheckState(Qt::Unchecked);
+            ui->useLegacyAddress->setCheckState(Qt::Unchecked);
         }
 
         // Set the button to be enabled or disabled based on whether the wallet can give out new addresses.
@@ -151,7 +151,7 @@ void ReceiveCoinsDialog::on_receiveButton_clicked()
     QString label = ui->reqLabel->text();
     /* Generate new receiving address */
     OutputType address_type;
-    if (ui->useBech32->isChecked()) {
+    if (!ui->useLegacyAddress->isChecked()) {
         address_type = OutputType::BECH32;
     } else if (ui->useMWEB->isChecked()) {
         address_type = OutputType::MWEB;
@@ -313,12 +313,12 @@ void ReceiveCoinsDialog::copyAmount()
     copyColumnToClipboard(RecentRequestsTableModel::Amount);
 }
 
-void ReceiveCoinsDialog::useBech32Clicked()
+void ReceiveCoinsDialog::useLegacyAddressClicked()
 {
     ui->useMWEB->setChecked(false);
 }
 
 void ReceiveCoinsDialog::useMWEBClicked()
 {
-    ui->useBech32->setChecked(false);
+    ui->useLegacyAdress->setChecked(false);
 }
