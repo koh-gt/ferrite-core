@@ -72,7 +72,7 @@ private Q_SLOTS:
     void copyLabel();
     void copyMessage();
     void copyAmount();
-    void useBech32Clicked();
+    void useLegacyAddressClicked();
     void useMWEBClicked();
 };
 
