@@ -320,5 +320,5 @@ void ReceiveCoinsDialog::useLegacyAddressClicked()
 
 void ReceiveCoinsDialog::useMWEBClicked()
 {
-    ui->useLegacyAdress->setChecked(false);
+    ui->useLegacyAddress->setChecked(false);
 }
