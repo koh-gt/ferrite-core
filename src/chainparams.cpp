@@ -95,7 +95,7 @@ public:
 
         // Deployment of MWEB (LIP-0002, LIP-0003, and LIP-0004)
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].bit = 4;
-        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 250000; // Jul 2023 (before halving 1)
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 200000; // Jul 2023 (before halving 1)
         // If 39 of 40 blocks in a window are mined with MWEB support after block 200000, then MWEB will be activated
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 99999999; // never*
         // MWEB will be automatically activated after block 99999999.
