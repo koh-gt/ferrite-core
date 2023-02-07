@@ -90,15 +90,15 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].bit = 2;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nStartHeight = 100000; // Apr 2023 (before halving 1)
         // If 39 of 40 blocks in a window are mined with Taproot support after block 100000, then Taproot will be activated
-        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeoutHeight = 150000; // May 2023 (before halving 1)
-        // Taproot will be automatically activated after block 99999999.
+        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeoutHeight = 200000; // Jul 2023 (before halving 1)
+        // Taproot will be automatically activated after block 200000.
 
         // Deployment of MWEB (LIP-0002, LIP-0003, and LIP-0004)
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].bit = 4;
-        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 200000; // Jul 2023 (before halving 1)
-        // If 39 of 40 blocks in a window are mined with MWEB support after block 200000, then MWEB will be activated
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 450000; // 2024 (after halving 1)
+        // If 39 of 40 blocks in a window are mined with MWEB support after block 450000, then MWEB will be activated
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 99999999; // never*
-        // MWEB will be automatically activated after block 99999999.
+        // MWEB will be automatically activated after block 99999999 for now.
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000025004406a93795");
