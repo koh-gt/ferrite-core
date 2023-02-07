@@ -29,25 +29,25 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     QWidget(nullptr, f), curAlignment(0)
 {
     // set reference point, paddings
-    int paddingRight            = 50;
-    int paddingTop              = 50;
-    int titleVersionVSpace      = 17;
-    int titleCopyrightVSpace    = 40;
+    int paddingRight            = 80;
+    int paddingTop              = 80;
+    int titleVersionVSpace      = 20;
+    int titleCopyrightVSpace    = 50;
 
-    float fontFactor            = 1.0;
+    float fontFactor            = 1.5;
     float devicePixelRatio      = 1.0;
     devicePixelRatio = static_cast<QGuiApplication*>(QCoreApplication::instance())->devicePixelRatio();
 
     // define text to place
     QString titleText       = PACKAGE_NAME;
     QString versionText     = QString("Version %1").arg(QString::fromStdString(FormatFullVersion()));
-    QString copyrightText   = QString::fromUtf8(CopyrightHolders(strprintf("\xc2\xA9 %u-%u ", 2022, COPYRIGHT_YEAR)).c_str());
+    QString copyrightText   = QString::fromUtf8(CopyrightHolders(strprintf("\xc2\xA9 %u-%u ", 2022, COPYRIGHT_YEAR)).c_str()) + QString::fromStdString(strprintf("\n\xc2\xA9 %u-%u The Litecoin Core Developers", 2011, COPYRIGHT_YEAR)) + QString::fromStdString(strprintf("\n\xc2\xA9 %u-%u The Bitcoin Core Developers", 2009, COPYRIGHT_YEAR));
     QString titleAddText    = networkStyle->getTitleAddText();
 
     QString font            = QApplication::font().toString();
 
     // create a bitmap according to device pixelratio
-    QSize splashSize(480*devicePixelRatio,320*devicePixelRatio);
+    QSize splashSize(960*devicePixelRatio,600*devicePixelRatio);
     pixmap = QPixmap(splashSize);
 
     // change to HiDPI if it makes sense
