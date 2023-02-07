@@ -90,12 +90,12 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].bit = 2;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nStartHeight = 100000; // Apr 2023 (before halving 1)
         // If 39 of 40 blocks in a window are mined with Taproot support after block 100000, then Taproot will be activated
-        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeoutHeight = 99999999; // never*
+        consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeoutHeight = 150000; // May 2023 (before halving 1)
         // Taproot will be automatically activated after block 99999999.
 
         // Deployment of MWEB (LIP-0002, LIP-0003, and LIP-0004)
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].bit = 4;
-        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 200000; // Jun 2023 (before halving 1)
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 250000; // Jul 2023 (before halving 1)
         // If 39 of 40 blocks in a window are mined with MWEB support after block 200000, then MWEB will be activated
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 99999999; // never*
         // MWEB will be automatically activated after block 99999999.
@@ -216,8 +216,8 @@ public:
 
         // Deployment of MWEB (LIP-0002, LIP-0003, and LIP-0004)
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].bit = 4;
-        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 10; 
-        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 20;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 30; 
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 40;
 
         consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000200020");
         consensus.defaultAssumeValid = uint256S("0x7a9f43d6e86eefa66e2b79918b2235c9362106f3d9f11f37f7a33450ceae73c1");
@@ -293,8 +293,8 @@ public:
         consensus.SegwitHeight = 0; // SEGWIT is always activated on regtest unless overridden
         consensus.MinBIP9WarningHeight = 0;
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // 3.5 days
-        consensus.nPowTargetSpacing = 2.5 * 60;
+        consensus.nPowTargetTimespan = 10 * 60; // 1 hour
+        consensus.nPowTargetSpacing = 1 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = true;
         consensus.nRuleChangeActivationThreshold = 108; // 75% for testchains
