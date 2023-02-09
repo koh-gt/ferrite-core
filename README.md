@@ -1,6 +1,6 @@
 # ferrite-core
-### Ferrite Core full node + wallet based on Bitcoin Core and new Litecoin Core 21.0 codebase.
-### v2 currently in development stage, unstable.
+### Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase (MWEB disabled).
+### v2.0.0 is ready, executables will be compiled soon.
 ## [**Download Installer 1.3.0**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.4/ferrite-1.3.0-win64-setup.exe) - Windows x64
 [All downloads 1.3.0](https://github.com/koh-gt/ferrite-core/releases/download/v1.3.0)
 [Quick setup guide](https://github.com/koh-gt/ferrite-core/wiki/Getting-Started)
@@ -68,7 +68,7 @@ Premine: No premine <br/>
 ### Economic specifications: <br/>
 ### Circulating supply:  **$$𝔽\ 7,961,700\ /\ 60,221,400$$** 
 
-![](https://geps.dev/progress/13?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
+![](https://geps.dev/progress/13?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)<br>
 Block reward: 𝔽 100 <br/>
 Current Block reward:  𝔽 100 <br/>
 Maximum supply: 𝔽 60,221,400 <br/>
