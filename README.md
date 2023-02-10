@@ -2,7 +2,7 @@
 ### Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase (MWEB disabled).
 ### v2.0.0 is ready, executables will be compiled soon.
 ## [**Download Installer 1.3.0**](https://github.com/koh-gt/ferrite-core/releases/download/v1.2.4/ferrite-1.3.0-win64-setup.exe) - Windows x64
-[All downloads 1.3.0](https://github.com/koh-gt/ferrite-core/releases/download/v1.3.0)
+[All downloads 1.3.0](https://github.com/koh-gt/ferrite-core/releases/tag/v1.3.0)
 [Quick setup guide](https://github.com/koh-gt/ferrite-core/wiki/Getting-Started)
 
 ### [**Download Miner**](https://github.com/koh-gt/ferrite-core/releases/download/v1.3.0) or [Rent ASIC miners](https://github.com/koh-gt/ferrite-core/wiki/Rent-an-ASIC-miner)
