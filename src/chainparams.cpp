@@ -50,6 +50,8 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
  *     CTxOut(nValue=50.00000000, scriptPubKey=0x5F1DF16B2B704C8A578D0B)
  *   vMerkleTree: 4a5e1e
  */
+
+// All blocks were mined after the release of the 22 Nov 2022 news of FTX.
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
     const char* pszTimestamp = "ST 22Nov22 Singapore was second biggest user of FTX pre collapse";
@@ -66,7 +68,7 @@ public:
         strNetworkID = CBaseChainParams::MAIN;
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
-        consensus.nSubsidyHalvingInterval = 301107;
+        consensus.nSubsidyHalvingInterval = 301107;       // Halving occurs every 301107 blocks which happens to be very close to 8 months for timekeeping.
         consensus.BIP16Height = 0;
         consensus.BIP34Height = 0;
         consensus.BIP34Hash = uint256S("0x46ca17415c18e43f5292034ebf9bbd10de80a61fc6dc17180e6609f33d3b48f3");
@@ -76,12 +78,12 @@ public:
         consensus.SegwitHeight = 0;
         consensus.MinBIP9WarningHeight = 0; // segwit activation height + miner confirmation window
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        consensus.nPowTargetTimespan = 10 * 60; 
-        consensus.nPowTargetSpacing = 1 * 60;
-        consensus.fPowAllowMinDifficultyBlocks = false;
-        consensus.fPowNoRetargeting = false;
-        consensus.nRuleChangeActivationThreshold = 39; // 97.5% of 40 to count as consensus
-        consensus.nMinerConfirmationWindow = 40; // nPowTargetTimespan / nPowTargetSpacing * 4
+        consensus.nPowTargetTimespan = 10 * 60;                   // A target Timespan of 1h. Not 10 blocks. If blocks take longer than usual, difficulty will adjust earlier than usual.
+        consensus.nPowTargetSpacing = 1 * 60;                    // Block confirmation time of 60 seconds.
+        consensus.fPowAllowMinDifficultyBlocks = false;         // All blocks must have minimum difficulty of 1
+        consensus.fPowNoRetargeting = false;                   // Difficulty will be dynamically adjusted.
+        consensus.nRuleChangeActivationThreshold = 39;        // 97.5% of 40 to count as consensus
+        consensus.nMinerConfirmationWindow = 40;             // nPowTargetTimespan / nPowTargetSpacing * 4
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1230767999; // December 31, 2008
@@ -95,13 +97,13 @@ public:
 
         // Deployment of MWEB (LIP-0002, LIP-0003, and LIP-0004)
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].bit = 4;
-        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 750000; // 2025 (after halving 2)
-        // If 39 of 40 blocks in a window are mined with MWEB support after block 750000, then MWEB will be activated
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 99000000; // never*
+        // MWEB can be put up for consensus voting in later versions when mining infrastructure is ready and compatible.
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 99999999; // never*
         // MWEB will be automatically activated after block 99999999 for now.
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000025004406a93795");
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000025004406a93795");  // A total of 10414 866307 823509 hashes (10.4 PH) of work as of block 60000.
         // By default assume that the signatures in ancestors of this block are valid.
         consensus.defaultAssumeValid = uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286");  // 60000
 
@@ -133,11 +135,14 @@ public:
         vSeeds.emplace_back("188.165.227.178");  // spools.online
         vSeeds.emplace_back("207.244.243.35");   // luckydogpool.com      
         vSeeds.emplace_back("144.91.107.170");   // coinxpool.com
-        vSeeds.emplace_back("31.125.159.200");   // findblocks.net
+        vSeeds.emplace_back("155.138.247.235");  // miningmypool.com 
+        vSeeds.emplace_back("155.133.26.223");   // zeusminingpool.com
+        
         vSeeds.emplace_back("node2.walletbuilders.com");     // node2.walletbuilders.com
-        vSeeds.emplace_back("155.138.247.235");    // miningmypool.com
-        vSeeds.emplace_back("89.252.188.59");   // cminer.org
-        vSeeds.emplace_back("seed01.altcoinbuilders.com");  // Tyler Anderson's pool
+        
+        vSeeds.emplace_back("31.125.159.200");   // findblocks.net
+        // vSeeds.emplace_back("89.252.188.59");   // cminer.org
+        // vSeeds.emplace_back("seed01.altcoinbuilders.com");  // Tyler Anderson's pool
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,36);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
