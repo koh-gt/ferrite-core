@@ -51,7 +51,7 @@ Reuse obsolete Litecoin and Dogecoin miners to mine Ferrite. Originally designed
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **`80649`** (11 Feb 2023)
+### Current Block Height: **`83624`** (14 Feb 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Jul 2023)
 
@@ -66,9 +66,9 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-### Circulating supply:  **$$𝔽\ 8,064,900\ /\ 60,221,400$$** 
+### Circulating supply:  **$$𝔽\ 8,362,400\ /\ 60,221,400$$** 
 
-![](https://geps.dev/progress/13?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)<br>
+![](https://geps.dev/progress/14?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)<br>
 Block reward: 𝔽 100 <br/>
 Current Block reward:  𝔽 100 <br/>
 Maximum supply: 𝔽 60,221,400 <br/>
@@ -84,7 +84,7 @@ Why the name Ferrite Core? - The humble ferrite core is cheap and hidden from vi
 Similarly, I hope that Ferrite Core will be used for fast, low volume transactions as well as small amount remittances for the unbanked people in developing nations to avoid exuberant remittance costs. A low price will ensure that Ferrite coins and its fees stay affordable.  
 The Ferrite coin logo is the IEEE-315 circuit diagram symbol for a ferrite bead.
 
-There are so many coins out there, what makes this special? - Nothing. This coin is created for a social experiment and not for profit. Ultimately, Ferrite is just copied code, pre-generated code, and lines of edited code. Ferrite coins, like other cryptocurrencies, have zero intrinsic value.
+There are so many coins out there, what makes this special? - Nothing. This coin is created for a social experiment and not for profit. Ultimately, Ferrite is just copied code, pre-generated code, and lines of edited code. Ferrite coins, like other cryptocurrencies, have zero intrinsic value. It will however be maintained and updated for the long term.
 
 High adoption rates need not be expensive, and high market cap is not the way to having high adoption.
 How many people are in cryptocurrency for its technological features rather than its profit potential?
