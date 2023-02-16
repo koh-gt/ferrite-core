@@ -45,12 +45,12 @@ Ferrite has no owner. The miners shall decide the fate of the network.
 Nobody knows who owns the mined coins, nor who sent the coins. Unless you identify as the owner of the public address, you maintain anonymity.
 
 ### Scrypt Algorithm -  
-Reuse obsolete Litecoin and Dogecoin miners to mine Ferrite. Originally designed to be ASIC resistant. 
+Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite. Originally designed to be ASIC resistant. 
 
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **`85564`** (15 Feb 2023)
+### Current Block Height: **`86816`** (16 Feb 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Jul 2023)
 
@@ -65,7 +65,7 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-### Circulating supply:  **$$𝔽\ 8,556,400\ /\ 60,221,400$$** 
+### Circulating supply:  **$$𝔽\ 8,681,600\ /\ 60,221,400$$** 
 
 ![](https://geps.dev/progress/14?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)<br>
 Block reward: 𝔽 100 <br/>
