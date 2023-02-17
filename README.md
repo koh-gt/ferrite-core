@@ -50,7 +50,7 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **`86816`** (16 Feb 2023)
+### Current Block Height: **`87798`** (17 Feb 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Jul 2023)
 
@@ -65,9 +65,9 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-### Circulating supply:  **$$𝔽\ 8,681,600\ /\ 60,221,400$$** 
+### Circulating supply:  **$$𝔽\ 8,779,800\ /\ 60,221,400$$** 
 
-![](https://geps.dev/progress/14?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)<br>
+![](https://geps.dev/progress/15?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)<br>
 Block reward: 𝔽 100 <br/>
 Current Block reward:  𝔽 100 <br/>
 Maximum supply: 𝔽 60,221,400 <br/>
@@ -80,6 +80,8 @@ Reward lifespan: 7109 days (19.48 years) <br/>
 ![ferrite-core-main-512px](https://user-images.githubusercontent.com/101822992/204157969-c910673a-44a3-42a8-be9c-957907c05b39.png)
 
 Why the name Ferrite Core? - The humble ferrite core is cheap and hidden from view. Most people have never heard about it, yet it is what allows our electric generators, switches and radio antennas to function. It has high magnetic permeability allowing for magnetic fields to pass through, yet has low electrical conductivity which reduces eddy current losses. Most importantly, the ferrite core possesses these properties while being cheap and safe to use. This makes the ferrite core suitable for being used as magnetic cores for electromagnet coils. 
+Bitcoin is considered as digital gold, Litecoin as digital silver. Ferrite is ferrite. 
+In the real world, we use coins made of iron and ferrite because gold and silver are too precious for circulation. A cheap and low barrier to entry will allow for mass adoption.
 Similarly, I hope that Ferrite Core will be used for fast, low volume transactions as well as small amount remittances for the unbanked people in developing nations to avoid exuberant remittance costs. A low price will ensure that Ferrite coins and its fees stay affordable.  
 The Ferrite coin logo is the IEEE-315 circuit diagram symbol for a ferrite bead.
 
