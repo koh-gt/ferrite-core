@@ -1,5 +1,6 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2020 The Bitcoin Core developers
+// 2022-2023 Ferrite Core
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -594,8 +595,10 @@ static RPCHelpMan getblocktemplate()
                         {RPCResult::Type::STR, "mweb", /* optional */ true, "the MWEB block serialized as hex"}
                     }},
                 RPCExamples{
-                    HelpExampleCli("getblocktemplate", "'{\"rules\": [\"mweb\", \"segwit\"]}'")
-            + HelpExampleRpc("getblocktemplate", "{\"rules\": [\"mweb\", \"segwit\"]}")
+                    // HelpExampleCli("getblocktemplate", "'{\"rules\": [\"mweb\", \"segwit\"]}'")
+                    HelpExampleCli("getblocktemplate", "'{\"rules\": [\"segwit\"]}'")
+            // + HelpExampleRpc("getblocktemplate", "{\"rules\": [\"mweb\", \"segwit\"]}")
+            + HelpExampleRpc("getblocktemplate", "{\"rules\": [\"segwit\"]}")
                 },
         [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
 {
@@ -727,9 +730,12 @@ static RPCHelpMan getblocktemplate()
     }
 
     // GBT must be called with 'segwit' and 'mweb' sets in the rules
-    if (setClientRules.count("segwit") != 1 || setClientRules.count("mweb") != 1) {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "getblocktemplate must be called with the segwit & mweb rule sets (call with {\"rules\": [\"mweb\", \"segwit\"]})");
+    // if (setClientRules.count("segwit") != 1 || setClientRules.count("mweb") != 1) {
+        // throw JSONRPCError(RPC_INVALID_PARAMETER, "getblocktemplate must be called with the segwit & mweb rule sets (call with {\"rules\": [\"mweb\", \"segwit\"]})");
+    if (setClientRules.count("segwit") != 1){
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "getblocktemplate must be called with the segwit rule set.\n\n Segwit:    getblocktemplate \'{\"rules\": [\"segwit\"]}\'  \n MWEB:      getblocktemplate \'{\"rules\": [\"mweb\", \"segwit\"]}\'  \n\nMWEB must be called with Segwit enabled.\nBlocks mined without MWEB support will neither confirm any MWEB transactions nor receive any MWEB transaction fees.");
     }
+    
 
     // Update block
     static CBlockIndex* pindexPrev;
