@@ -15,9 +15,9 @@ Mine with or without MWEB support.
 ![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
 ## Community groups
-### Telegram - [View Group](https://t.me/ferrite_core) 
-###   Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin)
-###  Discord - [View Group](https://discord.gg/qKgF5xhS5p)
+### ![telegram](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg) Telegram - [View Group](https://t.me/ferrite_core) 
+### ![reddit](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg) Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin)
+### ![discord](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg) Discord - [View Group](https://discord.gg/qKgF5xhS5p)
 
 ### Block Explorer - [View](http://explorer.ferritecoin.org)
 ### Website Mining Calculator - [View](http://www.ferritecoin.org)
