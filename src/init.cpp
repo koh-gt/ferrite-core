@@ -1333,8 +1333,61 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
         // Warn if no conf file exists at path provided by user
         InitWarning(strprintf(_("The specified config file %s does not exist\n"), config_file_path.string()));
     } else {
+        /*
         // Not categorizing as "Warning" because it's the default behavior
         LogPrintf("Config file: %s (not found, skipping)\n", config_file_path.string());
+        */
+        // Not categorizing as "Warning" because it's the default behavior
+        LogPrintf("Config file: %s (not found, automatically creating default config file)\n", config_file_path.string());
+
+        FILE* configFile = fopen(GetConfigFile(gArgs.GetArg("-conf", BITCOIN_CONF_FILENAME)).string().c_str(), "a");
+        if (configFile != NULL) {
+            std::string strHeader = "# Ferrite Core configuration file:\n"
+                                    "\n"            
+                                    "# Node settings (default: Full Node):\n"
+                                    "daemon=1\n"
+                                    "server=1\n"
+                                    "txindex=1\n"
+                                    "listen=1\n"
+                                    "daemon=1\n"
+                                    "upnp=1\n"
+                                    "\n"
+                                    "# RPC settings (default: Local network only)\n"
+                                    "rpcuser=user\n"
+                                    "rpcpassword=password\n"
+                                    "port=9574\n"
+                                    "rpcport=9573\n"
+                                    "rpcbind=127.0.0.1\n"
+                                    "rpcallowip=127.0.0.1\n"
+                                    "rpcthreads=32\n"
+                                    "\n"
+                                    "# Relay and fee settings (default: 1 atom/vB)\n"
+                                    "mintxfee=0.00001\n"
+                                    "minrelaytxfee=0.00001\n"
+                                    "rpcconnect=500\n"
+                                    "maxconnections=500\n"
+                                    "\n"
+                                    "# Depreciated RPCs for compatibility\n"
+                                    "deprecatedrpc=accounts\n"
+                                    "deprecatedrpc=generate\n"
+                                    "\n"
+                                    "# Nodes:\n"
+                                    "addnode=node1.ferritecoin.org\n"
+                                    "addnode=node2.ferritecoin.org\n"
+                                    "addnode=node3.ferritecoin.org\n"
+                                    "addnode=node2.walletbuilders.com\n"    
+                                    "addnode=118.189.201.104:9574\n"
+                                    "addnode=188.165.227.178:9574 # spools.online \n"
+                                    "addnode=207.244.243.35:9574 # luckydogpool.com \n"
+                                    "addnode=144.91.107.170:9574 # coinxpool.com \n"
+                                    "addnode=83.61.85.197:9574 # 2miningpool.com \n"
+                                    "addnode=155.138.247.235:9574 # miningmypool.com \n"
+                                    "addnode=155.133.26.223:9574 # zeusminingpool.com \n"
+                                    "\n";
+
+            fwrite(strHeader.c_str(), std::strlen(strHeader.c_str()), 1, configFile);
+            fclose(configFile);
+        }
     }
 
     // Log the config arguments to debug.log
