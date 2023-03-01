@@ -69,7 +69,7 @@ Premine: No premine <br/>
 ### Economic specifications: <br/>
 ### Circulating supply:  **$$𝔽\ 9,946,300\ /\ 60,221,400$$** 
 
-![](https://geps.dev/progress/16?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)<br>
+![](https://geps.dev/progress/17?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)<br>
 Block reward: 𝔽 100 <br/>
 Current Block reward:  𝔽 100 <br/>
 Maximum supply: 𝔽 60,221,400 <br/>
