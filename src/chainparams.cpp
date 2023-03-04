@@ -103,9 +103,30 @@ public:
         // MWEB will be automatically activated after block 99999999 for now.
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000025004406a93795");  // A total of 10414 866307 823509 hashes (10.4 PH) of work as of block 60000.
+        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000009cec62dc44b76d");  
+        // A total of 44170 005713 303405 hashes (44.2 PH) of work as of block 100000.
+        
+        // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000009cec62dc44b76d");  
+        // A total of 44170 005713 303405 hashes (44.17 PH) of work as of block 100000.
+        // consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000025004406a93795");  
+        // A total of 10414 866307 823509 hashes (10.41 PH) of work as of block 60000.
+        // consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000003f1caaf8e7d1f");  
+        // A total of  1110 277761 170719 hashes (1.110 PH) of work as of block 30000.
+        // consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000aaf695561da1");  
+        // A total of   187 976044 125601 hashes (188.0 TH) of work as of block 10000.
+        
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286");  // 60000
+        consensus.defaultAssumeValid = uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297");  
+        // Block 100000
+        
+        // consensus.defaultAssumeValid = uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297");  
+        // Block 100000
+        // consensus.defaultAssumeValid = uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286");  
+        // Block 60000
+        // consensus.defaultAssumeValid = uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95");  
+        // Block 30000
+        // consensus.defaultAssumeValid = uint256S("0xf5da0fabe25733a186805366c0fdede73e2454e782083676e7627b8ec991ef9b");  
+        // Block 10000
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -126,26 +147,11 @@ public:
         assert(consensus.hashGenesisBlock == uint256S("0x46ca17415c18e43f5292034ebf9bbd10de80a61fc6dc17180e6609f33d3b48f3"));
         assert(genesis.hashMerkleRoot == uint256S("0x3db2b5aa928b56b8f38dc404f5bdb9e76209906b91ba175361acdc2405b19592"));
 
-        // Note that of those which support the service bits prefix, most only support a subset of
-        // possible options.
-        // This is fine at runtime as we'll fall back to using them as an addrfetch if they don't support the
-        // service bits we want, but we should get them updated to support all service bits wanted by any
-        // release ASAP to avoid it where possible.
+        // Seed servers to connect to other nodes.
+        // Default configuration file contains nodes of popular ferritecoin mining pools.
         vSeeds.emplace_back("node1.ferritecoin.org");  // node1.ferritecoin.org
-        vSeeds.emplace_back("node2.ferritecoin.org");  // node1.ferritecoin.org
-        vSeeds.emplace_back("node3.ferritecoin.org");  // node1.ferritecoin.org
-        
-        vSeeds.emplace_back("188.165.227.178");  // spools.online
-        vSeeds.emplace_back("207.244.243.35");   // luckydogpool.com      
-        vSeeds.emplace_back("144.91.107.170");   // coinxpool.com
-        vSeeds.emplace_back("155.138.247.235");  // miningmypool.com 
-        vSeeds.emplace_back("155.133.26.223");   // zeusminingpool.com
-        
-        vSeeds.emplace_back("node2.walletbuilders.com");     // node2.walletbuilders.com
-        
-        vSeeds.emplace_back("31.125.159.200");   // findblocks.net
-        // vSeeds.emplace_back("89.252.188.59");   // cminer.org
-        // vSeeds.emplace_back("seed01.altcoinbuilders.com");  // Tyler Anderson's pool
+        vSeeds.emplace_back("node2.ferritecoin.org");  // node2.ferritecoin.org
+        vSeeds.emplace_back("node3.ferritecoin.org");  // node3.ferritecoin.org
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,36);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
@@ -177,13 +183,14 @@ public:
                 {  10000, uint256S("0xf5da0fabe25733a186805366c0fdede73e2454e782083676e7627b8ec991ef9b")},
                 {  30000, uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95")},
                 {  60000, uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286")},
+                {  100000, uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297")},
             }
         };
 
         chainTxData = ChainTxData{
-            /* nTime    */ 1674730012,
-            /* nTxCount */ 67650,
-            /* dTxRate  */ 0.01153600
+            /* nTime    */ 1677953251,
+            /* nTxCount */ 111405,
+            /* dTxRate  */ 0.01352083
         };
     }
 };
@@ -247,7 +254,9 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
-        vSeeds.emplace_back("118.189.201.104");
+        vSeeds.emplace_back("node1.ferritecoin.org");  // node1.ferritecoin.org
+        vSeeds.emplace_back("node2.ferritecoin.org");  // node1.ferritecoin.org
+        vSeeds.emplace_back("node3.ferritecoin.org");  // node1.ferritecoin.org
         
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
