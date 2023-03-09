@@ -152,6 +152,7 @@ public:
         vSeeds.emplace_back("node1.ferritecoin.org");  // node1.ferritecoin.org
         vSeeds.emplace_back("node2.ferritecoin.org");  // node2.ferritecoin.org
         vSeeds.emplace_back("node3.ferritecoin.org");  // node3.ferritecoin.org
+        vSeeds.emplace_back("node4.ferritecoin.org");  // node4.ferritecoin.org
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,36);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
