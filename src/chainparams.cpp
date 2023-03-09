@@ -92,10 +92,10 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_SEGWIT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT; 
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000025004406a93795");
+        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000009cec62dc44b76d");
 
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286"); 
+        consensus.defaultAssumeValid = uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297"); 
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -122,14 +122,10 @@ public:
         // service bits we want, but we should get them updated to support all service bits wanted by any
         // release ASAP to avoid it where possible.
 
-        vSeeds.emplace_back("118.189.201.104");  // node1.ferritecoin.org
-        vSeeds.emplace_back("188.165.227.178");  // spools.online
-        vSeeds.emplace_back("207.244.243.35");   // luckydogpool.com      
-        vSeeds.emplace_back("144.91.107.170");   // coinxpool.com
-        vSeeds.emplace_back("155.133.26.223");   // zeusminingpool.com
-        vSeeds.emplace_back("31.125.159.200");   // findblocks.net
-        vSeeds.emplace_back("155.138.247.235");    // miningmypool.com
-        vSeeds.emplace_back("node2.walletbuilders.com");     // node2.walletbuilders.com
+        vSeeds.emplace_back("node1.ferritecoin.org");  // node2.ferritecoin.org
+        vSeeds.emplace_back("node2.ferritecoin.org");  // node2.ferritecoin.org
+        vSeeds.emplace_back("node3.ferritecoin.org");  // node3.ferritecoin.org
+        vSeeds.emplace_back("node4.ferritecoin.org");  // node4.ferritecoin.org
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,36);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
@@ -159,13 +155,14 @@ public:
                 {  10000, uint256S("0xf5da0fabe25733a186805366c0fdede73e2454e782083676e7627b8ec991ef9b")},
                 {  30000, uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95")},
                 {  60000, uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286")},
+                { 100000, uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297")},
             }
         };
 
         chainTxData = ChainTxData{
-            /* nTime    */ 1674730012,
-            /* nTxCount */ 67650,
-            /* dTxRate  */ 0.01153600
+            /* nTime    */ 1677953251,
+            /* nTxCount */ 111405,
+            /* dTxRate  */ 0.01352083
         };
 
         /* disable fallback fee on mainnet */
