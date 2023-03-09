@@ -76,7 +76,7 @@ QString dateTimeStr(qint64 nTime)
 }
 
 
-QFont fixedPitchFont()
+QFont fixedPitchFont(bool use_embedded_font)
 {
     if (use_embedded_font) {
         return {"Roboto Mono"};
