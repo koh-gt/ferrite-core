@@ -1,16 +1,18 @@
 # ferrite-core
-### Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase.
+## Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase.
 Mine with or without MWEB support.
-## [**Download Installer 2.1.0**](https://github.com/koh-gt/ferrite-core/releases/download/v2.1.0/ferrite-2.1.0-win64-setup.exe) - Windows x64
-[All downloads 2.1.0](https://github.com/koh-gt/ferrite-core/releases/tag/v2.1.0)
-[Quick setup guide](https://github.com/koh-gt/ferrite-core/wiki/Getting-Started)
-
+| OS                        | Bit      | Name                   | Link                              | SHA256 Checksum                         |
+|--------------------|-------|---------------------|--------------------------|---------------------------------------|
+| Windows             | 64     | Setup                     | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v2.1.1/ferrite-2.1.1-win64-setup.exe) | `57193a922cb8fdc1cd03d5a759a2e8de7e307e27b566eba43dcb2330ebef7215` |
+| Windows             | 64     | Qt Wallet               | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v2.1.1/ferrite-qt.exe) |  `507f520cd6e726dff458ae86b57c5c36abdc7870b8dc2bd8522f2a74d99d8998` |
+###[All downloads 2.1.1](https://github.com/koh-gt/ferrite-core/releases/tag/v2.1.1)
+###[Quick setup guide](https://github.com/koh-gt/ferrite-core/wiki/Getting-Started)
 ### [**Download Miner**](https://github.com/koh-gt/ferrite-core/releases/download/v1.3.0) or [Rent ASIC miners](https://github.com/koh-gt/ferrite-core/wiki/Rent-an-ASIC-miner)
 
 ### [Mining pools list](https://github.com/koh-gt/ferrite-core/wiki/Mining-Pools-List) 
 ### [Trade Ferrite coin](https://github.com/koh-gt/ferrite-core/wiki/Trading-Exchanges)
 
-### Ferrite is a cryptocurrency that seeks to enable fast and free payments.  <br>
+## Ferrite is a cryptocurrency that seeks to enable fast and free payments.  <br>
 
 ![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
@@ -52,7 +54,7 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **`107455`** (8 Mar 2023)
+### Current Block Height: **`111030`** (11 Mar 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Jul 2023)
 
@@ -67,7 +69,7 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-### Circulating supply:  **$$𝔽\ 10,745,500\ /\ 60,221,400$$** 
+### Circulating supply:  **$$𝔽\ 11,103,000\ /\ 60,221,400$$** 
 
 ![](https://geps.dev/progress/18?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)<br>
 Block reward: 𝔽 100 <br/>
