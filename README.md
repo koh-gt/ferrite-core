@@ -3,27 +3,40 @@
 Mine with or without MWEB support.
 | OS                        | Bit      | Name                   | Link                              | SHA256 Checksum                         |
 |--------------------|-------|---------------------|--------------------------|---------------------------------------|
-| Windows             | 64     | Setup                     | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v2.1.1/ferrite-2.1.1-win64-setup.exe) | `57193a922cb8fdc1cd03d5a759a2e8de7e307e27b566eba43dcb2330ebef7215` |
-| Windows             | 64     | Qt Wallet               | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v2.1.1/ferrite-qt.exe) |  `507f520cd6e726dff458ae86b57c5c36abdc7870b8dc2bd8522f2a74d99d8998` |
-###[All downloads 2.1.1](https://github.com/koh-gt/ferrite-core/releases/tag/v2.1.1)
-###[Quick setup guide](https://github.com/koh-gt/ferrite-core/wiki/Getting-Started)
-### [**Download Miner**](https://github.com/koh-gt/ferrite-core/releases/download/v1.3.0) or [Rent ASIC miners](https://github.com/koh-gt/ferrite-core/wiki/Rent-an-ASIC-miner)
+| Windows             | 64      | Setup                     | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v2.1.1/ferrite-2.1.1-win64-setup.exe) | `57193a922cb8fdc1cd03d5a759a2e8de7e307e27b566eba43dcb2330ebef7215` |
+| Windows             | 64      | Qt Wallet               | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v2.1.1/ferrite-qt.exe) |  `507f520cd6e726dff458ae86b57c5c36abdc7870b8dc2bd8522f2a74d99d8998` |
+| Windows, Unix       | 32 / 64 | Others                  | [Release 2.1.1](https://github.com/koh-gt/ferrite-core/releases/tag/v2.1.1) | |
 
-### [Mining pools list](https://github.com/koh-gt/ferrite-core/wiki/Mining-Pools-List) 
-### [Trade Ferrite coin](https://github.com/koh-gt/ferrite-core/wiki/Trading-Exchanges)
-
-## Ferrite is a cryptocurrency that seeks to enable fast and free payments.  <br>
-
-![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
-
-## Community groups
+## Community group links
 ### ![telegram](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg) Telegram - [View Group](https://t.me/ferrite_core) 
 ### ![reddit](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg) Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin)
 ### ![discord](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg) Discord - [View Group](https://discord.gg/qKgF5xhS5p)
 
-### Block Explorer - [View](http://explorer.ferritecoin.org)
-### Website Mining Calculator - [View](http://www.ferritecoin.org)
-### Merchandise - [View](http://shop.ferritecoin.org)
+## Mining information links
+| Name                      | Link                                            | Description                                                                |
+|---------------------------|-------------------------------------------------|----------------------------------------------------------------------------|
+| MiningPoolStats         | [Ferrite (FEC) Scrypt](https://miningpoolstats.stream/ferrite) | Overview of Ferrite hashrate and difficulty. |
+| Mining pools list       | [Github Wiki](https://github.com/koh-gt/ferrite-core/wiki/Mining-Pools-List) | A list of stratum mining pools to mine Ferrite. |
+| CCMiner software        | [Release 2.1.1](https://github.com/koh-gt/ferrite-core/releases/tag/v2.1.1) |
+| Rent ASIC mining hardware | [Github Wiki](https://github.com/koh-gt/ferrite-core/wiki/Rent-an-ASIC-miner) |
+| Quick setup guide (WIP)   | [Github Wiki](https://github.com/koh-gt/ferrite-core/wiki/Getting-Started) |
+
+## Trading information links
+| Name                      | Link                                            | Description                                                                |
+|---------------------------|-------------------------------------------------|----------------------------------------------------------------------------| 
+| CoinPaprika               | [FEC Price, Charts, Markets](https://coinpaprika.com/coin/fec-ferrite/) | Price information and charts |
+| Trading Exchanges         | [Trade Ferrite coin](https://github.com/koh-gt/ferrite-core/wiki/Trading-Exchanges) | Price history, available FEC trading pairs |
+
+## Blockchain information links
+| Name                      | Link                                            | Description                                                                |
+|---------------------------|-------------------------------------------------|----------------------------------------------------------------------------|
+| Website                   | [View](http://www.ferritecoin.org) | Ferrite website with mining calculator |
+| Block Explorer            | [View](http://explorer.ferritecoin.org) | Blockchain explorer to view latest transactions, circulating supply and rich list distribution |
+| Merchandise               | [View](http://shop.ferritecoin.org) | Redirect link to Teespring shop with Ferrite coin themed merchandise |
+
+## Ferrite is a cryptocurrency that seeks to enable fast and free payments.  <br>
+
+![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
 ## Features:
 ### 1 minute block time - 
