@@ -7,10 +7,10 @@
 | Windows, Unix       | 32 / 64 | Others                  | [Release 2.1.1](https://github.com/koh-gt/ferrite-core/releases/tag/v2.1.1) | |
 
 ## Community group links
-### ![telegram](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg) Telegram - [View Group](https://t.me/ferrite_core) ### ![reddit](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg) Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin) ### ![discord](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg) Discord - [View Group](https://discord.gg/qKgF5xhS5p)
+### ![telegram](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg) Telegram - [View Group](https://t.me/ferrite_core)        ![reddit](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg) Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin)        ![discord](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg) Discord - [View Group](https://discord.gg/qKgF5xhS5p)
 
 ## Mining information links
-Mineable with or without MWEB support.
+> Mineable with or without MWEB support.
 | Name                      | Link                                            | Description                                                                |
 |---------------------------|-------------------------------------------------|----------------------------------------------------------------------------|
 | MiningPoolStats         | [Ferrite (FEC) Scrypt](https://miningpoolstats.stream/ferrite) | Overview of Ferrite hashrate and difficulty. |
@@ -42,13 +42,13 @@ Transactions are received instantly and can be confirmed within minutes.
 
 ### 1 hour difficulty adjustment time - 
 Difficulty adjusts in 60 blocks, allowing for dynamic difficulty adaptation.
-If mining hashrate spikes, difficulty will quickly rise to limit supply.
-If mining hashrate plummets, difficulty will quickly drop to encourage mining.
+> If mining hashrate spikes, difficulty will quickly rise to limit supply.
+> If mining hashrate plummets, difficulty will quickly drop to encourage mining.
 
 ### Limited supply - 
 A maximum of $100$ FEC (Ferrite coins) are mined in a block. 
 This number will halve every $301107$ blocks, or about 8 months considering block propagation time.
-There will be no more than $60,221,400$ FEC. $10^{16}$ times smaller than Avogadro's number!
+> There will be no more than $60,221,400$ FEC. $10^{16}$ times smaller than Avogadro's number!
 
 ### Transparency - 
 No pre-mine - Linux Executables are uploaded on public Telegram and Discord groups as early as block 120 (2 hours), with full migration to Github by block 3000 (50 hours).
