@@ -7,7 +7,8 @@
 | Windows, Unix       | 32 / 64 | Others                  | [Release 2.1.1](https://github.com/koh-gt/ferrite-core/releases/tag/v2.1.1) | |
 
 ## Community group links
-### ![telegram](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg) Telegram - [View Group](https://t.me/ferrite_core)        ![reddit](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg) Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin)        ![discord](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg) Discord - [View Group](https://discord.gg/qKgF5xhS5p)
+|--|--|--|
+| ![telegram](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg) Telegram - [View Group](https://t.me/ferrite_core) | ![reddit](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg) Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin) | ![discord](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg) Discord - [View Group](https://discord.gg/qKgF5xhS5p)
 
 ## Mining information links
 > Mineable with or without MWEB support.
@@ -95,13 +96,18 @@ Reward lifespan: 7109 days (19.48 years) <br/>
 
 ![ferrite-core-main-512px](https://user-images.githubusercontent.com/101822992/204157969-c910673a-44a3-42a8-be9c-957907c05b39.png)
 
-Why the name Ferrite Core? - The humble ferrite core is cheap and hidden from view. Most people have never heard about it, yet it is what allows our electric generators, switches and radio antennas to function. It has high magnetic permeability allowing for magnetic fields to pass through, yet has low electrical conductivity which reduces eddy current losses. Most importantly, the ferrite core possesses these properties while being cheap and safe to use. This makes the ferrite core suitable for being used as magnetic cores for electromagnet coils. 
+### Why the name Ferrite Core?
+The humble ferrite core is cheap and hidden from view. Most people have never heard about it, yet it is what allows our electric generators, switches and radio antennas to function. It has high magnetic permeability allowing for magnetic fields to pass through, yet has low electrical conductivity which reduces eddy current losses. Most importantly, the ferrite core possesses these properties while being cheap and safe to use. This makes the ferrite core suitable for being used as magnetic cores for electromagnet coils. 
+
 Bitcoin is considered as digital gold, Litecoin as digital silver. Ferrite is ferrite. 
-In the real world, we use coins made of iron and ferrite because gold and silver are too precious for circulation. A cheap and low barrier to entry will allow for mass adoption.
-Similarly, I hope that Ferrite Core will be used for fast, low volume transactions as well as small amount remittances for the unbanked people in developing nations to avoid exuberant remittance costs. A low price will ensure that Ferrite coins and its fees stay affordable.  
+> In the real world, we use coins made of ferrous base metals because gold and silver are too precious for circulation. 
+
+A cheap and low barrier to entry will allow for mass adoption.
+Similarly, I hope that Ferrite Core will be used for fast, low volume transactions as well as small amount remittances for the unbanked people in developing nations to avoid exuberant remittance costs. 
+A low price will ensure that Ferrite coins and its fees stay affordable.  
 The Ferrite coin logo is the IEEE-315 circuit diagram symbol for a ferrite bead.
 
-There are so many coins out there, what makes this special? - Nothing. This coin is created for a social experiment and not for profit. Ultimately, Ferrite is just copied code, pre-generated code, and lines of edited code. Ferrite coins, like other cryptocurrencies, have zero intrinsic value. It will however be maintained and updated for the long term.
+There are so many coins out there, what makes this special? - Nothing for now. This coin is created as a non-profit experimental software. Ferrite Core is just copied code, pre-generated code, and lines of edited code from multiple sources. Ferrite coins, like other cryptocurrencies, have zero intrinsic value. Do not invest more than what you can afford to lose.
 
 High adoption rates need not be expensive, and high market cap is not the way to having high adoption.
 How many people are in cryptocurrency for its technological features rather than its profit potential?
