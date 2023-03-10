@@ -1,5 +1,6 @@
 # ferrite-core
-## Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase.
+> Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase.
+
 | OS                        | Bit      | Name                   | Link                              | SHA256 Checksum                         |
 |--------------------|-------|---------------------|--------------------------|---------------------------------------|
 | Windows             | 64      | Setup                     | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v2.1.1/ferrite-2.1.1-win64-setup.exe) | `57193a922cb8fdc1cd03d5a759a2e8de7e307e27b566eba43dcb2330ebef7215` |
@@ -7,9 +8,8 @@
 | Windows, Unix       | 32 / 64 | Others                  | [Release 2.1.1](https://github.com/koh-gt/ferrite-core/releases/tag/v2.1.1) | |
 
 ## Community group links
-|  |  |  |
+| ![telegram](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg) Telegram - [View Group](https://t.me/ferrite_core) | ![reddit](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg) Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin) | ![discord](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg) Discord - [View Group](https://discord.gg/qKgF5xhS5p) |
 |--|--|--|
-| ![telegram](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg) Telegram - [View Group](https://t.me/ferrite_core) | ![reddit](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg) Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin) | ![discord](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg) Discord - [View Group](https://discord.gg/qKgF5xhS5p)
 
 ## Mining information links
 > Mineable with or without MWEB support.
