@@ -11,6 +11,7 @@
 
 ## Mining information links
 > Mineable with or without MWEB support.
+
 | Name                      | Link                                            | Description                                                                |
 |---------------------------|-------------------------------------------------|----------------------------------------------------------------------------|
 | MiningPoolStats         | [Ferrite (FEC) Scrypt](https://miningpoolstats.stream/ferrite) | Overview of Ferrite hashrate and difficulty. |
