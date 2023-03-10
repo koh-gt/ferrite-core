@@ -7,6 +7,7 @@
 | Windows, Unix       | 32 / 64 | Others                  | [Release 2.1.1](https://github.com/koh-gt/ferrite-core/releases/tag/v2.1.1) | |
 
 ## Community group links
+|  |  |  |
 |--|--|--|
 | ![telegram](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg) Telegram - [View Group](https://t.me/ferrite_core) | ![reddit](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg) Reddit - [View Forum](https://www.reddit.com/r/Ferritecoin) | ![discord](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg) Discord - [View Group](https://discord.gg/qKgF5xhS5p)
 
