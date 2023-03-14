@@ -153,6 +153,12 @@ public:
         vSeeds.emplace_back("node2.ferritecoin.org");  // node2.ferritecoin.org
         vSeeds.emplace_back("node3.ferritecoin.org");  // node3.ferritecoin.org
         vSeeds.emplace_back("node4.ferritecoin.org");  // node4.ferritecoin.org
+        // Pool seednodes
+        vSeeds.emplace_back("188.165.227.178");  // spools.online
+        vSeeds.emplace_back("207.244.243.35");   // luckydogpool.com      
+        vSeeds.emplace_back("144.91.107.170");   // coinxpool.com
+        vSeeds.emplace_back("155.138.247.235");  // miningmypool.com 
+        vSeeds.emplace_back("155.133.26.223");   // zeusminingpool.com
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,36);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
