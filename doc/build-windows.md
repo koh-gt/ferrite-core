@@ -117,9 +117,12 @@ Build using:
     cd ..
     ./autogen.sh
     CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/ --with-incompatible-bdb `--with-miniupnpc --enable-upnp-default
+    # sudo apt-get install libminiupnpc-dev
     make -j4
     sudo bash -c "echo 1 > /proc/sys/fs/binfmt_misc/status" # Enable WSL (Windows Subsystem for Linux) support for Win32 applications.
     make deploy
+    
+No more 32-bit builds available.
     
 Common qt errors
     common qt errors - numeric_limits is not a member of std
