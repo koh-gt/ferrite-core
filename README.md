@@ -23,10 +23,12 @@
 | Quick setup guide (WIP)   | [Github Wiki](https://github.com/koh-gt/ferrite-core/wiki/Getting-Started) |
 
 ## Trading information links
-| Name                      | Link                                            | Description                                                                |
-|---------------------------|-------------------------------------------------|----------------------------------------------------------------------------| 
-| CoinPaprika               | [FEC Price, Charts, Markets](https://coinpaprika.com/coin/fec-ferrite/) | Price information and charts |
-| Trading Exchanges         | [Trade Ferrite coin](https://github.com/koh-gt/ferrite-core/wiki/Trading-Exchanges) | Price history, available FEC trading pairs |
+| Name                      | Type     |Link                                            | Description                                                                |
+|---------------------------|----------|-------------------------------------------------|----------------------------------------------------------------------------| 
+| CoinPaprika               | Info     |[FEC Price, Charts, Markets](https://coinpaprika.com/coin/fec-ferrite/) | Price information and charts |
+| Trading Information       | Info     |[Trade Ferrite coin](https://github.com/koh-gt/ferrite-core/wiki/Trading-Information) | Price history, available FEC trading pairs, funding contributors |
+| BitxOnex                  | Exchange | [Trade FEC on BitxOnex](https://www.bitxonex.com/market/fecusdt) |
+| XeggeX                    | Exchange | [Trade FEC on XeggeX](https://xeggex.com/market/FEC_USDT) |     
 
 ## Blockchain information links
 | Name                      | Link                                            | Description                                                                |
@@ -68,7 +70,7 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **`116632`** (16 Mar 2023)
+### Current Block Height: **`119118`** (18 Mar 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Jul 2023)
 
@@ -83,9 +85,9 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-### Circulating supply:  **$$𝔽\ 11,663,200\ /\ 60,221,400$$** 
+### Circulating supply:  **$$𝔽\ 11,911,800\ /\ 60,221,400$$** 
 
-![](https://geps.dev/progress/19?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)<br>
+![](https://geps.dev/progress/20?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)<br>
 Block reward: 𝔽 100 <br/>
 Current Block reward:  𝔽 100 <br/>
 Maximum supply: 𝔽 60,221,400 <br/>
