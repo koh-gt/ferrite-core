@@ -85,19 +85,11 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-### Circulating supply:  **$$𝔽\ 12,072,400\ /\ 60,221,400$$**
-&nbsp;
-![](https://geps.dev/progress/100?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
-![](https://geps.dev/progress/100?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
-![](https://geps.dev/progress/0?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
-![](https://geps.dev/progress/0?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
-![](https://geps.dev/progress/0?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
-![](https://geps.dev/progress/0?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
-![](https://geps.dev/progress/0?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
-![](https://geps.dev/progress/0?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
-![](https://geps.dev/progress/0?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
-![](https://geps.dev/progress/0?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
-### **$$20.04\\%$$**
+![](https://progress-bar.dev/12072400/?scale=60221400&title=Circulating&nbsp;Supply&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60&#44;221&#44;400&nbsp;&nbsp;&#40;20&#183;04&percnt;&#41;)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+![](https://progress-bar.dev/120724/?scale=301107&title=Next&nbsp;Halving&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;301&#44;107&nbsp;blocks)
 <br>
 <br>
 Block reward: 𝔽 100 <br/>
