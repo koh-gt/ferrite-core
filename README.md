@@ -87,7 +87,7 @@ Premine: No premine <br/>
 ### Economic specifications: <br/>
 ### Circulating supply:  **$$𝔽\ 12,072,400\ /\ 60,221,400$$** 
 
-![](https://geps.dev/progress/100?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
+$20.04$%  ![](https://geps.dev/progress/100?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
 ![](https://geps.dev/progress/100?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
 ![](https://geps.dev/progress/0?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
 ![](https://geps.dev/progress/0?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
@@ -98,7 +98,6 @@ Premine: No premine <br/>
 ![](https://geps.dev/progress/0?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
 ![](https://geps.dev/progress/0?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)  <br>
 
-$20.04$%
 <br>
 Block reward: 𝔽 100 <br/>
 Current Block reward:  𝔽 100 <br/>
