@@ -97,6 +97,8 @@ Premine: No premine <br/>
 ![](https://geps.dev/progress/0?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
 ![](https://geps.dev/progress/0?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)
 ![](https://geps.dev/progress/0?dangerColor=0ff0fc&warningColor=0ff0fc&successColor=0ff0fc)  <br>
+</br>
+
 $20.04$%
 <br>
 <br>
