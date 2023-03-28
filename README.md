@@ -70,7 +70,7 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **`122389`** (27 Mar 2023)
+### Current Block Height: **`122937`** (29 Mar 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Jul 2023)
 
@@ -85,11 +85,11 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-![](https://progress-bar.dev/12238900/?scale=60221400&title=Circulating&nbsp;Supply&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60&#44;221&#44;400&nbsp;&nbsp;&#40;20&#183;323&percnt;&#41;)
+![](https://progress-bar.dev/12293700/?scale=60221400&title=Circulating&nbsp;Supply&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60&#44;221&#44;400&nbsp;&nbsp;&#40;20&#183;414&percnt;&#41;)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 ![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-![](https://progress-bar.dev/122389/?scale=301107&title=Next&nbsp;Halving&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;301&#44;107&nbsp;blocks)
+![](https://progress-bar.dev/122937/?scale=301107&title=Next&nbsp;Halving&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;301&#44;107&nbsp;blocks)
 <br>
 <br>
 Block reward: 𝔽 100 <br/>
