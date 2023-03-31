@@ -116,7 +116,7 @@ Build using:
     make HOST=x86_64-w64-mingw32 -j4
     cd ..
     ./autogen.sh
-    CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default
+    CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp
     # sudo apt-get install libminiupnpc-dev
     make -j4
     sudo bash -c "echo 1 > /proc/sys/fs/binfmt_misc/status" # Enable WSL (Windows Subsystem for Linux) support for Win32 applications.
