@@ -1377,6 +1377,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
                                     "addnode=118.189.201.104:9574\n"
                                     "addnode=118.189.201.104:9588\n"
                                     "addnode=118.189.201.104:9598\n"
+                                    "addnode=78.220.84.58:9574\n"
                                     "addnode=188.165.227.178:9574 # spools.online \n"
                                     "addnode=207.244.243.35:9574 # luckydogpool.com \n"
                                     "addnode=144.91.107.170:9574 # coinxpool.com \n"
