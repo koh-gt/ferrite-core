@@ -1347,6 +1347,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
                                     "# Node settings (default: Full Node):\n"
                                     "daemon=1\n"
                                     "server=1\n"
+                                    "prune=0\n"
                                     "txindex=1\n"
                                     "listen=1\n"
                                     "upnp=1\n"
