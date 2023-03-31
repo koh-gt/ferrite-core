@@ -1370,6 +1370,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
                                     "\n"
                                     "# Nodes:\n"
                                     "addnode=node1.ferritecoin.org\n"
+                                    "addnode=38.242.145.73:21004 # xeggex.com \n"
                                     "addnode=node2.ferritecoin.org\n"
                                     "addnode=node3.ferritecoin.org\n"
                                     "addnode=node2.walletbuilders.com\n"    
