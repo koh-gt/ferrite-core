@@ -116,25 +116,13 @@ Build using:
     make HOST=x86_64-w64-mingw32 -j4
     cd ..
     ./autogen.sh
-    CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/ --with-incompatible-bdb
+    CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp
+    # sudo apt-get install libminiupnpc-dev
     make -j4
     sudo bash -c "echo 1 > /proc/sys/fs/binfmt_misc/status" # Enable WSL (Windows Subsystem for Linux) support for Win32 applications.
     make deploy
     
-Build using (32-bit):
-
-    sudo chmod +x -R ferrite-core-main
-    cd ferrite-core-main
-    PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
-    sudo bash -c "echo 0 > /proc/sys/fs/binfmt_misc/status" # Disable WSL (Windows Subsystem for Linux) support for Win32 applications.
-    cd depends
-    make HOST=i686-w64-mingw32 -j4
-    cd ..
-    ./autogen.sh
-    CONFIG_SITE=$PWD/depends/i686-w64-mingw32/share/config.site ./configure --prefix=/ --with-incompatible-bdb
-    make -j4
-    sudo bash -c "echo 1 > /proc/sys/fs/binfmt_misc/status" # Enable WSL (Windows Subsystem for Linux) support for Win32 applications.
-    make deploy
+No more 32-bit builds available.
     
 Common qt errors
     common qt errors - numeric_limits is not a member of std
