@@ -1,11 +1,13 @@
 # ferrite-core
+
+# !! **Hardfork at Height $250,000$ (early-mid 2024).** [Update to v3.0.0](https://github.com/koh-gt/ferrite-core/releases/tag/v3.0.0)
 > Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase.
 
 | OS                        | Bit      | Name                   | Link                              | SHA256 Checksum                         |
 |--------------------|-------|---------------------|--------------------------|---------------------------------------|
-| Windows             | 64      | Setup                     | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v2.1.2/ferrite-2.1.2-win64-setup.exe) | `4fdc2486f1bf1770cc4a8570ac0e620c44d1128fd29d3a5d823d86532a6da7d0` |
-| Windows             | 64      | Qt Wallet               | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v2.1.2/ferrite-qt.exe) |  `d62683228a8de98272405e445327e22fb4952bd3b0c09e1cba4b8f9fa65c64fa` |
-| Windows, Unix       | 32 / 64 | Others                  | [Release 2.1.2](https://github.com/koh-gt/ferrite-core/releases/tag/v2.1.2) | |
+| Windows             | 64      | Setup                     | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v3.0.0/ferrite-3.0.0-win64-setup.exe) | `4d788dd0b15dc1b2ef53d4717f9abea320ae6d8c177cdc7d1f8b86dc8b700ce2` |
+| Windows             | 64      | Qt Wallet               | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v3.0.0/ferrite-qt.exe) |  `ca215e4d0392fb9d078791baec1daabe2b55c08c7daf436ac331b606c219428f` |
+| Windows, Unix       | 32 / 64 | Others                  | [Release 3.0.0](https://github.com/koh-gt/ferrite-core/releases/tag/v3.0.0) | |
 
 ## Community group links
 | ![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg) [Ferrite Core ](https://t.me/ferrite_core) | ![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | ![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg) [Discord](https://discord.gg/qKgF5xhS5p) |
@@ -70,7 +72,7 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **`127440`** (12 Apr 2023)
+### Current Block Height: **`127713`** (13 Apr 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Oct 2023)
 
@@ -85,11 +87,11 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-![](https://progress-bar.dev/12744000/?scale=60221400&title=Circulating&nbsp;Supply&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60&#44;221&#44;400&nbsp;&nbsp;&#40;21&#183;162&percnt;&#41;)
+![](https://progress-bar.dev/12771300/?scale=60221400&title=Circulating&nbsp;Supply&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60&#44;221&#44;400&nbsp;&nbsp;&#40;21&#183;207&percnt;&#41;)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 ![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-![](https://progress-bar.dev/127440/?scale=301107&title=Next&nbsp;Halving&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;301&#44;107&nbsp;blocks)
+![](https://progress-bar.dev/127713/?scale=301107&title=Next&nbsp;Halving&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;301&#44;107&nbsp;blocks)
 <br>
 <br>
 Block reward: 𝔽 100 <br/>
