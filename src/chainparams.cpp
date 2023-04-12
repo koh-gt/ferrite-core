@@ -80,6 +80,8 @@ public:
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 10 * 60;                   // A target Timespan of 1h. Not 10 blocks. If blocks take longer than usual, difficulty will adjust earlier than usual.
         consensus.nPowTargetSpacing = 1 * 60;                    // Block confirmation time of 60 seconds.
+        consensus.nPowKGWHeight = 250000;
+	consensus.nPowDGWHeight = 250000;
         consensus.fPowAllowMinDifficultyBlocks = false;         // All blocks must have minimum difficulty of 1
         consensus.fPowNoRetargeting = false;                   // Difficulty will be dynamically adjusted.
         consensus.nRuleChangeActivationThreshold = 39;        // 97.5% of 40 to count as consensus
@@ -223,6 +225,8 @@ public:
         consensus.powLimit = uint256S("000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 10 * 60; // 1 hour
         consensus.nPowTargetSpacing = 1 * 60;
+        consensus.nPowKGWHeight = 26; // DGW uses past 24 blocks
+	consensus.nPowDGWHeight = 26; // DGW uses past 24 blocks
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 10; // 50% for testchains
@@ -319,6 +323,8 @@ public:
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 10 * 60; // 1 hour
         consensus.nPowTargetSpacing = 1 * 60;
+        consensus.nPowKGWHeight = 26;
+	consensus.nPowDGWHeight = 26;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = true;
         consensus.nRuleChangeActivationThreshold = 108; // 75% for testchains
