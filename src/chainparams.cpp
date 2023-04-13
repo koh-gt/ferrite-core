@@ -155,6 +155,7 @@ public:
         vSeeds.emplace_back("node2.ferritecoin.org");  // node2.ferritecoin.org
         vSeeds.emplace_back("node3.ferritecoin.org");  // node3.ferritecoin.org
         vSeeds.emplace_back("node4.ferritecoin.org");  // node4.ferritecoin.org
+	    
         // Pool seednodes
         vSeeds.emplace_back("188.165.227.178");  // spools.online
         vSeeds.emplace_back("207.244.243.35");   // luckydogpool.com      
@@ -181,18 +182,18 @@ public:
 
         checkpointData = {
             {
-                {  0, uint256S("0x46ca17415c18e43f5292034ebf9bbd10de80a61fc6dc17180e6609f33d3b48f3")},
-                {  1, uint256S("0xc57e131b5a4e037b0ae4f6479464861b55bad6cdc934becd82fd78aa943cb731")},
-                {  10, uint256S("0xc11ad445b0d130cf4c76fca76c26fd58d08a0be1993206d1fabdf84da4032ee5")},
-                {  16, uint256S("0x85b9d245dc36364e19729250c5dcaa1019941833b4146cb5576d99d028208e48")},
-                {  45, uint256S("0x6f89572fd7463f191d90f3a9c47e2e4e6ca6222480ca55f3ba596ce56ee25690")},
-                {  101, uint256S("0xbc4383276f530a020085cc2ac9283050e6f681a9164aa9bc3fd2d0e7276b7621")},
-                {  578, uint256S("0x0ac60bc57de1e70e9246e43dac68b2e03bb07d8572decce24eb12ba37648cdf8")},
-                {  4072, uint256S("0x209f38181db9771939a131651b650451a319566d010a6f82c553b357f42aa6b0")},
-                {  10000, uint256S("0xf5da0fabe25733a186805366c0fdede73e2454e782083676e7627b8ec991ef9b")},
-                {  30000, uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95")},
-                {  60000, uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286")},
-                {  100000, uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297")},
+                {        0, uint256S("0x46ca17415c18e43f5292034ebf9bbd10de80a61fc6dc17180e6609f33d3b48f3")},
+                {        1, uint256S("0xc57e131b5a4e037b0ae4f6479464861b55bad6cdc934becd82fd78aa943cb731")},
+                {       10, uint256S("0xc11ad445b0d130cf4c76fca76c26fd58d08a0be1993206d1fabdf84da4032ee5")},
+                {       16, uint256S("0x85b9d245dc36364e19729250c5dcaa1019941833b4146cb5576d99d028208e48")},
+                {       45, uint256S("0x6f89572fd7463f191d90f3a9c47e2e4e6ca6222480ca55f3ba596ce56ee25690")},
+                {      101, uint256S("0xbc4383276f530a020085cc2ac9283050e6f681a9164aa9bc3fd2d0e7276b7621")},
+                {      578, uint256S("0x0ac60bc57de1e70e9246e43dac68b2e03bb07d8572decce24eb12ba37648cdf8")},
+                {     4072, uint256S("0x209f38181db9771939a131651b650451a319566d010a6f82c553b357f42aa6b0")},
+                {    10000, uint256S("0xf5da0fabe25733a186805366c0fdede73e2454e782083676e7627b8ec991ef9b")},
+                {    30000, uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95")},
+                {    60000, uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286")},
+                {   100000, uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297")},
             }
         };
 
@@ -242,11 +243,13 @@ public:
 
         // Deployment of MWEB (LIP-0002, LIP-0003, and LIP-0004)
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].bit = 4;
-        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 30; 
-        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 40;
-
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000200020");
-        consensus.defaultAssumeValid = uint256S("0x7a9f43d6e86eefa66e2b79918b2235c9362106f3d9f11f37f7a33450ceae73c1");
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 160; 
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 99999999;
+	    
+	
+        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000000000019a894b");
+	// 26 904907  (26.9 MH) hashes of work since block 250. (testnet)
+        consensus.defaultAssumeValid = uint256S("0xd710251db07b4b5ad58ff59edcda83642af83e757fdf791424cf9d85e977bd65");
 
         pchMessageStart[0] = 0xba;
         pchMessageStart[1] = 0x76;
@@ -265,9 +268,9 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         // nodes with support for servicebits filtering should be at the top
-        vSeeds.emplace_back("node1.ferritecoin.org");  // node1.ferritecoin.org
-        vSeeds.emplace_back("node2.ferritecoin.org");  // node1.ferritecoin.org
-        vSeeds.emplace_back("node3.ferritecoin.org");  // node1.ferritecoin.org
+        vSeeds.emplace_back("test1.ferritecoin.org");  // node1.ferritecoin.org
+        vSeeds.emplace_back("test2.ferritecoin.org");  // node1.ferritecoin.org
+        vSeeds.emplace_back("test3.ferritecoin.org");  // node1.ferritecoin.org
         
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
@@ -289,15 +292,22 @@ public:
 
         checkpointData = {
             {
-                {0, uint256S("7a9f43d6e86eefa66e2b79918b2235c9362106f3d9f11f37f7a33450ceae73c1")},
+                {        0, uint256S("0x7a9f43d6e86eefa66e2b79918b2235c9362106f3d9f11f37f7a33450ceae73c1")},
+		{        1, uint256S("0x9fe0eff34a1501c47e476c66d9cdca3133aebf3b1d8e2db13be04525f39301aa")},
+		{       10, uint256S("0x269cc5bc0f63df93ca6e65a6d39ab4450dcbba5c6f9069bcfe141071e42171b0")},     // taproot compatible
+		{       20, uint256S("0xc57940588a334cecf9bbaa1434892c074a6c532ea52c1b0adf9b1a55c07372ff")},     // taproot mandatory
+		{       28, uint256S("0xdb2b80687bd0d731e052b2e1370f36409fdbfd1b1852b4e66d2f30df1f3d684e")},     // DarkGravityWave v3 hardfork
+		{      100, uint256S("0x6e423dcbe5e9f98776f856cf54eafc00d65f42f4c4718cd6caaf9cd45711c129")},     
+		{      160, uint256S("0xbf82199c7f3985ebd673372a328e6a1cf409c46d18c505e0fc2536f6c51ac885")},     // MWEB compatible
+		{      250, uint256S("0xd710251db07b4b5ad58ff59edcda83642af83e757fdf791424cf9d85e977bd65")},
             }
         };
 
         chainTxData = ChainTxData{
             // Data from RPC: getchaintxstats 4096 36d8ad003bac090cf7bf4e24fbe1d319554c8933b9314188d6096ac12648764d
-            /* nTime    */ 1607986972,
-            /* nTxCount */ 4229067,
-            /* dTxRate  */ 0.06527021772939347,
+            /* nTime    */ 1681409764,
+            /* nTxCount */ 334,
+            /* dTxRate  */ 0.00382938753883577,
         };
     }
 };
