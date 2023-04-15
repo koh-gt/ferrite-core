@@ -62,15 +62,15 @@ Also, the Homebrew package could be installed:
 brew install berkeley-db4
 ```
 
-## Build Litecoin Core
+## Build Ferrite Core
 
-1. Clone the Litecoin Core source code:
+1. Clone the Ferrite Core source code:
     ```shell
-    git clone https://github.com/litecoin-project/litecoin
-    cd litecoin
+    git clone https://github.com/koh-gt /ferrite-core/ferrite-main
+    cd ferrite-main
     ```
 
-2.  Build Litecoin Core:
+2.  Build Ferrite Core:
 
     Configure and build the headless Litecoin Core binaries as well as the GUI (if Qt is found).
 
@@ -92,7 +92,7 @@ brew install berkeley-db4
     ```
 
 ## Disable-wallet mode
-When the intention is to run only a P2P node without a wallet, Litecoin Core may be
+When the intention is to run only a P2P hout a wallet, Litecoin Core may be
 compiled in disable-wallet mode with:
 ```shell
 ./configure --disable-wallet
