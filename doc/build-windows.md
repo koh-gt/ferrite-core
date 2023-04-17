@@ -6,7 +6,7 @@ Below are some notes on how to build Ferrite Core for Windows.
 The options known to work for building Ferrite Core on Windows are:
 
 * On Linux, using the [Mingw-w64](https://mingw-w64.org/doku.php) cross compiler tool chain. Ubuntu Bionic 18.04 is required
-and is the platform used to build the Litecoin Core Windows release binaries.
+and is the platform used to build the Ferrite Core Windows release binaries.
 * On Windows, using [Windows
 Subsystem for Linux (WSL)](https://docs.microsoft.com/windows/wsl/about) and the Mingw-w64 cross compiler tool chain.
 * On Windows, using a native compiler tool chain such as [Visual Studio](https://www.visualstudio.com). See [README.md](/build_msvc/README.md).
@@ -108,8 +108,8 @@ sudo apt install ./libfmt-dev_9.1.0+ds1-2_amd64.deb
 
 Build using:
 
-    sudo chmod +x -R ferrite-core-main
-    cd ferrite-core-main
+    sudo chmod +x -R ferrite-main
+    cd ferrite-main
     PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
     sudo bash -c "echo 0 > /proc/sys/fs/binfmt_misc/status" # Disable WSL (Windows Subsystem for Linux) support for Win32 applications.
     cd depends
@@ -144,9 +144,9 @@ Installation
 After building using the Windows subsystem it can be useful to copy the compiled
 executables to a directory on the Windows drive in the same directory structure
 as they appear in the release `.zip` archive. This can be done in the following
-way. This will install to `c:\workspace\litecoin`, for example:
+way. This will install to `c:\workspace\ferrite`, for example:
 
-    make install DESTDIR=/mnt/c/workspace/litecoin
+    make install DESTDIR=/mnt/c/workspace/ferrite
 
 You can also create an installer using:
 
