@@ -34,7 +34,7 @@ static RPCHelpMan validateaddress()
     return RPCHelpMan{"validateaddress",
                 "\nReturn information about the given ferrite address.\n",
                 {
-                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The litecoin address to validate"},
+                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The ferrite address to validate"},
                 },
                 RPCResult{
                     RPCResult::Type::OBJ, "", "",
