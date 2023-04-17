@@ -103,30 +103,30 @@ In this case there is no dependency on [*Berkeley DB*](#berkeley-db) and [*SQLit
 Mining is also possible in disable-wallet mode using the `getblocktemplate` RPC call.
 
 ## Running
-Litecoin Core is now available at `./src/litecoind`
+Ferrite Core is now available at `./src/ferrited`
 
 Before running, you may create an empty configuration file:
 ```shell
-mkdir -p "/Users/${USER}/Library/Application Support/Litecoin"
+mkdir -p "/Users/${USER}/Library/Application Support/Ferrite"
 
-touch "/Users/${USER}/Library/Application Support/Litecoin/litecoin.conf"
+touch "/Users/${USER}/Library/Application Support/Ferrite/ferrite.conf"
 
-chmod 600 "/Users/${USER}/Library/Application Support/Litecoin/litecoin.conf"
+chmod 600 "/Users/${USER}/Library/Application Support/Ferrite/ferrite.conf"
 ```
 
-The first time you run litecoind, it will start downloading the blockchain. This process could
+The first time you run ferrited, it will start downloading the blockchain. This process could
 take many hours, or even days on slower than average systems.
 
 You can monitor the download process by looking at the debug.log file:
 ```shell
-tail -f $HOME/Library/Application\ Support/Litecoin/debug.log
+tail -f $HOME/Library/Application\ Support/Ferrite/debug.log
 ```
 
 ## Other commands:
 ```shell
-./src/litecoind -daemon      # Starts the litecoin daemon.
-./src/litecoin-cli --help    # Outputs a list of command-line options.
-./src/litecoin-cli help      # Outputs a list of RPC commands when the daemon is running.
+./src/ferrited -daemon      # Starts the litecoin daemon.
+./src/ferrite-cli --help    # Outputs a list of command-line options.
+./src/ferrite-cli help      # Outputs a list of RPC commands when the daemon is running.
 ```
 
 ## Notes
