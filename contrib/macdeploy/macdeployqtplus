@@ -639,7 +639,7 @@ else:
 
 # ------------------------------------------------
 
-target = os.path.join("dist", "Litecoin-Qt.app")
+target = os.path.join("dist", "Ferrite-Qt.app")
 
 if verbose >= 2:
     print("+ Copying source bundle +")
