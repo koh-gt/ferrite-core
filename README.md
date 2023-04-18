@@ -1,7 +1,7 @@
 # ferrite-core
 
 # !! **Hardfork at Height $250,000$ (early-mid 2024).** <br> [Update to v3.0.0](https://github.com/koh-gt/ferrite-core/releases/tag/v3.0.0) 
-![](https://progress-bar.dev/120000/?scale=120000&title=&nbsp;Blocks&nbsp;Remaining&nbsp;&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;120&#44;000&nbsp;blocks)
+![](https://progress-bar.dev/118251/?scale=120000&title=&nbsp;Blocks&nbsp;Remaining&nbsp;&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;120&#44;000&nbsp;blocks)
 > Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase.
 
 | OS                        | Bit      | Name                   | Link                              | SHA256 Checksum                         |
@@ -36,7 +36,7 @@
 ## Blockchain information links
 | Name                      | Link                                            | Description                                                                |
 |---------------------------|-------------------------------------------------|----------------------------------------------------------------------------|
-| Website                   | [View](http://www.ferritecoin.org) | Ferrite website with mining calculator |
+| Website                   | [View](https://ferritecoin.org) | Ferrite website with mining calculator |
 | Block Explorer            | [View](http://explorer.ferritecoin.org) | Blockchain explorer to view latest transactions, circulating supply and rich list distribution |
 | Merchandise               | [View](http://shop.ferritecoin.org) | Redirect link to Teespring shop with Ferrite coin themed merchandise |
 
@@ -73,7 +73,7 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **`129635`** (16 Apr 2023)
+### Current Block Height: **`131749`** (19 Apr 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Oct 2023)
 
@@ -88,11 +88,11 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-![](https://progress-bar.dev/12963500/?scale=60221400&title=Circulating&nbsp;Supply&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60&#44;221&#44;400&nbsp;&nbsp;&#40;21&#183;526&percnt;&#41;)
+![](https://progress-bar.dev/13174900/?scale=60221400&title=Circulating&nbsp;Supply&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60&#44;221&#44;400&nbsp;&nbsp;&#40;21&#183;877&percnt;&#41;)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 ![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-![](https://progress-bar.dev/129635/?scale=301107&title=Next&nbsp;Halving&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;301&#44;107&nbsp;blocks)
+![](https://progress-bar.dev/121749/?scale=301107&title=Next&nbsp;Halving&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;301&#44;107&nbsp;blocks)
 <br>
 <br>
 Block reward: 𝔽 100 <br/>
