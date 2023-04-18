@@ -599,7 +599,7 @@ void SetupServerArgs(NodeContext& node)
 std::string LicenseInfo()
 {
     const std::string URL_SOURCE_CODE = "<https://github.com/koh-gt/ferrite-core>";
-    const std::string URL_WEBSITE = "<https://www.ferritecoin.org>";
+    const std::string URL_WEBSITE = "<https://ferritecoin.org>";
     const std::string URL_BLOCK_EXPLORER = "<http://explorer.ferritecoin.org>";
 
     return CopyrightHolders(strprintf(_("Copyright (C) %i-%i").translated, 2022, COPYRIGHT_YEAR) + " ") +
