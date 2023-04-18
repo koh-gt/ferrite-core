@@ -73,6 +73,8 @@ public:
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); 
         consensus.nPowTargetTimespan =  10 * 60;
         consensus.nPowTargetSpacing = 1 * 60;
+        consensus.nPowKGWHeight = 250000;
+	    consensus.nPowDGWHeight = 250000;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 39; // 97.5% of 40
@@ -186,6 +188,8 @@ public:
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan =  10 * 60;
         consensus.nPowTargetSpacing = 1 * 60;
+        consensus.nPowKGWHeight = 26; // DGW uses past 24 blocks
+	    consensus.nPowDGWHeight = 26; // DGW uses past 24 blocks
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = true;
         consensus.nRuleChangeActivationThreshold = 1512; // 75% for testchains
@@ -279,6 +283,8 @@ public:
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 3.5 * 24 * 60 * 60; // two weeks
         consensus.nPowTargetSpacing = 1 * 60;
+        consensus.nPowKGWHeight = 26; // DGW uses past 24 blocks
+	    consensus.nPowDGWHeight = 26; // DGW uses past 24 blocks
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = true;
         consensus.nRuleChangeActivationThreshold = 108; // 75% for testchains
