@@ -1,18 +1,18 @@
 # ferrite-core
 
-# !! **Hardfork at Height $250,000$ (early-mid 2024).** <br> [Update to v3.0.0](https://github.com/koh-gt/ferrite-core/releases/tag/v3.0.0) 
-![](https://progress-bar.dev/118251/?scale=120000&title=&nbsp;Blocks&nbsp;Remaining&nbsp;&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;120&#44;000&nbsp;blocks)
+# !! **Hardfork at Height $250,000$ (early-mid 2024).** <br> [Update to v3+](https://github.com/koh-gt/ferrite-core/releases/tag/v3.0.1) 
+![](https://progress-bar.dev/118197/?scale=120000&title=&nbsp;Blocks&nbsp;Remaining&nbsp;&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;120&#44;000&nbsp;blocks)
 > Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase.
 
 | OS                        | Bit      | Name                   | Link                              | SHA256 Checksum                         |
 |--------------------|-------|---------------------|--------------------------|---------------------------------------|
-| Windows             | 64      | Setup                     | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v3.0.0/ferrite-3.0.0-win64-setup.exe) | `4d788dd0b15dc1b2ef53d4717f9abea320ae6d8c177cdc7d1f8b86dc8b700ce2` |
-| Windows             | 64      | Qt Wallet               | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v3.0.0/ferrite-qt.exe) |  `ca215e4d0392fb9d078791baec1daabe2b55c08c7daf436ac331b606c219428f` |
-| Windows, Unix       | 32 / 64 | Others                  | [Release 3.0.0](https://github.com/koh-gt/ferrite-core/releases/tag/v3.0.0) | |
+| Windows             | 64      | Setup                     | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v3.0.1/ferrite-3.0.1-win64-setup.exe) | `da1accfa9800d7fb9af9c9c75d9bc3fbca66798064af969ac3a216ebf25ee04d` |
+| Windows             | 64      | Qt Wallet               | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v3.0.1/ferrite-qt.exe) |  `18c4e9a26be6528ffd2134a1cacca90574cc5216ea2a068c84d2b61544fb262f` |
+| Windows, Unix       | 32 / 64 | Others                  | [Release 3.0.1](https://github.com/koh-gt/ferrite-core/releases/tag/v3.0.1) | |
 
 ## Community group links
-| ![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg) [Ferrite Core ](https://t.me/ferrite_core) | ![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | ![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg) [Discord](https://discord.gg/qKgF5xhS5p) |
-|--|--|--|
+| ![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg) [Ferrite Core ](https://t.me/ferrite_core) | ![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | ![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg) [Discord](https://discord.gg/qKgF5xhS5p) | ![twitter-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Twitter.svg) [Twitter](https://twitter.com/ferritecoin) |
+|--|--|--|--|
 
 ## Mining information links
 > Mineable with or without MWEB support.
@@ -29,6 +29,7 @@
 | Name                      | Type     |Link                                            | Description                                                                |
 |---------------------------|----------|-------------------------------------------------|----------------------------------------------------------------------------| 
 | CoinPaprika               | Info     |[FEC Price, Charts, Markets](https://coinpaprika.com/coin/fec-ferrite/) | Price information and charts |
+| LiveCoinWatch             | Info     |[FEC Price, Charts, Markets](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | Price information and charts | 
 | Trading Information       | Info     |[Trade Ferrite coin](https://github.com/koh-gt/ferrite-core/wiki/Trading-Information) | Price history, available FEC trading pairs, funding contributors |
 | BitxOnex                  | Exchange | [Trade FEC on BitxOnex](https://www.bitxonex.com/market/fecusdt) |
 | XeggeX                    | Exchange | [Trade FEC on XeggeX](https://xeggex.com/market/FEC_USDT) |     
@@ -73,7 +74,7 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **`131749`** (19 Apr 2023)
+### Current Block Height: **`131803`** (21 Apr 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Oct 2023)
 
@@ -88,11 +89,11 @@ Transaction capacity: 50/s (100/s with Segwit) <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-![](https://progress-bar.dev/13174900/?scale=60221400&title=Circulating&nbsp;Supply&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60&#44;221&#44;400&nbsp;&nbsp;&#40;21&#183;877&percnt;&#41;)
+![](https://progress-bar.dev/13180300/?scale=60221400&title=Circulating&nbsp;Supply&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60&#44;221&#44;400&nbsp;&nbsp;&#40;21&#183;887&percnt;&#41;)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 ![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-![](https://progress-bar.dev/121749/?scale=301107&title=Next&nbsp;Halving&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;301&#44;107&nbsp;blocks)
+![](https://progress-bar.dev/131803/?scale=301107&title=Next&nbsp;Halving&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;301&#44;107&nbsp;blocks)
 <br>
 <br>
 Block reward: 𝔽 100 <br/>
