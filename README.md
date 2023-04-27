@@ -1,6 +1,6 @@
 # ferrite-core
 
-# !! **Hardfork at Height $250,000$ (early-mid 2024).** <br> [Update to v3+](https://github.com/koh-gt/ferrite-core/releases/tag/v3.0.1) 
+## !! **Hardfork at Height $250,000$ (early-mid 2024).** <br> [Update to v3+](https://github.com/koh-gt/ferrite-core/releases/tag/v3.0.1) 
 ![](https://progress-bar.dev/117101/?scale=120000&title=&nbsp;Blocks&nbsp;Remaining&nbsp;&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;120&#44;000&nbsp;blocks)
 > Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase.
 
@@ -33,8 +33,8 @@
 | Trading Information       | Info     |[Trade Ferrite coin](https://github.com/koh-gt/ferrite-core/wiki/Trading-Information) | Price history, available FEC trading pairs, funding contributors |
 | BitxOnex                  | Exchange | [Trade FEC on BitxOnex](https://www.bitxonex.com/market/fecusdt) |
 | XeggeX                    | Exchange | [Trade FEC on XeggeX](https://xeggex.com/market/FEC_USDT) |    
-| PancakeSwap                | DEX      | [Trade WFEC on Pancakeswap](https://pancakeswap.finance/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | BEP-20|
-| Uniswap                    | DEX      | [Trade WFEC on Uniswap](https://app.uniswap.org/#/swap?inputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75) | BEP-20, ARB-20|     
+| PancakeSwap                | DEX      | [Trade WFEC on Pancakeswap (BEP-20)](https://pancakeswap.finance/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | BEP-20 |
+| Uniswap                    | DEX      | [Trade WFEC on Uniswap (BEP-20)](https://app.uniswap.org/#/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D)<br>[Trade WFEC on Uniswap (ARB-20)](https://app.uniswap.org/#/swap?inputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75) | BEP-20, ARB-20 |      
 > [Wrapped Ferrite](https://github.com/koh-gt/wrapped-ferrite) contract addresses:
 > > WFEC [BEP-20](https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D): `0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D`<br>
 > > WFEC [ARB-20](https://arbiscan.io/token/0x09bf659db25522bc9c367163966f35ac268e5b75): `0x09bf659Db25522bc9c367163966f35ac268e5b75`<br>
