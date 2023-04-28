@@ -30,6 +30,7 @@
 |---------------------------|----------|-------------------------------------------------|----------------------------------------------------------------------------| 
 | CoinPaprika               | Info     |[FEC Price, Charts, Markets](https://coinpaprika.com/coin/fec-ferrite/) | Price information and charts |
 | LiveCoinWatch             | Info     |[FEC Price, Charts, Markets](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | Price information and charts | 
+| Coincodex                 | Info     |[FEC Price, Charts, Markets](https://coincodex.com/crypto/ferrite/) | Price information and charts |
 | Trading Information       | Info     |[Trade Ferrite coin](https://github.com/koh-gt/ferrite-core/wiki/Trading-Information) | Price history, available FEC trading pairs, funding contributors |
 | BitxOnex                  | Exchange | [Trade FEC on BitxOnex](https://www.bitxonex.com/market/fecusdt) |
 | XeggeX                    | Exchange | [Trade FEC on XeggeX](https://xeggex.com/market/FEC_USDT) |    
