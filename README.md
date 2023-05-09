@@ -1,7 +1,6 @@
 # ferrite-core
 
 ## !! **Hardfork at Height $250,000$ (early-mid 2024).** <br> [Update to v3+](https://github.com/koh-gt/ferrite-core/releases/tag/v3.0.1) 
-![](https://progress-bar.dev/113370/?scale=120000&title=&nbsp;Blocks&nbsp;Remaining&nbsp;&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;120&#44;000&nbsp;blocks)
 > Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase.
 
 | OS                        | Bit      | Name                   | Link                              | SHA256 Checksum                         |
@@ -81,9 +80,9 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **`136630`** (5 May 2023)
+### Current Block Height: **`140076`** (10 May 2023)
 ### Halving Epoch: **0**
-### Next halving block: 301107 (~ Oct 2023)
+### Next halving block: 301107 (~ Jan 2024)
 
 Algorithm type: Scrypt, Proof of Work <br/>
 Ports: 9573 (RPC), 9574 (P2P) <br/>
@@ -92,15 +91,12 @@ Difficulty adjustment time: 1 block or 1 hour <br/>
 Halving time: 301,107 blocks <br/>
 Propogation time: 5 seconds (8.3% detached rate) <br/>
 Block size: 3.8147 MiB <br/>
-Transaction capacity: 50/s (100/s with Segwit) <br/>
+Transaction capacity: 105/s <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-![](https://progress-bar.dev/13663000/?scale=60221400&title=Circulating&nbsp;Supply&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60&#44;221&#44;400&nbsp;&nbsp;&#40;22&#183;688&percnt;&#41;)
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)
-<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-![](https://progress-bar.dev/136630/?scale=301107&title=Next&nbsp;Halving&width=240&color=323040&suffix=&nbsp;&sol;&nbsp;301&#44;107&nbsp;blocks)
+$$14,007,600\text{ / }60,221,400$$
+$$\text{ (}23.260\\%\text{)}$$
 <br>
 <br>
 Block reward: 𝔽 100 <br/>
