@@ -19,7 +19,7 @@ Then install [Homebrew](https://brew.sh).
 
 ## Dependencies
 ```shell
-brew install automake libtool boost miniupnpc pkg-config python qt libevent qrencode fmt
+brew install automake libtool boost miniupnpc pkg-config python qt libevent qrencode fmt openssl
 ```
 
 If you run into issues, check [Homebrew's troubleshooting page](https://docs.brew.sh/Troubleshooting).
@@ -77,7 +77,7 @@ brew install berkeley-db4
     You can disable the GUI build by passing `--without-gui` to configure.
     ```shell
     ./autogen.sh
-    ./configure
+    ./configure BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" BDB_CFLAGS="-I${BDB_PREFIX}/include"
     make
     ```
 
