@@ -99,7 +99,7 @@ public:
 
         // Deployment of MWEB (LIP-0002, LIP-0003, and LIP-0004)
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].bit = 4;
-        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 99000000; // never*
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 150000; // 
         // MWEB can be put up for consensus voting in later versions when mining infrastructure is ready and compatible.
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 99999999; // never*
         // MWEB will be automatically activated after block 99999999 for now.
@@ -155,6 +155,9 @@ public:
         vSeeds.emplace_back("node2.ferritecoin.org");  // node2.ferritecoin.org
         vSeeds.emplace_back("node3.ferritecoin.org");  // node3.ferritecoin.org
         vSeeds.emplace_back("node4.ferritecoin.org");  // node4.ferritecoin.org
+	
+	// CryptoID Chainz explorer
+	vSeeds.emplace_back("46.105.34.58");  // https://btc.cryptoid.info/fec/
 	    
         // Pool seednodes
         vSeeds.emplace_back("188.165.227.178");  // spools.online
