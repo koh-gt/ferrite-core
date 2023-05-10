@@ -76,6 +76,7 @@ brew install berkeley-db4
 
     You can disable the GUI build by passing `--without-gui` to configure.
     ```shell
+    chmod +x autogen.sh
     ./autogen.sh
     ./configure BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" BDB_CFLAGS="-I${BDB_PREFIX}/include"
     make
