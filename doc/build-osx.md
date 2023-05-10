@@ -60,6 +60,7 @@ Also, the Homebrew package could be installed:
 
 ```shell
 brew install berkeley-db4
+brew link berkeley-db@4 --force
 ```
 
 ## Build Ferrite Core
