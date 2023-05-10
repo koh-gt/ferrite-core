@@ -29,7 +29,7 @@ To Build
 
 ```bash
 ./autogen.sh
-./configure
+./configure --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp
 make
 make install # optional
 ```
