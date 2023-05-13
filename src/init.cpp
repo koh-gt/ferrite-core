@@ -1263,7 +1263,7 @@ bool AppInitMain(InitInterfaces& interfaces)
     } else {
         // Not categorizing as "Warning" because it's the default behavior
         LogPrintf("Config file: %s (not found, skipping)\n", config_file_path.string());
-        */
+        
         // Not categorizing as "Warning" because it's the default behavior
         LogPrintf("Config file: %s (not found, automatically creating default config file)\n", config_file_path.string());
 
