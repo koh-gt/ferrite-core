@@ -128,7 +128,7 @@ Common qt errors
     common qt errors - numeric_limits is not a member of std
     
     go to qbytearraymatcher.h 
-    /ferrite-core-main/depends/work/build/i686-w64-mingw32/qt/5.9.7-30b9272ce7f/qtbase/src/corelib/tools/qbytearraymatcher.h
+    /ferrite-core-main/depends/work/build/x86_64-w64-mingw32/qt/5.9.8-e9d8e4b8361/qtbase/src/corelib/tools/qbytearraymatcher.h
     #include <stddef.h>
     #include <limits.h>
     #include <stdexcept>
