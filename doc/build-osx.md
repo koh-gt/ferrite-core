@@ -19,8 +19,11 @@ Then install [Homebrew](https://brew.sh).
 
 ## Dependencies
 ```shell
-brew install automake libtool boost miniupnpc pkg-config python qt libevent qrencode fmt
+brew install automake libtool boost miniupnpc pkg-config python libevent qrencode fmt openssl
+brew install qt@5
 ```
+qt@5 only requires C++11, while latest qt 6 will require C++17 which may not be available on older MacOS make versions.
+The requirements are only qt > 5.5.1. Current version is v5.15.8 (20230511)
 
 If you run into issues, check [Homebrew's troubleshooting page](https://docs.brew.sh/Troubleshooting).
 See [dependencies.md](dependencies.md) for a complete overview.
@@ -60,6 +63,7 @@ Also, the Homebrew package could be installed:
 
 ```shell
 brew install berkeley-db4
+brew link berkeley-db@4 --force
 ```
 
 ## Build Ferrite Core
@@ -76,8 +80,9 @@ brew install berkeley-db4
 
     You can disable the GUI build by passing `--without-gui` to configure.
     ```shell
+    chmod +x autogen.sh
     ./autogen.sh
-    ./configure
+    ./configure BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" BDB_CFLAGS="-I${BDB_PREFIX}/include"
     make
     ```
 
