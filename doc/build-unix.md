@@ -28,9 +28,10 @@ To Build
 ---------------------
 
 ```bash
+sudo chmod +x -R ferrite-core-ferrite-main
 ./autogen.sh
 ./configure --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp
-make
+make -j4 # -j4 represents 4 threads being used. If you wish to use only one core, just use "make"
 make install # optional
 ```
 
