@@ -5,12 +5,12 @@
 
 | OS                        | Bit      | Name                   | Link                              | SHA256 Checksum                         |
 |--------------------|-------|---------------------|--------------------------|---------------------------------------|
-| Windows             | 64      | Setup                     | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v3.0.1/ferrite-3.0.1-win64-setup.exe) | `da1accfa9800d7fb9af9c9c75d9bc3fbca66798064af969ac3a216ebf25ee04d` |
-| Windows             | 64      | Qt Wallet               | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v3.0.1/ferrite-qt.exe) |  `18c4e9a26be6528ffd2134a1cacca90574cc5216ea2a068c84d2b61544fb262f` |
-| Windows, Unix       | 32 / 64 | Others                  | [Release 3.0.1](https://github.com/koh-gt/ferrite-core/releases/tag/v3.0.1) | |
+| Windows             | 64      | Setup                     | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v3.1.0/ferrite-3.1.0-win64-setup.exe) | `528f7f23f52a484bafce9a0b14df930aa8b4660141fd6869867c1a0c910b1676` |
+| Windows             | 64      | Qt Wallet               | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v3.1.0/ferrite-qt.exe) |  `6c6dcd1d08801aeba7f5acc00b6d7cc175b37ef650fc65e7f6c6e1b684eed8c1` |
+| Windows, Mac, Linux | 32 / 64 | Others                  | [Release 3.1.0](https://github.com/koh-gt/ferrite-core/releases/tag/v3.1.0) | |
 
 ## Community group links
-| ![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg) [Ferrite Core ](https://t.me/ferrite_core) | ![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | ![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg) [Discord](https://discord.gg/qKgF5xhS5p) | ![twitter-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Twitter.svg) [Twitter](https://twitter.com/ferritecoin) |
+| [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | [![twitter-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Twitter.svg)](https://twitter.com/ferritecoin) [Twitter](https://twitter.com/ferritecoin) |
 |--|--|--|--|
 
 ## Mining information links
@@ -30,6 +30,7 @@
 | CoinPaprika               | Info     |[FEC Price, Charts, Markets](https://coinpaprika.com/coin/fec-ferrite/) | Price information and charts |
 | LiveCoinWatch             | Info     |[FEC Price, Charts, Markets](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | Price information and charts | 
 | Coincodex                 | Info     |[FEC Price, Charts, Markets](https://coincodex.com/crypto/ferrite/) | Price information and charts |
+| CoinMarketLeague          | Info     |[FEC Price, Charts, Markets](https://coinmarketleague.com/coin/feritecoin) | Price information and charts |
 | Trading Information       | Info     |[Trade Ferrite coin](https://github.com/koh-gt/ferrite-core/wiki/Trading-Information) | Price history, available FEC trading pairs, funding contributors |
 | BitxOnex                  | Exchange | [Trade FEC on BitxOnex](https://www.bitxonex.com/market/fecusdt) |
 | XeggeX                    | Exchange | [Trade FEC on XeggeX](https://xeggex.com/market/FEC_USDT) |    
@@ -43,7 +44,7 @@
 | Name                      | Link                                            | Description                                                                |
 |---------------------------|-------------------------------------------------|----------------------------------------------------------------------------|
 | Website                   | [View](https://ferritecoin.org) | Ferrite website with mining calculator |
-| Explorer            | [View](http://explorer.ferritecoin.org) | Blockchain explorer to view latest transactions, circulating supply and rich list distribution |
+| Explorer              | [View](http://explorer.ferritecoin.org) | Blockchain explorer to view latest transactions, circulating supply and rich list distribution |
 | CryptoID Explorer         | [View](https://btc.cryptoid.info/fec/) | An advanced explorer with block mining history and node version data |
 | Merchandise               | [View](http://shop.ferritecoin.org) | Redirect link to Teespring shop with Ferrite coin themed merchandise |
 
@@ -80,7 +81,7 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **`142388`** (15 May 2023)
+### Current Block Height: **`143399`** (20 May 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Jan 2024)
 
@@ -95,8 +96,8 @@ Transaction capacity: 105/s <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-$$14,238,800\text{ / }60,221,400$$
-$$\text{ (}23.644\\%\text{)}$$
+$$14,339,900\text{ / }60,221,400$$
+$$\text{ (}23.812\\%\text{)}$$
 <br>
 <br>
 Block reward: 𝔽 100 <br/>
