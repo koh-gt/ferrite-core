@@ -24,27 +24,32 @@
 | Rent ASIC mining hardware | [Github Wiki](https://github.com/koh-gt/ferrite-core/wiki/Rent-an-ASIC-miner) |
 | Quick setup guide (WIP)   | [Github Wiki](https://github.com/koh-gt/ferrite-core/wiki/Getting-Started) |
 
+
 ## Trading information links
-| Name                      | Type     |Link                                            | Description                                                                |
-|---------------------------|----------|-------------------------------------------------|----------------------------------------------------------------------------| 
-| CoinPaprika               | Info     |[FEC Price, Charts, Markets](https://coinpaprika.com/coin/fec-ferrite/) | Price information and charts |
-| LiveCoinWatch             | Info     |[FEC Price, Charts, Markets](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | Price information and charts | 
-| Coincodex                 | Info     |[FEC Price, Charts, Markets](https://coincodex.com/crypto/ferrite/) | Price information and charts |
-| CoinMarketLeague          | Info     |[FEC Price, Charts, Markets](https://coinmarketleague.com/coin/feritecoin) | Price information and charts |
-| Trading Information       | Info     |[Trade Ferrite coin](https://github.com/koh-gt/ferrite-core/wiki/Trading-Information) | Price history, available FEC trading pairs, funding contributors |
-| BitxOnex                  | Exchange | [Trade FEC on BitxOnex](https://www.bitxonex.com/market/fecusdt) |
-| XeggeX                    | Exchange | [Trade FEC on XeggeX](https://xeggex.com/market/FEC_USDT) |    
-| PancakeSwap                | DEX      | [Trade WFEC on Pancakeswap (BEP-20)](https://pancakeswap.finance/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | BEP-20 |
-| Uniswap                    | DEX      | [Trade WFEC on Uniswap (BEP-20)](https://app.uniswap.org/#/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D)<br>[Trade WFEC on Uniswap (ARB-20)](https://app.uniswap.org/#/swap?inputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75) | BEP-20, ARB-20 |      
-> [Wrapped Ferrite](https://github.com/koh-gt/wrapped-ferrite) contract addresses:
-> > WFEC [BEP-20](https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D): `0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D`<br>
-> > WFEC [ARB-20](https://arbiscan.io/token/0x09bf659db25522bc9c367163966f35ac268e5b75): `0x09bf659Db25522bc9c367163966f35ac268e5b75`<br>
+### [Ferrite](https://github.com/koh-gt/ferrite-core/)
+| | Name                      | Type     | Description                                                                |
+|-|---------------------------|----------|----------------------------------------------------------------------------| 
+| <p align=center>[![coinpaprika32](https://github.com/koh-gt/ferrite-core/assets/101822992/151060b8-19a9-4193-8791-857e3b783b1e)](https://coinpaprika.com/coin/fec-ferrite/)</p> | [CoinPaprika](https://coinpaprika.com/coin/fec-ferrite/) | Info |[FEC Price, Charts, Markets] | Price information and charts |
+| <p align=center>[![livecoinwatch32](https://github.com/koh-gt/ferrite-core/assets/101822992/9dc7490b-f40c-4107-a81d-fbb4808a76a6)](https://www.livecoinwatch.com/price/Ferritecoin-FEC)</p> | [LiveCoinWatch](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | Info | Price information and charts | 
+| <p align=center>[![coincodex32](https://github.com/koh-gt/ferrite-core/assets/101822992/11928cf0-7980-4de2-b91e-90ae70065798)](https://coincodex.com/crypto/ferrite/)</p> | [Coincodex](https://coincodex.com/crypto/ferrite/) | Info | Price information and charts |
+| <p align=center>[![coinmarketleague32](https://github.com/koh-gt/ferrite-core/assets/101822992/a00c483f-d8b5-4be7-aaf9-fe1a5f0e3638)](https://coinmarketleague.com/coin/feritecoin)</p> | [CoinMarketLeague](https://coinmarketleague.com/coin/feritecoin) | Info | Price information and charts |
+| <p align=center></p> | [Trading Information](https://github.com/koh-gt/ferrite-core/wiki/Trading-Information) | Info | Price history, available FEC trading pairs, funding contributors |
+| <p align=center>[![bitxonex](https://github.com/koh-gt/ferrite-core/assets/101822992/f475a2b4-2e33-441c-8732-08d01165a35d)](https://www.bitxonex.com/market/fecusdt)</p> | [BitxOnex](https://www.bitxonex.com/market/fecusdt) | Exchange  | [FEC/USDT](https://www.bitxonex.com/market/fecusdt)<br>[FEC/LTC](https://www.bitxonex.com/market/fecltc) |
+| <p align=center>[![xeggex](https://github.com/koh-gt/ferrite-core/assets/101822992/0ea4401f-f232-49ef-a715-6bc6facf4294)](https://xeggex.com/asset/FEC)</p> | [XeggeX](https://xeggex.com/asset/FEC) | Exchange | [FEC/USDT](https://xeggex.com/market/FEC_USDT)<br>[FEC/LTC](https://xeggex.com/market/FEC_LTC) |    
+| <p align=center>[![pancakeswap32](https://github.com/koh-gt/ferrite-core/assets/101822992/b1a4cbaf-2de7-4e06-806c-5aa775cb74b4)](https://pancakeswap.finance/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D)</p> | [PancakeSwap](https://pancakeswap.finance/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | DEX | BEP-20 |
+| <p align=center>[![uniswap32](https://github.com/koh-gt/ferrite-core/assets/101822992/20792bb0-6d46-48ab-b0ca-73a29e357216)](https://app.uniswap.org/#/swap?inputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75)</p> | [Uniswap](https://app.uniswap.org/#/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D)<br>[Uniswap](https://app.uniswap.org/#/swap?inputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75) | DEX | BEP-20<br>ARB-20 | 
+
+### [Wrapped Ferrite](https://github.com/koh-gt/wrapped-ferrite)
+| Network | Contract address (CA) |
+|--------------------------------------------------------------------------|------------------|
+| [BEP-20](https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | `0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D` |
+| [ARB-20](https://arbiscan.io/token/0x09bf659db25522bc9c367163966f35ac268e5b75) | `0x09bf659Db25522bc9c367163966f35ac268e5b75` |
 
 ## Blockchain information links
-| Name                      | Link                                            | Description                                                                |
-|---------------------------|-------------------------------------------------|----------------------------------------------------------------------------|
+| Name                      | Link                                            | Description                                                          |
+|---------------------------|-------------------------------------------------|----------------------------------------------------------------------|
 | Website                   | [View](https://ferritecoin.org) | Ferrite website with mining calculator |
-| Explorer              | [View](http://explorer.ferritecoin.org) | Blockchain explorer to view latest transactions, circulating supply and rich list distribution |
+| Explorer                  | [View](http://explorer.ferritecoin.org) | Blockchain explorer to view latest transactions, circulating supply and rich list distribution |
 | CryptoID Explorer         | [View](https://btc.cryptoid.info/fec/) | An advanced explorer with block mining history and node version data |
 | Merchandise               | [View](http://shop.ferritecoin.org) | Redirect link to Teespring shop with Ferrite coin themed merchandise |
 
@@ -81,7 +86,7 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **`143399`** (20 May 2023)
+### Current Block Height: **`143517`** (23 May 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Jan 2024)
 
@@ -96,8 +101,8 @@ Transaction capacity: 105/s <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-$$14,339,900\text{ / }60,221,400$$
-$$\text{ (}23.812\\%\text{)}$$
+$$14,351,700\text{ / }60,221,400$$
+$$\text{ (}23.832\\%\text{)}$$
 <br>
 <br>
 Block reward: 𝔽 100 <br/>
