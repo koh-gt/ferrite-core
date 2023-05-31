@@ -58,11 +58,19 @@
 ![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
 ## Features:
+### Affordable transactions -
+Fees are denominated in fractions of Ferrite, which amounts to a negligible cost.
+
+### Uncensorable text messaging storage -
+Text inscribed on the blockchain are distributed to every node and stored permanently, allowing for censorship proofing.
+Use [Ferritext](https://github.com/koh-gt/ferritext) OP_RETURN tool to send messages.
+Inscription explorer will be launched soon.
+
 ### 1 minute block time - 
 Transactions are received instantly and can be confirmed within minutes.
 
-### 1 hour difficulty adjustment time - 
-Difficulty adjusts in 60 blocks, allowing for dynamic difficulty adaptation.
+### Dynamic difficulty adjustment (after height 250,000) - 
+Difficulty adjusts every block, adapting quickly to difficulty fluctuations.
 > If mining hashrate spikes, difficulty will quickly rise to limit supply.
 > If mining hashrate plummets, difficulty will quickly drop to encourage mining.
 
@@ -86,7 +94,7 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **`143583`** (27 May 2023)
+### Current Block Height: **`144118`** (31 May 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Jan 2024)
 
@@ -101,8 +109,8 @@ Transaction capacity: 105/s <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-$$14,358,300\text{ / }60,221,400$$
-$$\text{ (}23.843\\%\text{)}$$
+$$14,411,800\text{ / }60,221,400$$
+$$\text{ (}23.931\\%\text{)}$$
 <br>
 <br>
 Block reward: 𝔽 100 <br/>
