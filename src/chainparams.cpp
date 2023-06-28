@@ -105,22 +105,26 @@ public:
         // MWEB will be automatically activated after block 99999999 for now.
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000009cec62dc44b76d");  
-        // A total of 44170 005713 303405 hashes (44.2 PH) of work as of block 100000.
-        
+        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000050c151ee81a40c9");  
+        // A total of 363688 892397 404361 hashes (363.7 PH) of work as of block 149000.
+
+	// consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000050c151ee81a40c9");  
+        // A total of 363688 892397 404361 hashes (363.7 PH) of work as of block 149000.
         // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000009cec62dc44b76d");  
-        // A total of 44170 005713 303405 hashes (44.17 PH) of work as of block 100000.
+        // A total of  44170 005713 303405 hashes (44.17 PH) of work as of block 100000.
         // consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000025004406a93795");  
-        // A total of 10414 866307 823509 hashes (10.41 PH) of work as of block 60000.
+        // A total of  10414 866307 823509 hashes (10.41 PH) of work as of block 60000.
         // consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000003f1caaf8e7d1f");  
-        // A total of  1110 277761 170719 hashes (1.110 PH) of work as of block 30000.
+        // A total of   1110 277761 170719 hashes (1.110 PH) of work as of block 30000.
         // consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000aaf695561da1");  
-        // A total of   187 976044 125601 hashes (188.0 TH) of work as of block 10000.
+        // A total of    187 976044 125601 hashes (188.0 TH) of work as of block 10000.
         
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297");  
-        // Block 100000
-        
+        consensus.defaultAssumeValid = uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1");  
+        // Block 149000
+	    
+        // consensus.defaultAssumeValid = uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1");  
+        // Block 149000
         // consensus.defaultAssumeValid = uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297");  
         // Block 100000
         // consensus.defaultAssumeValid = uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286");  
@@ -160,11 +164,9 @@ public:
 	vSeeds.emplace_back("46.105.34.58");  // https://btc.cryptoid.info/fec/
 	    
         // Pool seednodes
-        vSeeds.emplace_back("188.165.227.178");  // spools.online
-        vSeeds.emplace_back("207.244.243.35");   // luckydogpool.com      
+        vSeeds.emplace_back("188.165.227.178");  // spools.online     
         vSeeds.emplace_back("144.91.107.170");   // coinxpool.com
         vSeeds.emplace_back("155.138.247.235");  // miningmypool.com 
-        vSeeds.emplace_back("155.133.26.223");   // zeusminingpool.com
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,36);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
@@ -197,13 +199,14 @@ public:
                 {    30000, uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95")},
                 {    60000, uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286")},
                 {   100000, uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297")},
+		{   149000, uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1")},
             }
         };
 
         chainTxData = ChainTxData{
-            /* nTime    */ 1677953251,
-            /* nTxCount */ 111405,
-            /* dTxRate  */ 0.01352083
+            /* nTime    */ 1687991792,
+            /* nTxCount */ 162810,
+            /* dTxRate  */ 0.00492770
         };
     }
 };
