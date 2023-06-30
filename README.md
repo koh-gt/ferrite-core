@@ -1,6 +1,6 @@
 # ferrite-core
 
-## !! **Hardfork at Height $250,000$ (early-mid 2024).** <br> [Update to v3+](https://github.com/koh-gt/ferrite-core/releases/tag/v3.0.1) 
+## !! **Hardfork at Height $250,000$ (early-mid 2024).** <br> [Update to v3+](https://github.com/koh-gt/ferrite-core/releases/tag/v3.1.1) 
 > Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase.
 
 | OS                        | Bit      | Name                   | Link                              | SHA256 Checksum                         |
