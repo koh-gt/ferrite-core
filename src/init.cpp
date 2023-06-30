@@ -110,7 +110,7 @@ static const char* DEFAULT_ASMAP_FILENAME="ip_asn.map";
 /**
  * The PID file facilities.
  */
-static const char* BITCOIN_PID_FILENAME = "bitcoind.pid";
+static const char* BITCOIN_PID_FILENAME = "ferrited.pid";
 
 static fs::path GetPidFile(const ArgsManager& args)
 {
@@ -1355,14 +1355,12 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
                                     "# RPC settings (default: Local network only)\n"
                                     "rpcuser=user\n"
                                     "rpcpassword=password\n"
-                                    "port=9574\n"
                                     "rpcallowip=127.0.0.1\n"
                                     "rpcthreads=32\n"
                                     "\n"
                                     "# Relay and fee settings (default: 1 atom/vB)\n"
                                     "mintxfee=0.00001\n"
                                     "minrelaytxfee=0.00001\n"
-                                    "rpcconnect=500\n"
                                     "maxconnections=500\n"
                                     "\n"
                                     "# Depreciated RPCs for compatibility\n"
