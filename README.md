@@ -26,20 +26,25 @@
 
 
 ## Trading information links
-### [Ferrite](https://github.com/koh-gt/ferrite-core/)
 | | Name                      | Type     | Description                                                                |
 |-|---------------------------|----------|----------------------------------------------------------------------------| 
-| <p align=center>[![coinpaprika32](https://github.com/koh-gt/ferrite-core/assets/101822992/151060b8-19a9-4193-8791-857e3b783b1e)](https://coinpaprika.com/coin/fec-ferrite/)</p> | [CoinPaprika](https://coinpaprika.com/coin/fec-ferrite/) | Info |[FEC Price, Charts, Markets] | Price information and charts |
+| <p align=center>[![coinpaprika32](https://github.com/koh-gt/ferrite-core/assets/101822992/151060b8-19a9-4193-8791-857e3b783b1e)](https://coinpaprika.com/coin/fec-ferrite/)</p> | [CoinPaprika](https://coinpaprika.com/coin/fec-ferrite/) | Info | Price information and charts |
 | <p align=center>[![livecoinwatch32](https://github.com/koh-gt/ferrite-core/assets/101822992/9dc7490b-f40c-4107-a81d-fbb4808a76a6)](https://www.livecoinwatch.com/price/Ferritecoin-FEC)</p> | [LiveCoinWatch](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | Info | Price information and charts | 
 | <p align=center>[![coincodex32](https://github.com/koh-gt/ferrite-core/assets/101822992/11928cf0-7980-4de2-b91e-90ae70065798)](https://coincodex.com/crypto/ferrite/)</p> | [Coincodex](https://coincodex.com/crypto/ferrite/) | Info | Price information and charts |
 | <p align=center>[![coinmarketleague32](https://github.com/koh-gt/ferrite-core/assets/101822992/a00c483f-d8b5-4be7-aaf9-fe1a5f0e3638)](https://coinmarketleague.com/coin/feritecoin)</p> | [CoinMarketLeague](https://coinmarketleague.com/coin/feritecoin) | Info | Price information and charts |
 | <p align=center></p> | [Trading Information](https://github.com/koh-gt/ferrite-core/wiki/Trading-Information) | Info | Price history, available FEC trading pairs, funding contributors |
-| <p align=center>[![bitxonex](https://github.com/koh-gt/ferrite-core/assets/101822992/f475a2b4-2e33-441c-8732-08d01165a35d)](https://www.bitxonex.com/market/fecusdt)</p> | [BitxOnex](https://www.bitxonex.com/market/fecusdt) | Exchange  | [FEC/USDT](https://www.bitxonex.com/market/fecusdt)<br>[FEC/LTC](https://www.bitxonex.com/market/fecltc) |
-| <p align=center>[![xeggex](https://github.com/koh-gt/ferrite-core/assets/101822992/0ea4401f-f232-49ef-a715-6bc6facf4294)](https://xeggex.com/asset/FEC)</p> | [XeggeX](https://xeggex.com/asset/FEC) | Exchange | [FEC/USDT](https://xeggex.com/market/FEC_USDT)<br>[FEC/LTC](https://xeggex.com/market/FEC_LTC) |    
-| <p align=center>[![pancakeswap32](https://github.com/koh-gt/ferrite-core/assets/101822992/b1a4cbaf-2de7-4e06-806c-5aa775cb74b4)](https://pancakeswap.finance/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D)</p> | [PancakeSwap](https://pancakeswap.finance/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | DEX | BEP-20 |
-| <p align=center>[![uniswap32](https://github.com/koh-gt/ferrite-core/assets/101822992/20792bb0-6d46-48ab-b0ca-73a29e357216)](https://app.uniswap.org/#/swap?inputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75)</p> | [Uniswap](https://app.uniswap.org/#/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D)<br>[Uniswap](https://app.uniswap.org/#/swap?inputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75) | DEX | BEP-20<br>ARB-20 | 
 
-### [Wrapped Ferrite](https://github.com/koh-gt/wrapped-ferrite)
+## Exchange links
+| | Name                      | Type     | Description                                                                |
+|-|---------------------------|----------|----------------------------------------------------------------------------| 
+| <p align=center>[![bitxonex](https://github.com/koh-gt/ferrite-core/assets/101822992/f475a2b4-2e33-441c-8732-08d01165a35d)](https://www.bitxonex.com/market/fecusdt)</p> | [BitxOnex](https://www.bitxonex.com/market/fecusdt) | Exchange  | [FEC/USDT](https://www.bitxonex.com/market/fecusdt)<br>[FEC/LTC](https://www.bitxonex.com/market/fecltc) |
+| <p align=center>[![xeggex](https://github.com/koh-gt/ferrite-core/assets/101822992/0ea4401f-f232-49ef-a715-6bc6facf4294)](https://xeggex.com/asset/FEC)</p> | [XeggeX](https://xeggex.com/asset/FEC) | Exchange | [FEC/USDT](https://xeggex.com/market/FEC_USDT)<br>[FEC/LTC](https://xeggex.com/market/FEC_LTC) | 
+| <p align=center>[![caldera-trade32](https://github.com/koh-gt/ferrite-core/assets/101822992/95c8dee8-3d16-4cc5-8726-5c567b6e0755)](https://discord.com/channels/859575137560297533/859831040213909554)</p>| [Caldera](https://discord.com/channels/859575137560297533/859831040213909554) | OTC | [FEC](https://discord.com/channels/1066663020257882182/1107052872736198676)<br>[ Available trading pairs](https://caldera.trade/coins)|
+| <p align=center>[![pancakeswap32](https://github.com/koh-gt/ferrite-core/assets/101822992/b1a4cbaf-2de7-4e06-806c-5aa775cb74b4)](https://pancakeswap.finance/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D)</p> | [PancakeSwap](https://pancakeswap.finance/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | DEX | [BEP-20](https://pancakeswap.finance/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) |
+| <p align=center>[![uniswap32](https://github.com/koh-gt/ferrite-core/assets/101822992/20792bb0-6d46-48ab-b0ca-73a29e357216)](https://app.uniswap.org/#/swap?inputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75)</p> | [Uniswap](https://app.uniswap.org/#/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D)<br>[Uniswap](https://app.uniswap.org/#/swap?inputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75) | DEX | [BEP-20](https://app.uniswap.org/#/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D)<br>[ARB-20](https://app.uniswap.org/#/swap?inputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75) | 
+
+## [Wrapped Ferrite](https://github.com/koh-gt/wrapped-ferrite) Token
+For third party movile wallets - add custom token CA to Metamask or Trust Wallet
 | Network | Contract address (CA) |
 |--------------------------------------------------------------------------|------------------|
 | [BEP-20](https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | `0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D` |
@@ -58,18 +63,26 @@
 ![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
 ## Features:
+### Affordable transactions -
+Fees are denominated in fractions of Ferrite, which amounts to a negligible cost.
+
+### Uncensorable text messaging storage -
+Text inscribed on the blockchain are distributed to every node and stored permanently, allowing for censorship proofing.
+Use [Ferritext](https://github.com/koh-gt/ferritext) OP_RETURN tool to send messages.
+Inscription explorer will be launched soon.
+
 ### 1 minute block time - 
 Transactions are received instantly and can be confirmed within minutes.
 
-### 1 hour difficulty adjustment time - 
-Difficulty adjusts in 60 blocks, allowing for dynamic difficulty adaptation.
+### Dynamic difficulty adjustment (after height 250,000) - 
+Difficulty adjusts every block, adapting quickly to difficulty fluctuations.
 > If mining hashrate spikes, difficulty will quickly rise to limit supply.
 > If mining hashrate plummets, difficulty will quickly drop to encourage mining.
 
 ### Limited supply - 
+There will be no more than 60,221,400 FEC - [View current supply](http://explorer.ferritecoin.org)
 A maximum of $100$ FEC (Ferrite coins) are mined in a block. 
 This number will halve every $301107$ blocks, or about 8 months considering block propagation time.
-> There will be no more than $60,221,400$ FEC. $10^{16}$ times smaller than Avogadro's number!
 
 ### Transparency - 
 No pre-mine - Linux Executables are uploaded on public Telegram and Discord groups as early as block 120 (2 hours), with full migration to Github by block 3000 (50 hours).
@@ -80,13 +93,16 @@ Ferrite has no owner. The miners shall decide the fate of the network.
 ### Pseudonymous -
 Nobody knows who owns the mined coins, nor who sent the coins. Unless you identify as the owner of the public address, you maintain anonymity.
 
+### Opt-in Anonymity -
+By Implementing Litecoin's MWEB after height 150,000 transactions can be made private and confidential at a time where exchanges are mandating strict KYC and AML measures.
+
 ### Scrypt Algorithm -  
 Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite. Originally designed to be ASIC resistant. 
 
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
-### Current Block Height: **`143517`** (23 May 2023)
+### Current Block Height: **`149816`** (30 Jun 2023)
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Jan 2024)
 
@@ -101,8 +117,8 @@ Transaction capacity: 105/s <br/>
 Premine: No premine <br/>
 
 ### Economic specifications: <br/>
-$$14,351,700\text{ / }60,221,400$$
-$$\text{ (}23.832\\%\text{)}$$
+$$14,981,600\text{ / }60,221,400$$
+$$\text{ (}24.878\\%\text{)}$$
 <br>
 <br>
 Block reward: 𝔽 100 <br/>
