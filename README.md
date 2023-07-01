@@ -5,9 +5,9 @@
 
 | OS                        | Bit      | Name                   | Link                              | SHA256 Checksum                         |
 |--------------------|-------|---------------------|--------------------------|---------------------------------------|
-| Windows             | 64     | New/clean install   | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v3.1.0/ferrite-3.1.1-win64-setup.exe) | `9425b0af58b07492b3b06ac94757f2578cfa952c4a5452e2fa117494d8ec7aa5` |
-| Windows             | 64     | Wallet Update        | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v3.1.0/ferrite-qt.exe) |  `6a332f4205855cacf0b10a2cdf55d361ddf4442bd807b52d6a71b2c15a71b110` |
-| Windows, Linux | 32 / 64 | Others                  | [Release 3.1.1](https://github.com/koh-gt/ferrite-core/releases/tag/v3.1.0) | |
+| Windows             | 64     | New/clean install   | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v3.1.1/ferrite-3.1.1-win64-setup.exe) | `9425b0af58b07492b3b06ac94757f2578cfa952c4a5452e2fa117494d8ec7aa5` |
+| Windows             | 64     | Wallet Update        | [Download](https://github.com/koh-gt/ferrite-core/releases/download/v3.1.1/ferrite-qt.exe) |  `6a332f4205855cacf0b10a2cdf55d361ddf4442bd807b52d6a71b2c15a71b110` |
+| Windows, Linux | 32 / 64 | Others                  | [Release 3.1.1](https://github.com/koh-gt/ferrite-core/releases/tag/v3.1.1) | |
 | Android, iOS, MacOS | 32 / 64 | Wrapped Ferrite | [Information](https://github.com/koh-gt/ferrite-core#wrapped-ferrite-token)
 
 ## Community group links
@@ -89,7 +89,7 @@ There will be no more than 60,221,400 FEC - [View current supply](http://explore
 A maximum of $100$ FEC (Ferrite coins) are mined in a block. 
 This number will halve every $301107$ blocks, or about 8 months considering block propagation time.
 
-### Transparency - 
+### Transparent - 
 No pre-mine - Linux Executables are uploaded on public Telegram and Discord groups as early as block 120 (2 hours), with full migration to Github by block 3000 (50 hours).
 
 ### Decentralised - 
@@ -97,8 +97,6 @@ Ferrite has no owner. The miners shall decide the fate of the network.
 
 ### Pseudonymous -
 Nobody knows who owns the mined coins, nor who sent the coins. Unless you identify as the owner of the public address, you maintain anonymity.
-
-### Opt-in Anonymity -
 By Implementing Litecoin's MWEB after height 150,000 transactions can be made private and confidential at a time where exchanges are mandating strict KYC and AML measures.
 
 ### Scrypt Algorithm -  
@@ -108,7 +106,7 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
 
-### Current Block Height: **`149817`** (1 Jul 2023)
+### Current Block Height: **`149901`** (2 Jul 2023)
 
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Jan 2024)
@@ -125,8 +123,8 @@ Premine: No premine <br/>
 
 ### Economic specifications: <br/>
 
-$$14,981,700\text{ / }60,221,400$$
-$$\text{ (}24.878\\%\text{)}$$
+$$14,990,100\text{ / }60,221,400$$
+$$\text{ (}24.892\\%\text{)}$$
 
 <br>
 <br>
