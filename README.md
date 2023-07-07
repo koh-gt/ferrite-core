@@ -103,7 +103,7 @@ Ferrite has no owner. The miners shall decide the fate of the network.
 
 ### Pseudonymous -
 Nobody knows who owns the mined coins, nor who sent the coins. Unless you identify as the owner of the public address, you maintain anonymity.
-By Implementing Litecoin's MWEB after height 150,000 transactions can be made private and confidential at a time where exchanges are mandating strict KYC and AML measures.
+With Litecoin's MWEB implementation on Ferrite transactions can be made private and confidential at a time where exchanges are mandating strict KYC and AML measures. (active as of height 150,000 on 6 Jul 2023)
 
 ### Scrypt Algorithm -  
 Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite. Originally designed to be ASIC resistant. 
@@ -112,7 +112,7 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
 
-### Current Block Height: **`149901`** (2 Jul 2023)
+### Current Block Height: **`150209`** (8 Jul 2023)
 
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Jan 2024)
@@ -129,8 +129,8 @@ Premine: No premine <br/>
 
 ### Economic specifications: <br/>
 
-$$14,990,100\text{ / }60,221,400$$
-$$\text{ (}24.892\\%\text{)}$$
+$$15,020,900\text{ / }60,221,400$$
+$$\text{ (}24.943\\%\text{)}$$
 
 <br>
 <br>
