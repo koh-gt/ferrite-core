@@ -24,14 +24,18 @@ install fmt before fmt-dev
 sudo apt install ./libfmt9_9.1.0+ds1-2_amd64.deb
 sudo apt install ./libfmt-dev_9.1.0+ds1-2_amd64.deb
 
-To Build
+To Build (64 bit x86 Ubuntu Linux)
 ---------------------
-
 ```bash
-sudo chmod +x -R ferrite-core-ferrite-main
+sudo chmod +x -R ferrite-core-main
+cd ferrite-core-main
+PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
+cd depends
+make HOST=x86_64-w64-linux -j$(nproc)    # multicore make for linux
+cd ..
 ./autogen.sh
-./configure --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp
-make -j4 # -j4 represents 4 threads being used. If you wish to use only one core, just use "make"
+CONFIG_SITE=$PWD/depends/x86_64-w64-linux/share/config.site ./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp
+make -j#(nproc) # -j4 represents 4 threads being used
 make install # optional
 ```
 
