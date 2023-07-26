@@ -71,7 +71,8 @@ For third party movile wallets - add custom token CA to Metamask or Trust Wallet
 
 ## Ferrite is a cryptocurrency that seeks to enable fast and free payments.  <br>
 
-![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
+![ferrite-core-main-4ka-8k-4](https://github.com/koh-gt/ferrite-core/assets/101822992/55820629-5911-429a-ab53-20d95561d5dc)
+
 
 ## Features:
 ### Affordable transactions -
@@ -112,7 +113,7 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
 
-### Current Block Height: **`150309`** (18 Jul 2023)
+### Current Block Height: **`150377`** (27 Jul 2023)
 
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Jan 2024)
@@ -129,8 +130,8 @@ Premine: No premine <br/>
 
 ### Economic specifications: <br/>
 
-$$15,030,900\text{ / }60,221,400$$
-$$\text{ (}24.959\\%\text{)}$$
+$$15,037,700\text{ / }60,221,400$$
+$$\text{ (}24.971\\%\text{)}$$
 
 <br>
 <br>
