@@ -81,6 +81,7 @@ brew link berkeley-db@4 --force
     You can disable the GUI build by passing `--without-gui` to configure.
     ```shell
     chmod +x autogen.sh
+    chmod +x share/genbuild.sh
     ./autogen.sh
     ./configure
     make
