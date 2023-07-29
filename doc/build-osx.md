@@ -82,7 +82,7 @@ brew link berkeley-db@4 --force
     ```shell
     chmod +x autogen.sh
     ./autogen.sh
-    ./configure BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" BDB_CFLAGS="-I${BDB_PREFIX}/include"
+    ./configure
     make
     ```
 
