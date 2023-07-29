@@ -31,16 +31,15 @@ InitWalletDirTestingSetup::InitWalletDirTestingSetup(const std::string& chainNam
     fs::create_directories(m_walletdir_path_cases["default"]);
     fs::create_directories(m_walletdir_path_cases["custom"]);
     fs::create_directories(m_walletdir_path_cases["relative"]);
-    std::ofstream f(m_walletdir_path_cases["file"].BOOST_FILESYSTEM_C_STR);
-    f.close();
+    #if BOOST_VERSION >= 107700
+        Std::ofstream f(BOOST_FILESYSTEM_C_STR(m_walletdir_path_cases["file"]));
+    #else    
+	std::ofstream f(m_walletdir_path_cases["file"].BOOST_FILESYSTEM_C_STR);
+    #endif // BOOST_VERSION >= 107700
+        f.close();
 }
 
 InitWalletDirTestingSetup::~InitWalletDirTestingSetup()
 {
     fs::current_path(m_cwd);
-}
-
-void InitWalletDirTestingSetup::SetWalletDir(const fs::path& walletdir_path)
-{
-    gArgs.ForceSetArg("-walletdir", walletdir_path.string());
 }
