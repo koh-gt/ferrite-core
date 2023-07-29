@@ -1344,10 +1344,11 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
         if (configFile != NULL) {
             std::string strHeader = "# Ferrite Core configuration file:\n"
                                     "\n"            
-                                    "# Node settings (default: Full Node):\n"
+                                    "# Node settings (default: Full Node with no pruning):\n"
+                                    "prune=0\n"
                                     "daemon=1\n"
                                     "server=1\n"
-                                    "prune=0\n"
+                                    "blockfilterindex=basic\n"
                                     "txindex=1\n"
                                     "listen=1\n"
                                     "upnp=1\n"
@@ -1360,6 +1361,8 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
                                     "\n"
                                     "# Relay and fee settings (default: 1 atom/vB)\n"
                                     "mintxfee=0.00001\n"
+                                    "maxtxfee=1000\n"
+                                    "maxfeerate=1000\n"
                                     "minrelaytxfee=0.00001\n"
                                     "maxconnections=500\n"
                                     "\n"
@@ -1369,20 +1372,13 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
                                     "\n"
                                     "# Nodes:\n"
                                     "addnode=node1.ferritecoin.org\n"
-                                    "addnode=38.242.145.73:21004 # xeggex.com \n"
                                     "addnode=node2.ferritecoin.org\n"
-                                    "addnode=node3.ferritecoin.org\n"
-                                    "addnode=node2.walletbuilders.com\n"    
+                                    "addnode=node3.ferritecoin.org\n"  
+                                    "addnode=38.242.145.73:21004 # xeggex.com \n"
                                     "addnode=118.189.201.104:9574\n"
                                     "addnode=118.189.201.104:9588\n"
                                     "addnode=118.189.201.104:9598\n"
                                     "addnode=78.220.84.58:9574\n"
-                                    "addnode=188.165.227.178:9574 # spools.online \n"
-                                    "addnode=207.244.243.35:9574 # luckydogpool.com \n"
-                                    "addnode=144.91.107.170:9574 # coinxpool.com \n"
-                                    "addnode=83.61.85.197:9574 # 2miningpool.com \n"
-                                    "addnode=155.138.247.235:9574 # miningmypool.com \n"
-                                    "addnode=155.133.26.223:9574 # zeusminingpool.com \n"
                                     "\n"
                                     "\n"
                                     "# Testnet parameters: \n"
@@ -1419,9 +1415,9 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
     // Warn about relative -datadir path.
     if (args.IsArgSet("-datadir") && !fs::path(args.GetArg("-datadir", "")).is_absolute()) {
         LogPrintf("Warning: relative datadir option '%s' specified, which will be interpreted relative to the " /* Continued */
-                  "current working directory '%s'. This is fragile, because if litecoin is started in the future "
+                  "current working directory '%s'. This is fragile, because if ferrite is started in the future "
                   "from a different location, it will be unable to locate the current data files. There could "
-                  "also be data loss if litecoin is started while in a temporary directory.\n",
+                  "also be data loss if ferrite is started while in a temporary directory.\n",
                   args.GetArg("-datadir", ""), fs::current_path().string());
     }
 
