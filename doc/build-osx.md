@@ -16,11 +16,17 @@ xcode-select --install
 When the popup appears, click `Install`.
 
 Then install [Homebrew](https://brew.sh).
+``` shell
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
 
 ## Dependencies
+Qt requires [Xcode](https://developer.apple.com/download/all/)  
+Tested on MacOS 10.15.7 - [Xcode 12.4](https://download.developer.apple.com/Developer_Tools/Xcode_12.4/Xcode_12.4.xip)  
+Extract and run Xcode - will require about 30 GB of storage space.  
 ```shell
 brew install automake libtool boost miniupnpc pkg-config python libevent qrencode fmt openssl
-brew install qt@5
+brew install qt@5   # requires full xcode
 ```
 qt@5 only requires C++11, while latest qt 6 will require C++17 which may not be available on older MacOS make versions.
 The requirements are only qt > 5.5.1. Current version is v5.15.8 (20230511)
@@ -84,7 +90,7 @@ brew link berkeley-db@4 --force
     chmod +x share/genbuild.sh
     ./autogen.sh
     ./configure
-    make
+    make # make -j4 if you have 4 threads, make -j8 for 8 threads
     ```
 
 3.  It is recommended to build and run the unit tests:
