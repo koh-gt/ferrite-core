@@ -35,7 +35,7 @@ make HOST=x86_64-w64-linux -j$(nproc)    # multicore make for linux
 cd ..
 ./autogen.sh
 CONFIG_SITE=$PWD/depends/x86_64-w64-linux/share/config.site ./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp
-make -j#(nproc) # -j4 represents 4 threads being used
+make -j$(nproc) # -j4 represents 4 threads being used
 make install # optional
 ```
 
