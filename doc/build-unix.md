@@ -31,7 +31,7 @@ sudo chmod +x -R ferrite-core-main
 cd ferrite-core-main
 PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
 cd depends
-make HOST=x86_64-w64-linux -j$(nproc)    # multicore make for linux
+make HOST=x86_64-pc-linux-gnu -j$(nproc)    # multicore make for linux
 cd ..
 ./autogen.sh
 CONFIG_SITE=$PWD/depends/x86_64-w64-linux/share/config.site ./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp
