@@ -113,12 +113,12 @@ Build using:
     PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
     sudo bash -c "echo 0 > /proc/sys/fs/binfmt_misc/status" # Disable WSL (Windows Subsystem for Linux) support for Win32 applications.
     cd depends
-    make HOST=x86_64-w64-mingw32 -j4
+    make HOST=x86_64-w64-mingw32 -j$(nproc)
     cd ..
     ./autogen.sh
     CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp
     # sudo apt-get install libminiupnpc-dev
-    make -j4
+    make -j$(nproc)
     sudo bash -c "echo 1 > /proc/sys/fs/binfmt_misc/status" # Enable WSL (Windows Subsystem for Linux) support for Win32 applications.
     make deploy
     
