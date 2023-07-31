@@ -38,7 +38,6 @@
 ## Exchange links
 | | Name                      | Type     | Description                                                                |
 |-|---------------------------|----------|----------------------------------------------------------------------------| 
-| <p align=center>[![bitxonex](https://github.com/koh-gt/ferrite-core/assets/101822992/f475a2b4-2e33-441c-8732-08d01165a35d)](https://www.bitxonex.com/market/fecusdt)</p> | [BitxOnex](https://www.bitxonex.com/market/fecusdt) | Exchange  | [FEC/USDT](https://www.bitxonex.com/market/fecusdt)<br>[FEC/LTC](https://www.bitxonex.com/market/fecltc) |
 | <p align=center>[![xeggex](https://github.com/koh-gt/ferrite-core/assets/101822992/0ea4401f-f232-49ef-a715-6bc6facf4294)](https://xeggex.com/asset/FEC)</p> | [XeggeX](https://xeggex.com/asset/FEC) | Exchange | [FEC/USDT](https://xeggex.com/market/FEC_USDT)<br>[FEC/LTC](https://xeggex.com/market/FEC_LTC) | 
 | <p align=center>[![caldera-trade32](https://github.com/koh-gt/ferrite-core/assets/101822992/95c8dee8-3d16-4cc5-8726-5c567b6e0755)](https://discord.com/channels/859575137560297533/859831040213909554)</p>| [Caldera](https://discord.com/channels/859575137560297533/859831040213909554) | OTC | [FEC](https://discord.com/channels/1066663020257882182/1107052872736198676)<br>[ Available trading pairs](https://caldera.trade/coins)|
 
@@ -92,7 +91,7 @@ Difficulty adjusts every block, adapting quickly to difficulty fluctuations.
 > If mining hashrate plummets, difficulty will quickly drop to encourage mining.
 
 ### Limited supply - 
-There will be no more than 60,221,400 FEC - [View current supply](http://explorer.ferritecoin.org)
+There will be no more than 60,221,400 FEC - [View current supply](https://explorer.ferritecoin.org)
 A maximum of $100$ FEC (Ferrite coins) are mined in a block. 
 This number will halve every $301107$ blocks, or about 8 months considering block propagation time.
 
@@ -113,7 +112,7 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
 
-### Current Block Height: **`150377`** (27 Jul 2023)
+### Current Block Height: **`150468`** (1 Aug 2023)
 
 ### Halving Epoch: **0**
 ### Next halving block: 301107 (~ Jan 2024)
@@ -130,8 +129,8 @@ Premine: No premine <br/>
 
 ### Economic specifications: <br/>
 
-$$15,037,700\text{ / }60,221,400$$
-$$\text{ (}24.971\\%\text{)}$$
+$$15,046,800\text{ / }60,221,400$$
+$$\text{ (}24.986\\%\text{)}$$
 
 <br>
 <br>
