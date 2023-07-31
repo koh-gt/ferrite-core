@@ -51,7 +51,7 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-InstallDir $PROGRAMFILES64\_Ferrite_Core
+InstallDir $PROGRAMFILES64\Ferrite
 CRCCheck on
 XPStyle on
 BrandingText " "
