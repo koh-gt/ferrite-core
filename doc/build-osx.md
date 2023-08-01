@@ -45,6 +45,12 @@ brew install gcc --HEAD
 #
 ```
 qt@5 only requires C++11, while latest qt 6 will require C++17 which may not be available on older MacOS make versions.
+Common qt error - 
+```error: "Qt requires a C++17 compiler"```
+```shell
+brew remove qt6
+```
+
 The requirements are only qt > 5.5.1. Current version is v5.15.8 (20230511)
 
 If you run into issues, check [Homebrew's troubleshooting page](https://docs.brew.sh/Troubleshooting).
