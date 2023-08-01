@@ -21,7 +21,7 @@ Then install [Homebrew](https://brew.sh).
 ```
 
 ## Dependencies
-Qt requires [Xcode](https://developer.apple.com/download/all/)  
+Qt requires [Xcode](https://developer.apple.com/download/all/)
 Tested on MacOS 10.15.7 - [Xcode 12.4](https://download.developer.apple.com/Developer_Tools/Xcode_12.4/Xcode_12.4.xip)  
 Extract and run Xcode - will require about 30 GB of storage space.  
 ```shell
@@ -30,6 +30,19 @@ brew install automake libtool boost miniupnpc pkg-config python libevent libnatp
 # Move xcode to applications folder, xcode necessary for qt
 sudo xcode-select --switch /Applications/Xcode.app
 brew install qt@5   # requires full xcode
+
+# If you need to have qt@5 first in your PATH, run:
+echo 'export PATH="/usr/local/opt/qt@5/bin:$PATH"' >> ~/.zshrc
+# For compilers to find qt@5 you may need to set:
+export LDFLAGS="-L/usr/local/opt/qt@5/lib"
+export CPPFLAGS="-I/usr/local/opt/qt@5/include"
+# For pkg-config to find qt@5 you may need to set:
+export PKG_CONFIG_PATH="/usr/local/opt/qt@5/lib/pkgconfig"
+
+# get latest c++17
+brew install gcc --HEAD
+
+#
 ```
 qt@5 only requires C++11, while latest qt 6 will require C++17 which may not be available on older MacOS make versions.
 The requirements are only qt > 5.5.1. Current version is v5.15.8 (20230511)
@@ -92,7 +105,7 @@ brew link berkeley-db@4 --force
     chmod +x autogen.sh
     chmod +x share/genbuild.sh
     ./autogen.sh
-    ./configure --with-miniupnpc --enable-upnp-default --with-natpmp
+    ./configure --with-miniupnpc --enable-upnp-default --with-natpmp --disable-tests
     make # make -j4 if you have 4 threads, make -j8 for 8 threads
     ```
 
