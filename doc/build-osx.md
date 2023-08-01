@@ -58,6 +58,8 @@ See [dependencies.md](dependencies.md) for a complete overview.
 If you want to build the disk image with `make deploy` (.dmg / optional), you need RSVG:
 ```shell
 brew install librsvg
+
+brew install imagemagick libtiff
 ```
 
 The wallet support requires one or both of the dependencies ([*SQLite*](#sqlite) and [*Berkeley DB*](#berkeley-db)) in the sections below.
