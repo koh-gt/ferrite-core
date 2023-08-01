@@ -19,7 +19,7 @@ Communication Channels
 
 Most communication about Ferrite Core development happens on the
 #ferrite-core channel on Telegram. The easiest way to participate on Telegram is
-with the web client, [Telegram](https://t.me/ferrite-core/).
+with the web client, [Telegram](https://t.me/ferrite_core/).
 
 Discussion about code base improvements happens in GitHub issues and on pull
 requests.

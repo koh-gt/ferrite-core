@@ -1284,12 +1284,16 @@ std::string CopyrightHolders(const std::string& strPrefix)
     const auto copyright_devs = strprintf(_(COPYRIGHT_HOLDERS).translated, COPYRIGHT_HOLDERS_SUBSTITUTION);
     std::string strCopyrightHolders = strPrefix + copyright_devs;
 
-    // Make sure Bitcoin Core copyright is not removed by accident
+    // Make sure copyrights are not removed by accident
     if (copyright_devs.find("Bitcoin Core") == std::string::npos) {
         if (strPrefix.find("2011") != std::string::npos) {
             std::string strYear = strPrefix;
-            strYear.replace(strYear.find("2022-2023"), sizeof("2022-2023")-1, "2011-2023");
-            strCopyrightHolders += "\n" + strYear + "The Ferrite Core developers";
+	    strYear.replace(strYear.find("2022-2023"), sizeof("2022-2023")-1, "2014-2023");
+            strCopyrightHolders += "\n" + strYear + "The Dash Core developers";
+            strYear.replace(strYear.find("2014-2023"), sizeof("2014-2023")-1, "2013-2023");
+            strCopyrightHolders += "\n" + strYear + "The Dogecoin Core developers";
+            strYear.replace(strYear.find("2013-2023"), sizeof("2013-2023")-1, "2011-2023");
+            strCopyrightHolders += "\n" + strYear + "The Litecoin Core developers";
             strYear.replace(strYear.find("2011-2023"), sizeof("2011-2023")-1, "2009-2023");
             strCopyrightHolders += "\n" + strYear + "The Bitcoin Core developers";
         }

@@ -41,7 +41,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     // define text to place
     QString titleText       = PACKAGE_NAME;
     QString versionText     = QString("Version %1").arg(QString::fromStdString(FormatFullVersion()));
-    QString copyrightText   = QString::fromUtf8(CopyrightHolders(strprintf("\xc2\xA9 %u-%u ", 2022, COPYRIGHT_YEAR)).c_str()) + QString::fromStdString(strprintf("\n\xc2\xA9 %u-%u The Ferrite Core Developers", 2011, COPYRIGHT_YEAR)) + QString::fromStdString(strprintf("\n\xc2\xA9 %u-%u The Bitcoin Core Developers", 2009, COPYRIGHT_YEAR));
+    QString copyrightText   = QString::fromUtf8(CopyrightHolders(strprintf("\xc2\xA9 %u-%u ", 2022, COPYRIGHT_YEAR)).c_str()) + QString::fromStdString(strprintf("\n\xc2\xA9 %u-%u The Dash Core Developers", 2014, COPYRIGHT_YEAR)) + QString::fromStdString(strprintf("\n\xc2\xA9 %u-%u The Dogecoin Core Developers", 2013, COPYRIGHT_YEAR)) + QString::fromStdString(strprintf("\n\xc2\xA9 %u-%u The Litecoin Core Developers", 2011, COPYRIGHT_YEAR)) + QString::fromStdString(strprintf("\n\xc2\xA9 %u-%u The Bitcoin Core Developers", 2009, COPYRIGHT_YEAR));
     QString titleAddText    = networkStyle->getTitleAddText();
 
     QString font            = QApplication::font().toString();

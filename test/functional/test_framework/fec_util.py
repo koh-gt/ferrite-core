@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-# Copyright (c) 2014-2022 The Ferrite Core developers
+# Copyright (c) 2014-2022 The Litecoin Core developers
+# Copyright (c) 2022-2023 The Ferrite Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Random assortment of utility functions"""

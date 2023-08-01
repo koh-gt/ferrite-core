@@ -1,0 +1,1 @@
+Added new unit kFEC (1000 coins) for more human-meaningful numerical wallet balances given the current value of Ferrite coin ($0.0002/FEC, $0.20/kFEC) and active wallet balances.
