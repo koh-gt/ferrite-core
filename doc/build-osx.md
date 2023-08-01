@@ -25,8 +25,7 @@ Qt requires [Xcode](https://developer.apple.com/download/all/)
 Tested on MacOS 10.15.7 - [Xcode 12.4](https://download.developer.apple.com/Developer_Tools/Xcode_12.4/Xcode_12.4.xip)  
 Extract and run Xcode - will require about 30 GB of storage space.  
 ```shell
-brew install automake libtool boost miniupnpc pkg-config python libevent libnatpmp qrencode fmt openssl
-
+brew install automake libtool boost miniupnpc pkg-config python libevent libnatpmp qrencode fmt openssl protobuf
 # Move xcode to applications folder, xcode necessary for qt
 sudo xcode-select --switch /Applications/Xcode.app
 brew install qt@5   # requires full xcode
