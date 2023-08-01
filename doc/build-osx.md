@@ -98,7 +98,7 @@ brew link berkeley-db@4 --force
 
 1. Clone the Ferrite Core source code:
     ```shell
-    git clone https://github.com/koh-gt /ferrite-core/ferrite-main
+    git clone https://github.com/koh-gt/ferrite-core/ferrite-main
     cd ferrite-main
     ```
 
