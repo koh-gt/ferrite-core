@@ -1289,7 +1289,7 @@ std::string CopyrightHolders(const std::string& strPrefix)
         if (strPrefix.find("2011") != std::string::npos) {
             std::string strYear = strPrefix;
             strYear.replace(strYear.find("2022-2023"), sizeof("2022-2023")-1, "2011-2023");
-            strCopyrightHolders += "\n" + strYear + "The Litecoin Core developers";
+            strCopyrightHolders += "\n" + strYear + "The Ferrite Core developers";
             strYear.replace(strYear.find("2011-2023"), sizeof("2011-2023")-1, "2009-2023");
             strCopyrightHolders += "\n" + strYear + "The Bitcoin Core developers";
         }

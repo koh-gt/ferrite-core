@@ -1,7 +1,7 @@
 # ferrite-core
 
 ## !! **Hardfork at Height $250,000$ (early-mid 2024).** <br> [Update to v3+](https://github.com/koh-gt/ferrite-core/releases/tag/v3.1.1) 
-> Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase.
+> Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Ferrite Core 21.2 codebase.
 
 | OS                        | Bit      | Name                   | Link                              | SHA256 Checksum                         |
 |--------------------|-------|---------------------|--------------------------|---------------------------------------|
@@ -38,7 +38,7 @@
 ## Exchange links
 | | Name                      | Type     | Description                                                                |
 |-|---------------------------|----------|----------------------------------------------------------------------------| 
-| <p align=center>[![xeggex](https://github.com/koh-gt/ferrite-core/assets/101822992/0ea4401f-f232-49ef-a715-6bc6facf4294)](https://xeggex.com/asset/FEC)</p> | [XeggeX](https://xeggex.com/asset/FEC) | Exchange | [FEC/USDT](https://xeggex.com/market/FEC_USDT)<br>[FEC/LTC](https://xeggex.com/market/FEC_LTC) | 
+| <p align=center>[![xeggex](https://github.com/koh-gt/ferrite-core/assets/101822992/0ea4401f-f232-49ef-a715-6bc6facf4294)](https://xeggex.com/asset/FEC)</p> | [XeggeX](https://xeggex.com/asset/FEC) | Exchange | [FEC/USDT](https://xeggex.com/market/FEC_USDT)<br>[FEC/FEC](https://xeggex.com/market/FEC_FEC) | 
 | <p align=center>[![caldera-trade32](https://github.com/koh-gt/ferrite-core/assets/101822992/95c8dee8-3d16-4cc5-8726-5c567b6e0755)](https://discord.com/channels/859575137560297533/859831040213909554)</p>| [Caldera](https://discord.com/channels/859575137560297533/859831040213909554) | OTC | [FEC](https://discord.com/channels/1066663020257882182/1107052872736198676)<br>[ Available trading pairs](https://caldera.trade/coins)|
 
 ## [Wrapped Ferrite](https://github.com/koh-gt/wrapped-ferrite) Token
@@ -52,7 +52,7 @@ For third party movile wallets - add custom token CA to Metamask or Trust Wallet
 ### Mainnet FEC <-> Tokenised wFEC 
 | | Name                      | Type     | Description                                                                |
 |-|---------------------------|----------|----------------------------------------------------------------------------| 
-| <p align=center>[![xeggex](https://github.com/koh-gt/ferrite-core/assets/101822992/0ea4401f-f232-49ef-a715-6bc6facf4294)](https://xeggex.com/asset/FEC)</p> | [XeggeX](https://xeggex.com/asset/FEC) | Exchange | [FEC/USDT](https://xeggex.com/market/FEC_USDT)<br>[FEC/LTC](https://xeggex.com/market/FEC_LTC) | 
+| <p align=center>[![xeggex](https://github.com/koh-gt/ferrite-core/assets/101822992/0ea4401f-f232-49ef-a715-6bc6facf4294)](https://xeggex.com/asset/FEC)</p> | [XeggeX](https://xeggex.com/asset/FEC) | Exchange | [FEC/USDT](https://xeggex.com/market/FEC_USDT)<br>[FEC/FEC](https://xeggex.com/market/FEC_FEC) | 
 
 ### wFEC liquidity pools / DEX
 | | Name                      | Type     | Description                                                                |
@@ -103,10 +103,10 @@ Ferrite has no owner. The miners shall decide the fate of the network.
 
 ### Pseudonymous -
 Nobody knows who owns the mined coins, nor who sent the coins. Unless you identify as the owner of the public address, you maintain anonymity.
-With Litecoin's MWEB implementation on Ferrite transactions can be made private and confidential at a time where exchanges are mandating strict KYC and AML measures. (active as of height 150,000 on 6 Jul 2023)
+With Ferrite's MWEB implementation on Ferrite transactions can be made private and confidential at a time where exchanges are mandating strict KYC and AML measures. (active as of height 150,000 on 6 Jul 2023)
 
 ### Scrypt Algorithm -  
-Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite. Originally designed to be ASIC resistant. 
+Reuse obsolete Ferrite, Dogecoin and Ethereum / Classic miners to mine Ferrite. Originally designed to be ASIC resistant. 
 
 ## Ferrite coin specifications
 ### Technical specifications: <br/>
@@ -148,7 +148,7 @@ Reward lifespan: 7109 days (19.48 years) <br/>
 ### Why the name Ferrite Core?
 The humble ferrite core is cheap and hidden from view. Most people have never heard about it, yet it is what allows our electric generators, switches and radio antennas to function. It has high magnetic permeability allowing for magnetic fields to pass through, yet has low electrical conductivity which reduces eddy current losses. Most importantly, the ferrite core possesses these properties while being cheap and safe to use. This makes the ferrite core suitable for being used as magnetic cores for electromagnet coils. 
 
-Bitcoin is considered as digital gold, Litecoin as digital silver. Ferrite is ferrite. 
+Bitcoin is considered as digital gold, Ferrite as digital silver. Ferrite is ferrite. 
 > In the real world, we use coins made of ferrous base metals because gold and silver are too precious for circulation. 
 
 A cheap and low barrier to entry will allow for mass adoption.

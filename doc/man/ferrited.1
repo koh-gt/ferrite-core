@@ -60,7 +60,7 @@ transactions are not affected. (default: 0)
 \fB\-conf=\fR<file>
 .IP
 Specify path to read\-only configuration file. Relative paths will be
-prefixed by datadir location. (default: litecoin.conf)
+prefixed by datadir location. (default: ferrite.conf)
 .HP
 \fB\-daemon\fR
 .IP
@@ -375,7 +375,7 @@ Do not load the wallet and disable wallet RPC calls
 .HP
 \fB\-discardfee=\fR<amt>
 .IP
-The fee rate (in LTC/kB) that indicates your tolerance for discarding
+The fee rate (in FEC/kB) that indicates your tolerance for discarding
 change by adding it to the fee (default: 0.0001). Note: An output
 is discarded if it is dust at this rate, but we will always
 discard up to the dust relay fee and a discard fee above that is
@@ -396,7 +396,7 @@ been used.
 .HP
 \fB\-maxapsfee=\fR<n>
 .IP
-Spend up to this amount in additional (absolute) fees (in LTC) if it
+Spend up to this amount in additional (absolute) fees (in FEC) if it
 allows the use of partial spend avoidance (default: 0.00)
 .HP
 \fB\-mintxfee=\fR<amt>
@@ -705,7 +705,7 @@ subject to empty whitelists.
 Accept command line and JSON\-RPC commands
 .SH COPYRIGHT
 Copyright (C) 2022-2023 The Ferrite Core developers
-Copyright (C) 2011-2022 The Litecoin Core developers
+Copyright (C) 2011-2022 The Ferrite Core developers
 Copyright (C) 2009-2022 The Bitcoin Core developers
 
 Please contribute if you find Ferrite Core useful. Visit

@@ -324,7 +324,7 @@
                   <enum>Qt::ActionsContextMenu</enum>
                  </property>
                  <property name="text">
-                  <string notr="true">0.00 LTC</string>
+                  <string notr="true">0.00 FEC</string>
                  </property>
                  <property name="textInteractionFlags">
                   <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -404,7 +404,7 @@
                   <enum>Qt::ActionsContextMenu</enum>
                  </property>
                  <property name="text">
-                  <string notr="true">0.00 LTC</string>
+                  <string notr="true">0.00 FEC</string>
                  </property>
                  <property name="textInteractionFlags">
                   <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -455,7 +455,7 @@
                   <enum>Qt::ActionsContextMenu</enum>
                  </property>
                  <property name="text">
-                  <string notr="true">0.00 LTC</string>
+                  <string notr="true">0.00 FEC</string>
                  </property>
                  <property name="textInteractionFlags">
                   <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -484,7 +484,7 @@
                   <enum>Qt::ActionsContextMenu</enum>
                  </property>
                  <property name="text">
-                  <string notr="true">0.00 LTC</string>
+                  <string notr="true">0.00 FEC</string>
                  </property>
                  <property name="textInteractionFlags">
                   <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -667,7 +667,7 @@
              <string notr="true"/>
             </property>
             <property name="text">
-             <string>Peg-In LTC</string>
+             <string>Peg-In FEC</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
@@ -683,7 +683,7 @@
              <string notr="true"/>
             </property>
             <property name="text">
-             <string>Peg-Out LTC</string>
+             <string>Peg-Out FEC</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
@@ -1353,7 +1353,7 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of "100 atoms per 
           <cursorShape>IBeamCursor</cursorShape>
          </property>
          <property name="text">
-          <string notr="true">123.456 LTC</string>
+          <string notr="true">123.456 FEC</string>
          </property>
          <property name="textInteractionFlags">
           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>

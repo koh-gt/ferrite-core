@@ -17,7 +17,7 @@ BEGIN
         BLOCK "040904E4" // U.S. English - multilingual (hex)
         BEGIN
             VALUE "CompanyName",        "Ferrite"
-            VALUE "FileDescription",    "ferrite-tx (CLI Litecoin transaction editor utility)"
+            VALUE "FileDescription",    "ferrite-tx (CLI Ferrite transaction editor utility)"
             VALUE "FileVersion",        VER_FILEVERSION_STR
             VALUE "InternalName",       "ferrite-tx"
             VALUE "LegalCopyright",     COPYRIGHT_STR

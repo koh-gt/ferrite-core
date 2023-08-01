@@ -1,6 +1,6 @@
 Bag Attributes
     localKeyID: 01 00 00 00 
-subject=C = SG, postalCode = 179098, L = Singapore, street = 111 North Bridge Road Peninsula Plaza #08-19, O = Litecoin Foundation Limited, CN = Litecoin Foundation Limited
+subject=C = SG, postalCode = 179098, L = Singapore, street = 111 North Bridge Road Peninsula Plaza #08-19, O = Ferrite Foundation Limited, CN = Ferrite Foundation Limited
 
 issuer=C = GB, ST = Greater Manchester, L = Salford, O = Sectigo Limited, CN = Sectigo RSA Code Signing CA
 

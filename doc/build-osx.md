@@ -104,7 +104,7 @@ brew link berkeley-db@4 --force
 
 2.  Build Ferrite Core:
 
-    Configure and build the headless Litecoin Core binaries as well as the GUI (if Qt is found).
+    Configure and build the headless Ferrite Core binaries as well as the GUI (if Qt is found).
 
     You can disable the GUI build by passing `--without-gui` to configure.
     ```shell
@@ -126,7 +126,7 @@ brew link berkeley-db@4 --force
     ```
 
 ## Disable-wallet mode
-When the intention is to run only a P2P hout a wallet, Litecoin Core may be
+When the intention is to run only a P2P hout a wallet, Ferrite Core may be
 compiled in disable-wallet mode with:
 ```shell
 ./configure --disable-wallet
@@ -158,7 +158,7 @@ tail -f $HOME/Library/Application\ Support/Ferrite/debug.log
 
 ## Other commands:
 ```shell
-./src/ferrited -daemon      # Starts the litecoin daemon.
+./src/ferrited -daemon      # Starts the ferrite daemon.
 ./src/ferrite-cli --help    # Outputs a list of command-line options.
 ./src/ferrite-cli help      # Outputs a list of RPC commands when the daemon is running.
 ```

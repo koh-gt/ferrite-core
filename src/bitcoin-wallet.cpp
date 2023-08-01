@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
     }
 
     if (method.empty()) {
-        tfm::format(std::cerr, "No method provided. Run `litecoin-wallet -help` for valid methods.\n");
+        tfm::format(std::cerr, "No method provided. Run `ferrite-wallet -help` for valid methods.\n");
         return EXIT_FAILURE;
     }
 

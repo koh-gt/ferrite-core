@@ -273,7 +273,7 @@ static RPCHelpMan verifymessage()
     return RPCHelpMan{"verifymessage",
                 "\nVerify a signed message\n",
                 {
-                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The litecoin address to use for the signature."},
+                    {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The ferrite address to use for the signature."},
                     {"signature", RPCArg::Type::STR, RPCArg::Optional::NO, "The signature provided by the signer in base 64 encoding (see signmessage)."},
                     {"message", RPCArg::Type::STR, RPCArg::Optional::NO, "The message that was signed."},
                 },
@@ -610,7 +610,7 @@ static RPCHelpMan echo(const std::string& name)
                 "\nSimply echo back the input arguments. This command is for testing.\n"
                 "\nIt will return an internal bug report when arg9='trigger_internal_bug' is passed.\n"
                 "\nThe difference between echo and echojson is that echojson has argument conversion enabled in the client-side table in "
-                "litecoin-cli and the GUI. There is no server-side difference.",
+                "ferrite-cli and the GUI. There is no server-side difference.",
                 {
                     {"arg0", RPCArg::Type::STR, RPCArg::Optional::OMITTED_NAMED_ARG, ""},
                     {"arg1", RPCArg::Type::STR, RPCArg::Optional::OMITTED_NAMED_ARG, ""},

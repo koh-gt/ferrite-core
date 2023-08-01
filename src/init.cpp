@@ -603,7 +603,7 @@ std::string LicenseInfo()
     const std::string URL_BLOCK_EXPLORER = "<http://explorer.ferritecoin.org>";
 
     return CopyrightHolders(strprintf(_("Copyright (C) %i-%i").translated, 2022, COPYRIGHT_YEAR) + " ") +
-           strprintf(_("\nCopyright (C) %i-%i The Litecoin Core developers").translated, 2011, COPYRIGHT_YEAR) +
+           strprintf(_("\nCopyright (C) %i-%i The Ferrite Core developers").translated, 2011, COPYRIGHT_YEAR) +
            strprintf(_("\nCopyright (C) %i-%i The Bitcoin Core developers").translated, 2009, COPYRIGHT_YEAR) +
            
            strprintf(_(" \n\nPlease contribute if you find %s useful. "
