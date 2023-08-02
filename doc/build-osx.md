@@ -26,6 +26,7 @@ Tested on MacOS 10.15.7 - [Xcode 12.4](https://download.developer.apple.com/Deve
 Extract and run Xcode - will require about 30 GB of storage space.  
 ```shell
 brew install automake libtool boost miniupnpc pkg-config python libevent libnatpmp qrencode fmt openssl protobuf
+brew install unzip virtualenv
 # Move xcode to applications folder, xcode necessary for qt
 sudo xcode-select --switch /Applications/Xcode.app
 brew install qt@5   # requires full xcode
