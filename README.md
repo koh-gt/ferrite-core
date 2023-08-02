@@ -1,6 +1,8 @@
 # ferrite-core
 
-## !! **Hardfork at Height $250,000$ (early-mid 2024).** <br> [Update to v3+](https://github.com/koh-gt/ferrite-core/releases/tag/v3.1.1) 
+### Announcement
+#### If you have installed Ferrite Core before Apr 2023, please update to v3+ by height $250,000$ (mid 2024).** <br> [Update to v3+](https://github.com/koh-gt/ferrite-core/releases/tag/v3.1.1)
+
 > Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase.
 
 | OS                        | Bit      | Name                   | Link                              | SHA256 Checksum                         |
@@ -13,6 +15,13 @@
 ## Community group links
 | [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | [![twitter-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Twitter.svg)](https://twitter.com/ferritecoin) [Twitter](https://twitter.com/ferritecoin) |
 |--|--|--|--|
+
+## Ferrite supply - 2023 08 03
+![](https://progress-bar.dev/15052900/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;24&#183;996&percnt;&#41;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+![](https://progress-bar.dev/150529/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)<br>
 
 ## Mining information links
 > Mineable with or without MWEB support.
@@ -70,7 +79,7 @@ For third party movile wallets - add custom token CA to Metamask or Trust Wallet
 
 ## Ferrite is a cryptocurrency that seeks to enable fast and free payments.  <br>
 
-![ferrite-core-main-4ka-8k-4](https://github.com/koh-gt/ferrite-core/assets/101822992/55820629-5911-429a-ab53-20d95561d5dc)
+![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
 
 ## Features:
@@ -112,11 +121,6 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
 
-### Current Block Height: **`150468`** (1 Aug 2023)
-
-### Halving Epoch: **0**
-### Next halving block: 301107 (~ Jan 2024)
-
 Algorithm type: Scrypt, Proof of Work <br/>
 Ports: 9573 (RPC), 9574 (P2P) <br/>
 Block time: 1 minute <br/>
@@ -129,21 +133,15 @@ Premine: No premine <br/>
 
 ### Economic specifications: <br/>
 
-$$15,046,800\text{ / }60,221,400$$
-$$\text{ (}24.986\\%\text{)}$$
-
-<br>
-<br>
-Block reward: 𝔽 100 <br/>
-Current Block reward:  𝔽 100 <br/>
+Initial block reward: 𝔽 100 <br/>
 Maximum supply: 𝔽 60,221,400 <br/>
 Blocks with reward: 10,237,637 blocks (33 halvings -1) <br/>
-Halving timespan: 209 days <br/>
-Reward lifespan: 7109 days (19.48 years) <br/>
+Halving timespan: at minimum 209 days <br/>
+Reward lifespan: at minimum 7109 days (19.48 years) <br/>
  
 ## Additional information - 
 
-![ferrite-core-main-512px](https://user-images.githubusercontent.com/101822992/204157969-c910673a-44a3-42a8-be9c-957907c05b39.png)
+[![ferrite-core-main-512px](https://user-images.githubusercontent.com/101822992/204157969-c910673a-44a3-42a8-be9c-957907c05b39.png)](https://www.ferritecoin.org)
 
 ### Why the name Ferrite Core?
 The humble ferrite core is cheap and hidden from view. Most people have never heard about it, yet it is what allows our electric generators, switches and radio antennas to function. It has high magnetic permeability allowing for magnetic fields to pass through, yet has low electrical conductivity which reduces eddy current losses. Most importantly, the ferrite core possesses these properties while being cheap and safe to use. This makes the ferrite core suitable for being used as magnetic cores for electromagnet coils. 
