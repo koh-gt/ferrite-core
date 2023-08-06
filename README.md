@@ -6,18 +6,18 @@
 
 > Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase.<br>
 
-<a href="https://github.com/koh-gt/ferrite-core/releases/tag/v3.1.1" target="_blank"><img width=512 src="https://github.com/koh-gt/ferrite-core/assets/101822992/f7b723a8-fa5c-469b-912f-81eca1c8f094" /></a>
+### <a href="https://github.com/koh-gt/ferrite-core/releases/tag/v3.1.1" target="_blank"><img width=512 src="https://github.com/koh-gt/ferrite-core/assets/101822992/e0a14905-5779-437b-b936-30fa7361342c" /></a>
 
 ## Community group links
 | [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | [![twitter-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Twitter.svg)](https://twitter.com/ferritecoin) [Twitter](https://twitter.com/ferritecoin) |
 |--|--|--|--|
 
 ## Ferrite supply - 2023 08 08
-![](https://progress-bar.dev/15055200/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;000&percnt;&#41;)<br>
+[![](https://progress-bar.dev/15055200/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;000&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-![](https://progress-bar.dev/150552/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)<br>
+[![](https://progress-bar.dev/150552/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)<br>
+[![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)](https://explorer.ferritecoin.org)<br>
 
 ## Mining information links
 > Mineable with or without MWEB support.
@@ -34,11 +34,11 @@
 ## Trading information links
 | | Name                      | Type     | Description                                                                |
 |-|---------------------------|----------|----------------------------------------------------------------------------| 
-| <p align=center>[![coinpaprika32](https://github.com/koh-gt/ferrite-core/assets/101822992/151060b8-19a9-4193-8791-857e3b783b1e)](https://coinpaprika.com/coin/fec-ferrite/)</p> | [CoinPaprika](https://coinpaprika.com/coin/fec-ferrite/) | Info | Price information and charts |
-| <p align=center>[![livecoinwatch32](https://github.com/koh-gt/ferrite-core/assets/101822992/9dc7490b-f40c-4107-a81d-fbb4808a76a6)](https://www.livecoinwatch.com/price/Ferritecoin-FEC)</p> | [LiveCoinWatch](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | Info | Price information and charts | 
-| <p align=center>[![coincodex32](https://github.com/koh-gt/ferrite-core/assets/101822992/11928cf0-7980-4de2-b91e-90ae70065798)](https://coincodex.com/crypto/ferrite/)</p> | [Coincodex](https://coincodex.com/crypto/ferrite/) | Info | Price information and charts |
-| <p align=center>[![coinmarketleague32](https://github.com/koh-gt/ferrite-core/assets/101822992/a00c483f-d8b5-4be7-aaf9-fe1a5f0e3638)](https://coinmarketleague.com/coin/feritecoin)</p> | [CoinMarketLeague](https://coinmarketleague.com/coin/feritecoin) | Info | Price information and charts |
-| <p align=center></p> | [Trading Information](https://github.com/koh-gt/ferrite-core/wiki/Trading-Information) | Info | Price history, available FEC trading pairs, funding contributors |
+| [![coinpaprika32](https://github.com/koh-gt/ferrite-core/assets/101822992/151060b8-19a9-4193-8791-857e3b783b1e)](https://coinpaprika.com/coin/fec-ferrite/) | [CoinPaprika](https://coinpaprika.com/coin/fec-ferrite/) | Info | Price information and charts |
+| [![livecoinwatch32](https://github.com/koh-gt/ferrite-core/assets/101822992/9dc7490b-f40c-4107-a81d-fbb4808a76a6)](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | [LiveCoinWatch](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | Info | Price information and charts | 
+| [![coincodex32](https://github.com/koh-gt/ferrite-core/assets/101822992/11928cf0-7980-4de2-b91e-90ae70065798)](https://coincodex.com/crypto/ferrite/) | [Coincodex](https://coincodex.com/crypto/ferrite/) | Info | Price information and charts |
+| [![coinmarketleague32](https://github.com/koh-gt/ferrite-core/assets/101822992/a00c483f-d8b5-4be7-aaf9-fe1a5f0e3638)](https://coinmarketleague.com/coin/feritecoin) | [CoinMarketLeague](https://coinmarketleague.com/coin/feritecoin) | Info | Price information and charts |
+|  | [Trading Information](https://github.com/koh-gt/ferrite-core/wiki/Trading-Information) | Info | Price history, available FEC trading pairs, funding contributors |
 
 ## Exchange links
 | | Name                      | Type     | Description                                                                |
