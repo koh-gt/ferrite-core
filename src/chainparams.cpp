@@ -99,15 +99,17 @@ public:
 
         // Deployment of MWEB (LIP-0002, LIP-0003, and LIP-0004)
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].bit = 4;
-        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 150000; // 
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 150000; // 150120
         // MWEB can be put up for consensus voting in later versions when mining infrastructure is ready and compatible.
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 99999999; // never*
         // MWEB will be automatically activated after block 99999999 for now.
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000050c151ee81a40c9");  
-        // A total of 363688 892397 404361 hashes (363.7 PH) of work as of block 149000.
-
+        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000005dad1ae9118c795");  
+        // A total of 421880 062801 397653 hashes (421.9 PH) of work as of block 151120. MWEB Activation height 150120
+	
+	// consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000005dad1ae9118c795");  
+        // A total of 421880 062801 397653 hashes (421.9 PH) of work as of block 151120. MWEB Activation height 150120
 	// consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000050c151ee81a40c9");  
         // A total of 363688 892397 404361 hashes (363.7 PH) of work as of block 149000.
         // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000009cec62dc44b76d");  
@@ -120,9 +122,11 @@ public:
         // A total of    187 976044 125601 hashes (188.0 TH) of work as of block 10000.
         
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1");  
-        // Block 149000
+        consensus.defaultAssumeValid = uint256S("0xc09529ad3df32d4c33c3110e10692f973d531085aacdc93f86ad157e5e872ea1");  
+        // Block 151120
 	    
+	// consensus.defaultAssumeValid = uint256S("0xc09529ad3df32d4c33c3110e10692f973d531085aacdc93f86ad157e5e872ea1");  
+        // Block 151120    
         // consensus.defaultAssumeValid = uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1");  
         // Block 149000
         // consensus.defaultAssumeValid = uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297");  
@@ -162,11 +166,6 @@ public:
 	
 	// CryptoID Chainz explorer
 	vSeeds.emplace_back("46.105.34.58");  // https://btc.cryptoid.info/fec/
-	    
-        // Pool seednodes
-        vSeeds.emplace_back("188.165.227.178");  // spools.online     
-        vSeeds.emplace_back("144.91.107.170");   // coinxpool.com
-        vSeeds.emplace_back("155.138.247.235");  // miningmypool.com 
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,36);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
@@ -200,13 +199,14 @@ public:
                 {    60000, uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286")},
                 {   100000, uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297")},
 		{   149000, uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1")},
+		{   151120, uint256S("0xc09529ad3df32d4c33c3110e10692f973d531085aacdc93f86ad157e5e872ea1")},
             }
         };
 
         chainTxData = ChainTxData{
-            /* nTime    */ 1687991792,
-            /* nTxCount */ 162810,
-            /* dTxRate  */ 0.00492770
+            /* nTime    */ 1692820156,
+            /* nTxCount */ 166120,
+            /* dTxRate  */ 0.00343088
         };
     }
 };
