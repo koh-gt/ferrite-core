@@ -9,7 +9,7 @@
 #include <rpc/protocol.h>
 
 #include <univalue.h>
-#include <utilstrencodings.h>
+#include <util/strencodings.h>
 #include <QMessageBox>
 
 SendFextPage::SendFextPage(const PlatformStyle *platformStyle, QWidget *parent) :
