@@ -17,7 +17,6 @@
 #include <qt/optionsmodel.h>
 #include <qt/platformstyle.h>
 #include <qt/rpcconsole.h>
-#include <qt/sendfextpage.h>
 #include <qt/utilitydialog.h>
 
 #ifdef ENABLE_WALLET
@@ -278,17 +277,6 @@ void BitcoinGUI::createActions()
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(historyAction);
 
-    sendFextAction = new QAction(platformStyle->SingleColorIcon(":/icons/bitcoin_transparent_letter"), tr("&Send Messages"), this);
-    sendFextAction->setStatusTip(tr("Transmit Ferritext Messages"));
-    sendFextAction->setToolTip(buyNamesAction->statusTip());
-    sendFextAction->setCheckable(true);
-    sendFextAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
-    tabGroup->addAction(sendFextAction);
-
-    sendFextMenuAction = new QAction(sendFextAction->text(), this);
-    sendFextMenuAction->setStatusTip(sendFextAction->statusTip());
-    sendFextMenuAction->setToolTip(sendFextMenuAction->statusTip());
-
 #ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
@@ -304,8 +292,6 @@ void BitcoinGUI::createActions()
     connect(receiveCoinsMenuAction, &QAction::triggered, this, &BitcoinGUI::gotoReceiveCoinsPage);
     connect(historyAction, &QAction::triggered, [this]{ showNormalIfMinimized(); });
     connect(historyAction, &QAction::triggered, this, &BitcoinGUI::gotoHistoryPage);
-    connect(sendFextAction, &QAction::triggered, [this]{ showNormalIfMinimized(); });
-    connect(sendFextAction, &QAction::triggered, this, &BitcoinGUI::gotoSendFextPage);
 #endif // ENABLE_WALLET
 
     quitAction = new QAction(tr("E&xit"), this);
@@ -564,7 +550,6 @@ void BitcoinGUI::createToolBars()
         toolbar->addAction(sendCoinsAction);
         toolbar->addAction(receiveCoinsAction);
         toolbar->addAction(historyAction);
-        toolbar->addAction(sendFextAction);
         overviewAction->setChecked(true);
 
 #ifdef ENABLE_WALLET
@@ -752,7 +737,6 @@ void BitcoinGUI::setWalletActionsEnabled(bool enabled)
     receiveCoinsAction->setEnabled(enabled);
     receiveCoinsMenuAction->setEnabled(enabled);
     historyAction->setEnabled(enabled);
-    sendFextAction->setEnabled(enabled);
     encryptWalletAction->setEnabled(enabled);
     backupWalletAction->setEnabled(enabled);
     changePassphraseAction->setEnabled(enabled);
@@ -807,9 +791,6 @@ void BitcoinGUI::createTrayIconMenu()
         trayIconMenu->addAction(signMessageAction);
         trayIconMenu->addAction(verifyMessageAction);
         trayIconMenu->addSeparator();
-        trayIconMenu->addAction(sendFextMenuAction);
-        trayIconMenu->addSeparator();
-            
     }
     trayIconMenu->addAction(optionsAction);
     trayIconMenu->addAction(openRPCConsoleAction);
@@ -899,12 +880,6 @@ void BitcoinGUI::gotoSendCoinsPage(QString addr)
 {
     sendCoinsAction->setChecked(true);
     if (walletFrame) walletFrame->gotoSendCoinsPage(addr);
-}
-
-void BitcoinGUI::gotoSendFextPage()
-{
-    sendFextAction->setChecked(true);
-    if (walletFrame) walletFrame->gotoSendFextPage();
 }
 
 void BitcoinGUI::gotoSignMessageTab(QString addr)
