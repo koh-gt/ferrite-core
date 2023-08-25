@@ -36,7 +36,7 @@ class WalletView : public QStackedWidget
     Q_OBJECT
 
 public:
-    explicit WalletView(WalletModel* wallet_model, const PlatformStyle *platformStyle, QWidget *parent);
+    explicit WalletView(const PlatformStyle *platformStyle, QWidget *parent);
     ~WalletView();
 
     /** Set the client model.
@@ -81,7 +81,7 @@ public Q_SLOTS:
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
     /** Switch to send Ferritext page */
-    void gotoSendFextPage(QString addr = "");
+    void gotoSendFextPage();
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
