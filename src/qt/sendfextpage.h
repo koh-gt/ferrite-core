@@ -32,6 +32,7 @@ private:
     WalletModel *walletModel;
 
 private Q_SLOTS:
+    bool eventFilter(QObject *object, QEvent *event);
     void onSendFextAction();
 };
 
