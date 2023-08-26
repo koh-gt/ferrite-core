@@ -278,7 +278,7 @@ void BitcoinGUI::createActions()
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(historyAction);
 
-    sendFextAction = new QAction(platformStyle->SingleColorIcon(":/icons/bitcoin_transparent_letter"), tr("&Send Messages"), this);
+    sendFextAction = new QAction(platformStyle->SingleColorIcon(":/icons/fext_letter"), tr("&Send Messages"), this);
     sendFextAction->setStatusTip(tr("Transmit Ferritext Messages"));
     sendFextAction->setToolTip(sendFextAction->statusTip());
     sendFextAction->setCheckable(true);
