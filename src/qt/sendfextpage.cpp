@@ -20,7 +20,7 @@ SendFextPage::SendFextPage(const PlatformStyle *platformStyle, QWidget *parent) 
 {
     ui->setupUi(this);
 
-    ui->sendFextButton->hide();
+    ui->sendFextButton->show();
   
     connect(ui->sendFextButton, &QPushButton::clicked, this, &SendFextPage::onSendFextAction);
 
