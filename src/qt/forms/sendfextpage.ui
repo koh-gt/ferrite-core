@@ -64,7 +64,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Standard ASCII characters only. View the&lt;a href=&quot;https://github.com/koh-gt/ferritext/wiki/Ferritext-Input&quot;&gt;Ferritext input notes&lt;/a&gt; usage guide.</string>
+         <string>Standard ASCII characters only. View the&lt;a href=&quot;https://github.com/koh-gt/ferritext/wiki/Ferritext-Input&quot;&gt; Ferritext input notes&lt;/a&gt; usage guide.</string>
         </property>
         <property name="textFormat">
          <enum>Qt::RichText</enum>
