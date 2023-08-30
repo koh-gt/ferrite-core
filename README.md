@@ -13,10 +13,10 @@
 | [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | [![twitter-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Twitter.svg)](https://twitter.com/ferritecoin) [Twitter](https://twitter.com/ferritecoin) |
 |--|--|--|--|
 
-## Ferrite supply - 2023 08 26
-[![](https://progress-bar.dev/15117600/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;103&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
+## Ferrite supply - 2023 08 31
+[![](https://progress-bar.dev/15151400/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;159&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![](https://progress-bar.dev/151176/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
+[![](https://progress-bar.dev/151514/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)](https://explorer.ferritecoin.org)<br>
 
@@ -80,9 +80,6 @@ For third party movile wallets - add custom token CA to Metamask or Trust Wallet
 
 
 ## Features:
-### Affordable transactions -
-Fees are denominated in fractions of Ferrite, which amounts to a negligible cost.
-
 ### Uncensorable text messaging storage -
 Text inscribed on the blockchain are distributed to every node and stored permanently, allowing for censorship proofing.
 Use [Ferritext](https://github.com/koh-gt/ferritext) OP_RETURN tool to send messages.
@@ -100,6 +97,9 @@ Difficulty adjusts every block, adapting quickly to difficulty fluctuations.
 There will be no more than 60,221,400 FEC - [View current supply](https://explorer.ferritecoin.org)
 A maximum of $100$ FEC (Ferrite coins) are mined in a block. 
 This number will halve every $301107$ blocks, or about 8 months considering block propagation time.
+
+### Affordable transactions -
+Fees are denominated in fractions of Ferrite, which amounts to a negligible cost.
 
 ### Transparent - 
 No pre-mine - Linux Executables are uploaded on public Telegram and Discord groups as early as block 120 (2 hours), with full migration to Github by block 3000 (50 hours).
