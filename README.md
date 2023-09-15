@@ -1,6 +1,37 @@
 # ferrite-core
 ### <a href="https://github.com/koh-gt/ferrite-core/" target="_blank"><img width=256 src="https://github.com/koh-gt/ferrite-core/assets/101822992/bddf138c-659d-45cb-83ee-dbc783bffd18" /></a>
 
+```mermaid
+    %%{init: { 'logLevel': 'debug', 'theme': 'base', 'gitGraph': {'showBranches': true, 'showCommitLabel':true,'mainBranchName': 'Ferrite 18'}} }%%
+      gitGraph
+        commit id:"1.0.0"
+        commit id:"1.1.0"
+        commit id:"1.2.0"
+        commit id:"1.2.1"
+        commit id:"1.2.2"
+        commit id:"1.2.3"
+        commit id:"1.2.4"
+        commit id:"1.3.0"
+        branch "Ferrite 21" order: 2
+        commit id:"2.0.0"
+        checkout "Ferrite 18"
+        commit id:"1.3.1 (x86)"
+        checkout "Ferrite 21"
+        commit id:"2.1.0"
+        commit id:"2.1.1"
+        commit id:"2.1.2"
+        branch "Ferrite 21 DGW" order: 4
+        commit id:"3.0.0"
+        commit id:"3.0.1"
+        commit id:"3.1.0"
+        checkout "Ferrite 18"
+        branch "Ferrite 18 DGW (x86)" order: 3
+        commit id:"1.3.30"
+        checkout "Ferrite 21 DGW"
+        commit id:"3.1.1"
+        commit id:"3.1.2"
+
+```
 
 ### Announcement
 #### If you have installed Ferrite Core before Apr 2023, please update to v3+ by height $250,000$ (mid 2024).** <br>
@@ -13,10 +44,10 @@
 | [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | [![twitter-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Twitter.svg)](https://twitter.com/ferritecoin) [Twitter](https://twitter.com/ferritecoin) |
 |--|--|--|--|
 
-## Ferrite supply - 2023 09 10
-[![](https://progress-bar.dev/15231800/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;293&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
+## Ferrite supply - 2023 09 16
+[![](https://progress-bar.dev/15234600/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;298&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![](https://progress-bar.dev/152318/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
+[![](https://progress-bar.dev/152346/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)](https://explorer.ferritecoin.org)<br>
 
