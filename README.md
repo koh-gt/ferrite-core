@@ -2,7 +2,7 @@
 ### <a href="https://github.com/koh-gt/ferrite-core/" target="_blank"><img width=256 src="https://github.com/koh-gt/ferrite-core/assets/101822992/bddf138c-659d-45cb-83ee-dbc783bffd18" /></a>
 
 ```mermaid
-    %%{init: { 'logLevel': 'debug', 'theme': 'base', 'gitGraph': {'showBranches': true, 'showCommitLabel':true,'mainBranchName': 'Ferrite 18'}} }%%
+    %%{init: { 'logLevel': 'debug', 'theme': 'base', 'gitGraph': {'showBranches': true, 'showCommitLabel':true,'mainBranchName': 'Ferrite 18', 'mainBranchOrder':4}} }%%
       gitGraph
         commit id:"1.0.0"
         commit id:"1.1.0"
@@ -12,7 +12,7 @@
         commit id:"1.2.3"
         commit id:"1.2.4"
         commit id:"1.3.0"
-        branch "Ferrite 21" order: 2
+        branch "Ferrite 21" order: 3
         commit id:"2.0.0"
         checkout "Ferrite 18"
         commit id:"1.3.1 (x86)"
@@ -20,12 +20,12 @@
         commit id:"2.1.0"
         commit id:"2.1.1"
         commit id:"2.1.2"
-        branch "Ferrite 21 DGW" order: 4
+        branch "Ferrite 21 DGW" order: 1
         commit id:"3.0.0"
         commit id:"3.0.1"
         commit id:"3.1.0"
         checkout "Ferrite 18"
-        branch "Ferrite 18 DGW (x86)" order: 3
+        branch "Ferrite 18 DGW (x86)" order: 2
         commit id:"1.3.30"
         checkout "Ferrite 21 DGW"
         commit id:"3.1.1"
