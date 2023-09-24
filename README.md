@@ -44,10 +44,10 @@
 | [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | [![twitter-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Twitter.svg)](https://twitter.com/ferritecoin) [Twitter](https://twitter.com/ferritecoin) |
 |--|--|--|--|
 
-## Ferrite supply - 2023 09 22
-[![](https://progress-bar.dev/15274000/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;363&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
+## Ferrite supply - 2023 09 25
+[![](https://progress-bar.dev/15274400/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;364&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![](https://progress-bar.dev/152740/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
+[![](https://progress-bar.dev/152744/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)](https://explorer.ferritecoin.org)<br>
 
@@ -109,6 +109,17 @@ For third party movile wallets - add custom token CA to Metamask or Trust Wallet
 
 ![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
+### Description
+Ferritecoin (FEC) is designed for frequent low-cost microtransactions. Network fees are denominated in 1/100,000,000 atomic subdivisions of FEC, ensuring that even the smallest transactions remain economically viable for users. Ferrite seeks to democratise access to cryptocurrency by integrating affordability and ease of use.
+
+A unique feature of FEC is its inclusion of an on-chain text messaging layer where users can communicate anonymously directly on the blockchain itself. The distributed ledger system prevents any attempts at censorship of text data. This is crucial for maintaining a truly decentralized and open social ecosystem, where communication is free from external control or interference.
+
+FEC places a strong emphasis on privacy and security. 
+It expands on Bitcoin to employ advanced features such as MWEB and DGW to safeguard user data and transactions. 
+- MWEB (Mimblewimble Extension Block) is a privacy protocol from Litecoin that enhances transaction confidentiality by using techniques like aggregation, cryptographic obfuscation, and efficient signatures to make Ferrite transactions more private and lightweight. 
+- Dark Gravity Wave (DGW) is a difficulty adjustment algorithm from Dash that helps maintain stable block times and enhances network security by dynamically adjusting mining difficulty based on recent block production rates.
+
+FEC is the designated exchange currency within the Ferrite ecosystem.
 
 ## Features:
 ### Uncensorable text messaging storage -
