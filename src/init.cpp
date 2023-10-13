@@ -601,16 +601,22 @@ std::string LicenseInfo()
     const std::string URL_SOURCE_CODE = "<https://github.com/koh-gt/ferrite-core>";
     const std::string URL_WEBSITE = "<https://www.ferritecoin.org>";
     const std::string URL_BLOCK_EXPLORER = "<https://explorer.ferritecoin.org>";
+    const std::string FEXT_URL_WEBSITE = "<https://github.com/koh-gt/ferritext/>";
+    const std::string FEXT_HELP_URL_WEBSITE = "<https://github.com/koh-gt/ferritext/wiki>";
 
     return CopyrightHolders(strprintf(_("Copyright (C) %i-%i").translated, 2022, COPYRIGHT_YEAR) + " ") +
            strprintf(_("\nCopyright (C) %i-%i The Dash Core developers").translated, 2014, COPYRIGHT_YEAR) +
            strprintf(_("\nCopyright (C) %i-%i The Dogecoin Core developers").translated, 2013, COPYRIGHT_YEAR) +
            strprintf(_("\nCopyright (C) %i-%i The Litecoin Core developers").translated, 2011, COPYRIGHT_YEAR) +
            strprintf(_("\nCopyright (C) %i-%i The Bitcoin Core developers").translated, 2009, COPYRIGHT_YEAR) +
-           
+
            strprintf(_(" \n\nPlease contribute if you find %s useful. "
                        "Visit %s for further information about the software.").translated,
                PACKAGE_NAME, URL_WEBSITE) +
+
+           strprintf(_(" \n\nFerritext (FEXT) is a native messaging tool built on %s. FEXT is available from %s. "
+                       "Visit %s for further information about the feature.").translated,
+               PACKAGE_NAME, FEXT_URL_WEBSITE, FEXT_HELP_URL_WEBSITE) +
 
            strprintf(_("\nThe source code is available from %s.").translated,
                URL_SOURCE_CODE) +
@@ -618,7 +624,6 @@ std::string LicenseInfo()
            strprintf(_("\nThe block explorer is available from %s.").translated,
                URL_BLOCK_EXPLORER) +
 
-           
            _("\n\nThis is experimental software.").translated +
            strprintf(_("\nDistributed under the MIT software license, see the accompanying file %s or %s").translated, "COPYING", "<https://opensource.org/licenses/MIT>") +
            strprintf(_("\n\nThis product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit %s and cryptographic software written by Eric Young and UPnP software written by Thomas Bernard.").translated, "<https://opensource.org/licenses/MIT>");
