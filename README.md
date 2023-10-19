@@ -66,57 +66,32 @@
 ## Trading information links
 | | Name                      | Type     | Description                                                                |
 |-|---------------------------|----------|----------------------------------------------------------------------------| 
-| [![coinpaprika32](https://github.com/koh-gt/ferrite-core/assets/101822992/151060b8-19a9-4193-8791-857e3b783b1e)](https://coinpaprika.com/coin/fec-ferrite/) | [CoinPaprika](https://coinpaprika.com/coin/fec-ferrite/) | Info | Price information and charts |
-| [![livecoinwatch32](https://github.com/koh-gt/ferrite-core/assets/101822992/9dc7490b-f40c-4107-a81d-fbb4808a76a6)](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | [LiveCoinWatch](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | Info | Price information and charts | 
-| [![coincodex32](https://github.com/koh-gt/ferrite-core/assets/101822992/11928cf0-7980-4de2-b91e-90ae70065798)](https://coincodex.com/crypto/ferrite/) | [Coincodex](https://coincodex.com/crypto/ferrite/) | Info | Price information and charts |
-| [![coinmarketleague32](https://github.com/koh-gt/ferrite-core/assets/101822992/a00c483f-d8b5-4be7-aaf9-fe1a5f0e3638)](https://coinmarketleague.com/coin/feritecoin) | [CoinMarketLeague](https://coinmarketleague.com/coin/feritecoin) | Info | Price information and charts |
+| <a href="https://coinpaprika.com/coin/fec-ferrite"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coinpaprika.png"></a> | [CoinPaprika](https://coinpaprika.com/coin/fec-ferrite/) | Info | Price information and charts |
+| <a href="https://www.livecoinwatch.com/price/Ferritecoin-FEC"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/livecoinwatch.png"></a> | [LiveCoinWatch](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | Info | Price information and charts | 
+| <a href="https://coincodex.com/crypto/ferrite/"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coincodex.png"></a> | [Coincodex](https://coincodex.com/crypto/ferrite/) | Info | Price information and charts |
+| <a href="https://coinmarketleague.com/coin/feritecoin"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coinmarketleague.svg"></a> | [CoinMarketLeague](https://coinmarketleague.com/coin/feritecoin) | Info | Price information and charts |
+| <a href="https://coincheckup.com/coins/ferrite"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coincheckup.png"></a> | [CoinCheckup](https://coincheckup.com/coins/ferrite) | Info | Price information and charts |
+| <a href="https://blockspot.io/coin/ferrite/"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/blockspot.png"></a> | [Blockspot](https://blockspot.io/coin/ferrite/) | Info | Price information and charts |
 |  | [Trading Information](https://github.com/koh-gt/ferrite-core/wiki/Trading-Information) | Info | Price history, available FEC trading pairs, funding contributors |
 
-
-```mermaid
-flowchart LR
-    A-->B
-    B-->C
-    C-->D
-    D-->E
-    click A "https://www.github.com" _blank
-    click B "https://www.github.com" "Open this in a new tab" _blank
-    click C href "https://www.github.com" _blank
-    click D href "https://www.github.com" "Open this in a new tab" _blank
-
-```
-
-
-
 ## Exchange links
-
-|[<img width=48 src="https://raw.githubusercontent.com/koh-gt/ferrite-core/101822992/591268c9-11ef-4348-8044-efa5768a295f">](https://xeggex.com/asset/FEC) <a href="https://xeggex.com/asset/FEC" target="_blank"><br><b>XeggeX</b></a> | [<img width=48 src="https://github.com/koh-gt/ferrite-core/assets/101822992/603f8179-f71a-412e-85fa-b6dc2ccdfc32">](https://xeggex.com/market/FEC_LTC) <a href="https://xeggex.com/market/FEC_LTC" target="_blank"><br>FEC/LTC</b></a> | [<img width=48 src="https://github.com/koh-gt/ferrite-core/assets/101822992/4ff402c8-dcb6-43cf-b6aa-85bf7b08d218">](https://xeggex.com/market/FEC_USDT) |
-|--|--|--|
-
-
-|<a href="https://nonkyc.io/asset/FEC" target="_blank"><img width=48 src="https://github.com/koh-gt/ferrite-core/assets/101822992/c2663da2-f1db-40ec-8949-43bbe0df00e7" /><br><b>NonKYC</b></a>| <a href="https://nonkyc.io/market/FEC_BTC" target="_blank"><img width=64 src="https://github.com/koh-gt/ferrite-core/assets/101822992/554374e3-8012-4a4c-803f-eabbd96a49fe" /><b>FEC/BTC</b></a> <a href="https://nonkyc.io/market/FEC_ETH" target="_blank"><img width=64 src="https://github.com/koh-gt/ferrite-core/assets/101822992/7028e52b-880a-4f81-a04e-339518d73314" /><b>FEC/ETH</b></a> <a href="https://nonkyc.io/market/FEC_XMR" target="_blank"><img width=64 src="https://github.com/koh-gt/ferrite-core/assets/101822992/bcbc8e39-b9ae-4022-a9c1-d9bf931e87c8" /><b>FEC/XMR</b></a> <a href="https://nonkyc.io/market/FEC_USDT" target="_blank"><img width=64 src="https://github.com/koh-gt/ferrite-core/assets/101822992/4ff402c8-dcb6-43cf-b6aa-85bf7b08d218" /><b>FEC/USDT</b></a>|
-|--|--|
-
-
-
-
-
-
-
-
-
+| Exchange | Trading pairs |
+|--|----|
+|<a href="https://xeggex.com/asset/FEC"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/xeggex.png"></a> <a href="https://xeggex.com/asset/FEC" target="_blank"><br><b>XeggeX</b></a> | [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-ltc.png">](https://xeggex.com/market/FEC_LTC)<a href="https://xeggex.com/market/FEC_LTC" target="_blank"><b>FEC/LTC</b></a> [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-usdt.png">](https://xeggex.com/market/FEC_USDT)<a href="https://xeggex.com/market/FEC_USDT" target="_blank"><b>FEC/USDT</b></a>|
+|<a href="https://nonkyc.io/asset/FEC" target="_blank"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/nonkyc.png" /><br><b>NonKYC</b></a>| <a href="https://nonkyc.io/market/FEC_BTC" target="_blank"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-btc.png" /><b>FEC/BTC</b></a> <a href="https://nonkyc.io/market/FEC_XMR" target="_blank"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-xmr.png" /><b>FEC/XMR</b></a> <a href="https://nonkyc.io/market/FEC_LTC" target="_blank"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-ltc.png" /><b>FEC/LTC</b></a> <a href="https://nonkyc.io/market/FEC_USDT" target="_blank"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-usdt.png" /><b>FEC/USDT</b></a>|
 
 | OTC | Trading pairs |
 |-----|---------------|
-|<a href="https://discord.com/channels/859575137560297533/859831040213909554" target="_blank"><img width=48 src="https://github.com/koh-gt/ferrite-core/assets/101822992/a7b0aa81-e337-43f3-82b9-72dca10e4d0b" /><br><b>Caldera</b></a>| <a href="https://discord.com/channels/1066663020257882182/1107052872736198676" target="_blank"><img width=48 src="https://github.com/koh-gt/ferrite-core/assets/101822992/01fff0ef-092f-4a29-8d66-871aa148cb5e" /><br>**FEC OTC**</a> | 
+|<a href="https://discord.com/channels/859575137560297533/859831040213909554" target="_blank"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/caldera-trade.png" /><br><b>Caldera</b></a>| <a href="https://discord.com/channels/1066663020257882182/1107052872736198676" target="_blank"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-inv512.png" /><b>FEC OTC</b></a> | 
 
 ## [Wrapped Ferrite](https://github.com/koh-gt/wrapped-ferrite) Token
 For third party movile wallets - add custom token CA to Metamask or Trust Wallet
 ### Contract addresses
-| Network | Contract address (CA) |
-|--------------------------------------------------------------------------|------------------|
-| [BEP-20](https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | `0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D` |
-| [ARB-20](https://arbiscan.io/token/0x09bf659db25522bc9c367163966f35ac268e5b75) | `0x09bf659Db25522bc9c367163966f35ac268e5b75` |
+| Token | Network | Contract address (CA) |
+|-------|--------------------------------------------------------------------------|------------------|
+| <a href="https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/ferrite-core-main-4k-bep20.png"></a> | <a href="https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/bsc.png"></a> [BEP-20](https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | `0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D` |
+| <a href="https://arbiscan.io/token/0x09bf659db25522bc9c367163966f35ac268e5b75"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/ferrite-core-main-4k-arb20.png"></a> | <a href="https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/arb.png"></a> [ARB-20](https://arbiscan.io/token/0x09bf659db25522bc9c367163966f35ac268e5b75) | `0x09bf659Db25522bc9c367163966f35ac268e5b75` |
+| <a href=""><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/ferrite-core-main-4k-erc20.png"></a> | <a href="https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/eth.png"></a> [ERC-20]() | `---` |
 
 ### Mainnet FEC <-> Tokenised wFEC 
 | | Name                      | Type     | Description                                                                |
