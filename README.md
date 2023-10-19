@@ -72,11 +72,39 @@
 | [![coinmarketleague32](https://github.com/koh-gt/ferrite-core/assets/101822992/a00c483f-d8b5-4be7-aaf9-fe1a5f0e3638)](https://coinmarketleague.com/coin/feritecoin) | [CoinMarketLeague](https://coinmarketleague.com/coin/feritecoin) | Info | Price information and charts |
 |  | [Trading Information](https://github.com/koh-gt/ferrite-core/wiki/Trading-Information) | Info | Price history, available FEC trading pairs, funding contributors |
 
+
+```mermaid
+flowchart LR
+    A-->B
+    B-->C
+    C-->D
+    D-->E
+    click A "https://www.github.com" _blank
+    click B "https://www.github.com" "Open this in a new tab" _blank
+    click C href "https://www.github.com" _blank
+    click D href "https://www.github.com" "Open this in a new tab" _blank
+
+```
+
+
+
 ## Exchange links
-| CEX | Trading pairs | 
-|-----|---------------|
-|<a href="https://xeggex.com/asset/FEC" target="_blank"><img width=48 src="https://github.com/koh-gt/ferrite-core/assets/101822992/591268c9-11ef-4348-8044-efa5768a295f" /><br><b>XeggeX</b></a>| <a href="https://xeggex.com/market/FEC_LTC" target="_blank"><img width=64 src="https://github.com/koh-gt/ferrite-core/assets/101822992/603f8179-f71a-412e-85fa-b6dc2ccdfc32" /><b>FEC/LTC</b></a> <a href="https://xeggex.com/market/FEC_USDT" target="_blank"><img width=64 src="https://github.com/koh-gt/ferrite-core/assets/101822992/4ff402c8-dcb6-43cf-b6aa-85bf7b08d218" /><b>FEC/USDT</b></a> | 
-|<a href="https://nonkyc.io/asset/FEC" target="_blank"><img width=48 src="https://github.com/koh-gt/ferrite-core/assets/101822992/c2663da2-f1db-40ec-8949-43bbe0df00e7" /><br><b>NonKYC</b></a>| <a href="https://nonkyc.io/market/FEC_BTC" target="_blank"><img width=64 src="https://github.com/koh-gt/ferrite-core/assets/101822992/554374e3-8012-4a4c-803f-eabbd96a49fe" /><b>FEC/BTC</b></a> <a href="https://nonkyc.io/market/FEC_ETH" target="_blank"><img width=64 src="https://github.com/koh-gt/ferrite-core/assets/101822992/7028e52b-880a-4f81-a04e-339518d73314" /><b>FEC/ETH</b></a> <a href="https://nonkyc.io/market/FEC_XMR" target="_blank"><img width=64 src="https://github.com/koh-gt/ferrite-core/assets/101822992/bcbc8e39-b9ae-4022-a9c1-d9bf931e87c8" /><b>FEC/XMR</b></a> <a href="https://nonkyc.io/market/FEC_USDT" target="_blank"><img width=64 src="https://github.com/koh-gt/ferrite-core/assets/101822992/4ff402c8-dcb6-43cf-b6aa-85bf7b08d218" /><b>FEC/USDT</b></a>| 
+
+|[<img width=48 src="https://raw.githubusercontent.com/koh-gt/ferrite-core/101822992/591268c9-11ef-4348-8044-efa5768a295f">](https://xeggex.com/asset/FEC) <a href="https://xeggex.com/asset/FEC" target="_blank"><br><b>XeggeX</b></a> | [<img width=48 src="https://github.com/koh-gt/ferrite-core/assets/101822992/603f8179-f71a-412e-85fa-b6dc2ccdfc32">](https://xeggex.com/market/FEC_LTC) <a href="https://xeggex.com/market/FEC_LTC" target="_blank"><br>FEC/LTC</b></a> | [<img width=48 src="https://github.com/koh-gt/ferrite-core/assets/101822992/4ff402c8-dcb6-43cf-b6aa-85bf7b08d218">](https://xeggex.com/market/FEC_USDT) |
+|--|--|--|
+
+
+|<a href="https://nonkyc.io/asset/FEC" target="_blank"><img width=48 src="https://github.com/koh-gt/ferrite-core/assets/101822992/c2663da2-f1db-40ec-8949-43bbe0df00e7" /><br><b>NonKYC</b></a>| <a href="https://nonkyc.io/market/FEC_BTC" target="_blank"><img width=64 src="https://github.com/koh-gt/ferrite-core/assets/101822992/554374e3-8012-4a4c-803f-eabbd96a49fe" /><b>FEC/BTC</b></a> <a href="https://nonkyc.io/market/FEC_ETH" target="_blank"><img width=64 src="https://github.com/koh-gt/ferrite-core/assets/101822992/7028e52b-880a-4f81-a04e-339518d73314" /><b>FEC/ETH</b></a> <a href="https://nonkyc.io/market/FEC_XMR" target="_blank"><img width=64 src="https://github.com/koh-gt/ferrite-core/assets/101822992/bcbc8e39-b9ae-4022-a9c1-d9bf931e87c8" /><b>FEC/XMR</b></a> <a href="https://nonkyc.io/market/FEC_USDT" target="_blank"><img width=64 src="https://github.com/koh-gt/ferrite-core/assets/101822992/4ff402c8-dcb6-43cf-b6aa-85bf7b08d218" /><b>FEC/USDT</b></a>|
+|--|--|
+
+
+
+
+
+
+
+
+
 
 | OTC | Trading pairs |
 |-----|---------------|
