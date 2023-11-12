@@ -85,7 +85,7 @@
 |<a href="https://discord.com/channels/859575137560297533/859831040213909554" target="_blank"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/caldera-trade.png" /><br><b>Caldera</b></a>| <a href="https://discord.com/channels/1066663020257882182/1107052872736198676" target="_blank"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-inv512.png" /><b>FEC OTC</b></a> | 
 
 ## [Wrapped Ferrite](https://github.com/koh-gt/wrapped-ferrite) Token
-For third party movile wallets - add custom token CA to Metamask or Trust Wallet
+For third party mobile wallets - add custom token CA to Metamask or Trust Wallet
 ### Contract addresses
 | Token | Network | Contract address (CA) |
 |-------|--------------------------------------------------------------------------|------------------|
@@ -172,7 +172,7 @@ Ports: 9573 (RPC), 9574 (P2P) <br/>
 Block time: 1 minute <br/>
 Difficulty adjustment time: 1 block or 1 hour <br/>
 Halving time: 301,107 blocks <br/>
-Propogation time: 5 seconds (8.3% detached rate) <br/>
+Propagation time: 5 seconds (8.3% detached rate) <br/>
 Block size: 3.8147 MiB <br/>
 Transaction capacity: 105/s <br/>
 Premine: No premine <br/>
