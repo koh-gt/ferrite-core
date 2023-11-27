@@ -44,10 +44,10 @@
 | [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | <a href="https://x.com/ferritecoin"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/x-fec-logo-transparent.gif?raw=true"></a> [X / Twitter](https://x.com/ferritecoin) |
 |--|--|--|--|
 
-## Ferrite supply - 2023 11 13
-[![](https://progress-bar.dev/15339500/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;472&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
+## Ferrite supply - 2023 11 28
+[![](https://progress-bar.dev/15397400/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;568&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![](https://progress-bar.dev/153395/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
+[![](https://progress-bar.dev/153974/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)](https://explorer.ferritecoin.org)<br>
 
@@ -78,7 +78,6 @@
 | Exchange | Trading pairs |
 |--|----|
 |<a href="https://xeggex.com/asset/FEC"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/xeggex.png"></a> <a href="https://xeggex.com/asset/FEC" target="_blank"><br><b>XeggeX</b></a> | [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-ltc.png">](https://xeggex.com/market/FEC_LTC)<a href="https://xeggex.com/market/FEC_LTC" target="_blank"><b>FEC/LTC</b></a> [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-usdt.png">](https://xeggex.com/market/FEC_USDT)<a href="https://xeggex.com/market/FEC_USDT" target="_blank"><b>FEC/USDT</b></a>|
-|<a href="https://nonkyc.io/asset/FEC" target="_blank"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/nonkyc.png" /><br><b>NonKYC</b></a>| <a href="https://nonkyc.io/market/FEC_BTC" target="_blank"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-btc.png" /><b>FEC/BTC</b></a> <a href="https://nonkyc.io/market/FEC_XMR" target="_blank"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-xmr.png" /><b>FEC/XMR</b></a> <a href="https://nonkyc.io/market/FEC_LTC" target="_blank"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-ltc.png" /><b>FEC/LTC</b></a> <a href="https://nonkyc.io/market/FEC_USDT" target="_blank"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-usdt.png" /><b>FEC/USDT</b></a>|
 
 | OTC | Trading pairs |
 |-----|---------------|
