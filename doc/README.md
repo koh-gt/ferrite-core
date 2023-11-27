@@ -5,7 +5,7 @@ Setup
 ---------------------
 Ferrite Core is the original Ferrite client and it builds the backbone of the network. It downloads and, by default, stores the entire history of Ferrite transactions, which requires approximately 22 gigabytes of disk space. Depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more.
 
-To download Ferrite Core, visit [ferrite.org](https://ferrite.org/).
+To download Ferrite Core, visit [ferritecoin.org](https://ferritecoin.org/).
 
 Running
 ---------------------
@@ -28,9 +28,9 @@ Drag Ferrite Core to your applications folder, and then run Ferrite Core.
 
 ### Need Help?
 
-* See the documentation at the [Ferrite Wiki](https://ferrite.info/) for help and more information.
-* Ask for help on [#ferrite](https://webchat.freenode.net/#ferrite) on Freenode. If you don't have an IRC client, use [webchat here](https://webchat.freenode.net/#ferrite).
-* Ask for help on the [FerriteTalk](https://ferritetalk.io/) forums, in the [Technical Support board](https://ferritetalk.io/c/technical-support).
+* See the documentation at the [Ferrite Github Wiki](https://github.com/koh-gt/ferrite-core/wiki) for help and more information.
+* Ask for help on [ferrite_core](https://t.me/ferrite_core) on Telegram. If you prefer to stay pseudonymous, use [Ferritext](https://github.com/koh-gt/ferritext/)
+* Ask for help on the [Ferrite Forum](https://ferritecoin.org:52443/) forums, in the Technical Support board.
 
 Building
 ---------------------
