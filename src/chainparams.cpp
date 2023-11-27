@@ -159,10 +159,16 @@ public:
 
         // Seed servers to connect to other nodes.
         // Default configuration file contains nodes of popular ferritecoin mining pools.
+	vSeeds.emplace_back("118.189.201.104");
+	vSeeds.emplace_back("38.242.145.73");
+        vSeeds.emplace_back("78.220.84.58");
+	vSeeds.emplace_back("133.177.197.167");
         vSeeds.emplace_back("node1.ferritecoin.org");  // node1.ferritecoin.org
         vSeeds.emplace_back("node2.ferritecoin.org");  // node2.ferritecoin.org
         vSeeds.emplace_back("node3.ferritecoin.org");  // node3.ferritecoin.org
         vSeeds.emplace_back("node4.ferritecoin.org");  // node4.ferritecoin.org
+        
+	
 	
 	// CryptoID Chainz explorer
 	vSeeds.emplace_back("46.105.34.58");  // https://btc.cryptoid.info/fec/
