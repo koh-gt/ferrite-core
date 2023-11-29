@@ -1,6 +1,37 @@
 # ferrite-core
 ### <a href="https://github.com/koh-gt/ferrite-core/" target="_blank"><img width=256 src="https://github.com/koh-gt/ferrite-core/assets/101822992/bddf138c-659d-45cb-83ee-dbc783bffd18" /></a>
 
+```mermaid
+    %%{init: { 'logLevel': 'debug', 'theme': 'base', 'gitGraph': {'showBranches': true, 'showCommitLabel':true,'mainBranchName': 'Ferrite 18', 'mainBranchOrder':4}} }%%
+      gitGraph
+        commit id:"1.0.0"
+        commit id:"1.1.0"
+        commit id:"1.2.0"
+        commit id:"1.2.1"
+        commit id:"1.2.2"
+        commit id:"1.2.3"
+        commit id:"1.2.4"
+        commit id:"1.3.0"
+        branch "Ferrite 21" order: 3
+        commit id:"2.0.0"
+        checkout "Ferrite 18"
+        commit id:"1.3.1 (x86)"
+        checkout "Ferrite 21"
+        commit id:"2.1.0"
+        commit id:"2.1.1"
+        commit id:"2.1.2"
+        branch "Ferrite 21 DGW" order: 1
+        commit id:"3.0.0"
+        commit id:"3.0.1"
+        commit id:"3.1.0"
+        checkout "Ferrite 18"
+        branch "Ferrite 18 DGW (x86)" order: 2
+        commit id:"1.3.30"
+        checkout "Ferrite 21 DGW"
+        commit id:"3.1.1"
+        commit id:"3.1.2"
+
+```
 
 ### Announcement
 #### If you have installed Ferrite Core before Apr 2023, please update to v3+ by height $250,000$ (mid 2024).** <br>
@@ -10,13 +41,13 @@
 ### <a href="https://github.com/koh-gt/ferrite-core/releases/tag/v3.1.2" target="_blank"><img width=512 src="https://github.com/koh-gt/ferrite-core/assets/101822992/e0a14905-5779-437b-b936-30fa7361342c" /></a>
 
 ## Community group links
-| [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | [![twitter-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Twitter.svg)](https://twitter.com/ferritecoin) [Twitter](https://twitter.com/ferritecoin) |
+| [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | <a href="https://x.com/ferritecoin"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/x-fec-logo-transparent.gif?raw=true"></a> [X / Twitter](https://x.com/ferritecoin) |
 |--|--|--|--|
 
-## Ferrite supply - 2023 08 19
-[![](https://progress-bar.dev/15089300/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;056&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
+## Ferrite supply - 2023 11 28
+[![](https://progress-bar.dev/15397400/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;568&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![](https://progress-bar.dev/150893/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
+[![](https://progress-bar.dev/153974/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)](https://explorer.ferritecoin.org)<br>
 
@@ -35,25 +66,31 @@
 ## Trading information links
 | | Name                      | Type     | Description                                                                |
 |-|---------------------------|----------|----------------------------------------------------------------------------| 
-| [![coinpaprika32](https://github.com/koh-gt/ferrite-core/assets/101822992/151060b8-19a9-4193-8791-857e3b783b1e)](https://coinpaprika.com/coin/fec-ferrite/) | [CoinPaprika](https://coinpaprika.com/coin/fec-ferrite/) | Info | Price information and charts |
-| [![livecoinwatch32](https://github.com/koh-gt/ferrite-core/assets/101822992/9dc7490b-f40c-4107-a81d-fbb4808a76a6)](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | [LiveCoinWatch](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | Info | Price information and charts | 
-| [![coincodex32](https://github.com/koh-gt/ferrite-core/assets/101822992/11928cf0-7980-4de2-b91e-90ae70065798)](https://coincodex.com/crypto/ferrite/) | [Coincodex](https://coincodex.com/crypto/ferrite/) | Info | Price information and charts |
-| [![coinmarketleague32](https://github.com/koh-gt/ferrite-core/assets/101822992/a00c483f-d8b5-4be7-aaf9-fe1a5f0e3638)](https://coinmarketleague.com/coin/feritecoin) | [CoinMarketLeague](https://coinmarketleague.com/coin/feritecoin) | Info | Price information and charts |
+| <a href="https://coinpaprika.com/coin/fec-ferrite"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coinpaprika.png"></a> | [CoinPaprika](https://coinpaprika.com/coin/fec-ferrite/) | Info | Price information and charts |
+| <a href="https://www.livecoinwatch.com/price/Ferritecoin-FEC"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/livecoinwatch.png"></a> | [LiveCoinWatch](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | Info | Price information and charts | 
+| <a href="https://coincodex.com/crypto/ferrite/"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coincodex.png"></a> | [Coincodex](https://coincodex.com/crypto/ferrite/) | Info | Price information and charts |
+| <a href="https://coinmarketleague.com/coin/feritecoin"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coinmarketleague.svg"></a> | [CoinMarketLeague](https://coinmarketleague.com/coin/feritecoin) | Info | Price information and charts |
+| <a href="https://coincheckup.com/coins/ferrite"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coincheckup.png"></a> | [CoinCheckup](https://coincheckup.com/coins/ferrite) | Info | Price information and charts |
+| <a href="https://blockspot.io/coin/ferrite/"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/blockspot.png"></a> | [Blockspot](https://blockspot.io/coin/ferrite/) | Info | Price information and charts |
 |  | [Trading Information](https://github.com/koh-gt/ferrite-core/wiki/Trading-Information) | Info | Price history, available FEC trading pairs, funding contributors |
 
 ## Exchange links
-| | Name                      | Type     | Description                                                                |
-|-|---------------------------|----------|----------------------------------------------------------------------------| 
-| <p align=center>[![xeggex](https://github.com/koh-gt/ferrite-core/assets/101822992/0ea4401f-f232-49ef-a715-6bc6facf4294)](https://xeggex.com/asset/FEC)</p> | [XeggeX](https://xeggex.com/asset/FEC) | Exchange | [FEC/USDT](https://xeggex.com/market/FEC_USDT)<br>[FEC/LTC](https://xeggex.com/market/FEC_LTC) | 
-| <p align=center>[![caldera-trade32](https://github.com/koh-gt/ferrite-core/assets/101822992/95c8dee8-3d16-4cc5-8726-5c567b6e0755)](https://discord.com/channels/859575137560297533/859831040213909554)</p>| [Caldera](https://discord.com/channels/859575137560297533/859831040213909554) | OTC | [FEC](https://discord.com/channels/1066663020257882182/1107052872736198676)<br>[ Available trading pairs](https://caldera.trade/coins)|
+| Exchange | Trading pairs |
+|--|----|
+|<a href="https://xeggex.com/asset/FEC"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/xeggex.png"></a> <a href="https://xeggex.com/asset/FEC" target="_blank"><br><b>XeggeX</b></a> | [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-ltc.png">](https://xeggex.com/market/FEC_LTC)<a href="https://xeggex.com/market/FEC_LTC" target="_blank"><b>FEC/LTC</b></a> [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-usdt.png">](https://xeggex.com/market/FEC_USDT)<a href="https://xeggex.com/market/FEC_USDT" target="_blank"><b>FEC/USDT</b></a>|
+
+| OTC | Trading pairs |
+|-----|---------------|
+|<a href="https://discord.com/channels/859575137560297533/859831040213909554" target="_blank"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/caldera-trade.png" /><br><b>Caldera</b></a>| <a href="https://discord.com/channels/1066663020257882182/1107052872736198676" target="_blank"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-inv512.png" /><b>FEC OTC</b></a> | 
 
 ## [Wrapped Ferrite](https://github.com/koh-gt/wrapped-ferrite) Token
-For third party movile wallets - add custom token CA to Metamask or Trust Wallet
+For third party mobile wallets - add custom token CA to Metamask or Trust Wallet
 ### Contract addresses
-| Network | Contract address (CA) |
-|--------------------------------------------------------------------------|------------------|
-| [BEP-20](https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | `0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D` |
-| [ARB-20](https://arbiscan.io/token/0x09bf659db25522bc9c367163966f35ac268e5b75) | `0x09bf659Db25522bc9c367163966f35ac268e5b75` |
+| Token | Network | Contract address (CA) |
+|-------|--------------------------------------------------------------------------|------------------|
+| <a href="https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/ferrite-core-main-4k-bep20.png"></a> | <a href="https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/bsc.png"></a> [BEP-20](https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | `0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D` |
+| <a href="https://arbiscan.io/token/0x09bf659db25522bc9c367163966f35ac268e5b75"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/ferrite-core-main-4k-arb20.png"></a> | <a href="https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/arb.png"></a> [ARB-20](https://arbiscan.io/token/0x09bf659db25522bc9c367163966f35ac268e5b75) | `0x09bf659Db25522bc9c367163966f35ac268e5b75` |
+| <a href=""><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/ferrite-core-main-4k-erc20.png"></a> | <a href="https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/eth.png"></a> [ERC-20]() | `---` |
 
 ### Mainnet FEC <-> Tokenised wFEC 
 | | Name                      | Type     | Description                                                                |
@@ -63,8 +100,8 @@ For third party movile wallets - add custom token CA to Metamask or Trust Wallet
 ### wFEC liquidity pools / DEX
 | | Name                      | Type     | Description                                                                |
 |-|---------------------------|----------|----------------------------------------------------------------------------| 
-| <p align=center>[![pancakeswap32](https://github.com/koh-gt/ferrite-core/assets/101822992/b1a4cbaf-2de7-4e06-806c-5aa775cb74b4)](https://pancakeswap.finance/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D)</p> | [PancakeSwap](https://pancakeswap.finance/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | DEX | [BEP-20](https://pancakeswap.finance/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) |
-| <p align=center>[![uniswap32](https://github.com/koh-gt/ferrite-core/assets/101822992/20792bb0-6d46-48ab-b0ca-73a29e357216)](https://app.uniswap.org/#/swap?inputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75)</p> | [Uniswap](https://app.uniswap.org/#/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D)<br>[Uniswap](https://app.uniswap.org/#/swap?inputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75) | DEX | [BEP-20](https://app.uniswap.org/#/swap?inputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D)<br>[ARB-20](https://app.uniswap.org/#/swap?inputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75) | 
+| <p align=center>[![pancakeswap32](https://github.com/koh-gt/ferrite-core/assets/101822992/b1a4cbaf-2de7-4e06-806c-5aa775cb74b4)](https://pancakeswap.finance/swap?outputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D)</p> | [PancakeSwap](https://pancakeswap.finance/swap?outputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | DEX | [BEP-20](https://pancakeswap.finance/swap?outputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) |
+| <p align=center>[![uniswap32](https://github.com/koh-gt/ferrite-core/assets/101822992/20792bb0-6d46-48ab-b0ca-73a29e357216)](https://app.uniswap.org/#/swap?outputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75)</p> | [Uniswap](https://app.uniswap.org/#/swap?outputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75) | DEX | [ARB-20](https://app.uniswap.org/#/swap?outputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75) | 
 
 ## Blockchain information links
 | Name                      | Link                                            | Description                                                          |
@@ -78,11 +115,19 @@ For third party movile wallets - add custom token CA to Metamask or Trust Wallet
 
 ![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
+### Description
+Ferritecoin (FEC) is designed for frequent low-cost microtransactions. Network fees are denominated in 1/100,000,000 atomic subdivisions of FEC, ensuring that even the smallest transactions remain economically viable for users. Ferrite seeks to democratise access to cryptocurrency by integrating affordability and ease of use.
+
+A unique feature of FEC is its inclusion of an on-chain text messaging layer where users can communicate anonymously directly on the blockchain itself. The distributed ledger system prevents any attempts at censorship of text data. This is crucial for maintaining a truly decentralized and open social ecosystem, where communication is free from external control or interference.
+
+FEC places a strong emphasis on privacy and security. 
+It expands on Bitcoin to employ advanced features such as MWEB and DGW to safeguard user data and transactions. 
+- MWEB (Mimblewimble Extension Block) is a privacy protocol from Litecoin that enhances transaction confidentiality by using techniques like aggregation, cryptographic obfuscation, and efficient signatures to make Ferrite transactions more private and lightweight. 
+- Dark Gravity Wave (DGW) is a difficulty adjustment algorithm from Dash that helps maintain stable block times and enhances network security by dynamically adjusting mining difficulty based on recent block production rates.
+
+FEC is the designated exchange currency within the Ferrite ecosystem.
 
 ## Features:
-### Affordable transactions -
-Fees are denominated in fractions of Ferrite, which amounts to a negligible cost.
-
 ### Uncensorable text messaging storage -
 Text inscribed on the blockchain are distributed to every node and stored permanently, allowing for censorship proofing.
 Use [Ferritext](https://github.com/koh-gt/ferritext) OP_RETURN tool to send messages.
@@ -100,6 +145,9 @@ Difficulty adjusts every block, adapting quickly to difficulty fluctuations.
 There will be no more than 60,221,400 FEC - [View current supply](https://explorer.ferritecoin.org)
 A maximum of $100$ FEC (Ferrite coins) are mined in a block. 
 This number will halve every $301107$ blocks, or about 8 months considering block propagation time.
+
+### Affordable transactions -
+Fees are denominated in fractions of Ferrite, which amounts to a negligible cost.
 
 ### Transparent - 
 No pre-mine - Linux Executables are uploaded on public Telegram and Discord groups as early as block 120 (2 hours), with full migration to Github by block 3000 (50 hours).
@@ -123,7 +171,7 @@ Ports: 9573 (RPC), 9574 (P2P) <br/>
 Block time: 1 minute <br/>
 Difficulty adjustment time: 1 block or 1 hour <br/>
 Halving time: 301,107 blocks <br/>
-Propogation time: 5 seconds (8.3% detached rate) <br/>
+Propagation time: 5 seconds (8.3% detached rate) <br/>
 Block size: 3.8147 MiB <br/>
 Transaction capacity: 105/s <br/>
 Premine: No premine <br/>

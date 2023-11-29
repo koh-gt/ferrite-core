@@ -1,13 +1,13 @@
 <!-- This issue tracker is only for technical issues related to Ferrite Core.
 
-General ferrite questions and/or support requests and are best directed to the [ferritetalk.io forums](https://ferritetalk.io/).
+General Ferrite Core questions and/or support requests and are best directed to the [Ferrite Forums](https://ferritecoin.org:52443/).
 
-For reporting security issues, please contact the Ferrite developers on the #ferrite-dev Freenode IRC channel or alternatively you can email us at contact@ferrite.org.
+For reporting security issues, please contact the Ferrite developers on the [Telegram channel](https://t.me/ferrite_core) or alternatively you can email us at system@ferritecoin.org.
 
 If the node is "stuck" during sync or giving "block checksum mismatch" errors, please ensure your hardware is stable by running memtest and observe CPU temperature with a load-test tool such as linpack before creating an issue!
 
 Any report, issue or feature request related to the GUI should be reported at
-https://github.com/bitcoin-core/gui/issues/
+https://github.com/koh-gt/ferrite-core/issues/
 -->
 
 <!-- Describe the issue -->

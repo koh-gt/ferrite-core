@@ -105,11 +105,11 @@ public:
         // MWEB will be automatically activated after block 99999999 for now.
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000005dad1ae9118c795");  
-        // A total of 421880 062801 397653 hashes (421.9 PH) of work as of block 151120. MWEB Activation height 150120
+	consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000088358036fda6c15"); 
+        // A total of 613430 746037 251093 hashes (613.4 PH) of work as of block 154000. MWEB Activation height 150120
 	
-	// consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000005dad1ae9118c795");  
-        // A total of 421880 062801 397653 hashes (421.9 PH) of work as of block 151120. MWEB Activation height 150120
+	// consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000088358036fda6c15"); 
+        // A total of 613430 746037 251093 hashes (613.4 PH) of work as of block 154000. MWEB Activation height 150120
 	// consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000050c151ee81a40c9");  
         // A total of 363688 892397 404361 hashes (363.7 PH) of work as of block 149000.
         // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000009cec62dc44b76d");  
@@ -122,11 +122,11 @@ public:
         // A total of    187 976044 125601 hashes (188.0 TH) of work as of block 10000.
         
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0xc09529ad3df32d4c33c3110e10692f973d531085aacdc93f86ad157e5e872ea1");  
-        // Block 151120
+        consensus.defaultAssumeValid = uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2");  
+        // Block 154000
 	    
-	// consensus.defaultAssumeValid = uint256S("0xc09529ad3df32d4c33c3110e10692f973d531085aacdc93f86ad157e5e872ea1");  
-        // Block 151120    
+	// consensus.defaultAssumeValid = uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2");  
+        // Block 154000    
         // consensus.defaultAssumeValid = uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1");  
         // Block 149000
         // consensus.defaultAssumeValid = uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297");  
@@ -159,10 +159,16 @@ public:
 
         // Seed servers to connect to other nodes.
         // Default configuration file contains nodes of popular ferritecoin mining pools.
+	vSeeds.emplace_back("118.189.201.104");
+	vSeeds.emplace_back("38.242.145.73");
+        vSeeds.emplace_back("78.220.84.58");
+	vSeeds.emplace_back("133.177.197.167");
         vSeeds.emplace_back("node1.ferritecoin.org");  // node1.ferritecoin.org
         vSeeds.emplace_back("node2.ferritecoin.org");  // node2.ferritecoin.org
         vSeeds.emplace_back("node3.ferritecoin.org");  // node3.ferritecoin.org
         vSeeds.emplace_back("node4.ferritecoin.org");  // node4.ferritecoin.org
+        
+	
 	
 	// CryptoID Chainz explorer
 	vSeeds.emplace_back("46.105.34.58");  // https://btc.cryptoid.info/fec/
@@ -199,14 +205,14 @@ public:
                 {    60000, uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286")},
                 {   100000, uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297")},
 		{   149000, uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1")},
-		{   151120, uint256S("0xc09529ad3df32d4c33c3110e10692f973d531085aacdc93f86ad157e5e872ea1")},
+		{   154000, uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2")},
             }
         };
 
         chainTxData = ChainTxData{
-            /* nTime    */ 1692820156,
-            /* nTxCount */ 166120,
-            /* dTxRate  */ 0.00343088
+            /* nTime    */ 1701118087,
+            /* nTxCount */ 173084,
+            /* dTxRate  */ 0.00237163
         };
     }
 };
