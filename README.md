@@ -12,7 +12,7 @@
         commit id:"1.2.3"
         commit id:"1.2.4"
         commit id:"1.3.0"
-        branch "Ferrite 21" order: 3
+        branch "Ferrite 21" order: 4
         commit id:"2.0.0"
         checkout "Ferrite 18"
         commit id:"1.3.1 (x86)"
@@ -20,16 +20,20 @@
         commit id:"2.1.0"
         commit id:"2.1.1"
         commit id:"2.1.2"
-        branch "Ferrite 21 DGW" order: 1
+        branch "Ferrite 21 DGW" order: 2
         commit id:"3.0.0"
         commit id:"3.0.1"
         commit id:"3.1.0"
         checkout "Ferrite 18"
-        branch "Ferrite 18 DGW (x86)" order: 2
+        branch "Ferrite 18 DGW (x86)" order: 3
         commit id:"1.3.30"
         checkout "Ferrite 21 DGW"
         commit id:"3.1.1"
         commit id:"3.1.2"
+        commit id:"3.1.3"
+        branch "Ferrite 21 FEXT" order: 1
+        commit id:"4.0.0" type: HIGHLIGHT
+        
 
 ```
 
@@ -44,10 +48,10 @@
 | [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | <a href="https://x.com/ferritecoin"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/x-fec-logo-transparent.gif?raw=true"></a> [X / Twitter](https://x.com/ferritecoin) |
 |--|--|--|--|
 
-## Ferrite supply - 2023 11 28
-[![](https://progress-bar.dev/15397400/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;568&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
+## Ferrite supply - 2023 11 30
+[![](https://progress-bar.dev/15403600/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;578&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![](https://progress-bar.dev/153974/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
+[![](https://progress-bar.dev/154036/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)](https://explorer.ferritecoin.org)<br>
 
