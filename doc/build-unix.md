@@ -31,7 +31,7 @@ sudo chmod +x -R ferrite-core-main
 cd ferrite-core-main
 PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
 ./autogen.sh
-./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp --disable-tests
+./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp --disable-tests --disable-shared
 make -j$(nproc) # -j4 represents 4 threads being used
 make install # optional
 ```
