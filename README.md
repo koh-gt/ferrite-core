@@ -42,16 +42,16 @@
 
 > Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2 codebase.<br>
 
-### <a href="https://github.com/koh-gt/ferrite-core/releases/tag/v3.1.2" target="_blank"><img width=512 src="https://github.com/koh-gt/ferrite-core/assets/101822992/e0a14905-5779-437b-b936-30fa7361342c" /></a>
+### <a href="https://github.com/koh-gt/ferrite-core/releases/tag/v3.1.3" target="_blank"><img width=512 src="https://github.com/koh-gt/ferrite-core/assets/101822992/e0a14905-5779-437b-b936-30fa7361342c" /></a>
 
 ## Community group links
 | [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | <a href="https://x.com/ferritecoin"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/x-fec-logo-transparent.gif?raw=true"></a> [X / Twitter](https://x.com/ferritecoin) |
 |--|--|--|--|
 
-## Ferrite supply - 2023 11 30
-[![](https://progress-bar.dev/15403600/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;578&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
+## Ferrite supply - 2023 12 05
+[![](https://progress-bar.dev/15436700/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;633&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![](https://progress-bar.dev/154036/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
+[![](https://progress-bar.dev/154367/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)](https://explorer.ferritecoin.org)<br>
 
@@ -105,7 +105,7 @@ For third party mobile wallets - add custom token CA to Metamask or Trust Wallet
 | | Name                      | Type     | Description                                                                |
 |-|---------------------------|----------|----------------------------------------------------------------------------| 
 | <p align=center>[![pancakeswap32](https://github.com/koh-gt/ferrite-core/assets/101822992/b1a4cbaf-2de7-4e06-806c-5aa775cb74b4)](https://pancakeswap.finance/swap?outputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D)</p> | [PancakeSwap](https://pancakeswap.finance/swap?outputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | DEX | [BEP-20](https://pancakeswap.finance/swap?outputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) |
-| <p align=center>[![uniswap32](https://github.com/koh-gt/ferrite-core/assets/101822992/20792bb0-6d46-48ab-b0ca-73a29e357216)](https://app.uniswap.org/#/swap?outputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75)</p> | [Uniswap](https://app.uniswap.org/#/swap?outputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75) | DEX | [ARB-20](https://app.uniswap.org/#/swap?outputCurrency=0x09bf659Db25522bc9c367163966f35ac268e5b75) | 
+| <p align=center>[![uniswap32](https://github.com/koh-gt/ferrite-core/assets/101822992/20792bb0-6d46-48ab-b0ca-73a29e357216)](https://app.uniswap.org/#/swap?outputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D)</p> | [Uniswap](https://app.uniswap.org/#/swap?outputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | DEX | [BEP-20](https://app.uniswap.org/#/swap?outputCurrency=0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | 
 
 ## Blockchain information links
 | Name                      | Link                                            | Description                                                          |
