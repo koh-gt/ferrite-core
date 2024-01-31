@@ -48,10 +48,10 @@
 | [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | <a href="https://x.com/ferritecoin"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/x-fec-logo-transparent.gif?raw=true"></a> [X / Twitter](https://x.com/ferritecoin) |
 |--|--|--|--|
 
-## Ferrite supply - 2024 01 22
-[![](https://progress-bar.dev/15510100/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;755&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
+## Ferrite supply - 2024 02 01
+[![](https://progress-bar.dev/15565200/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;25&#183;847&percnt;&#41;)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![](https://progress-bar.dev/155101/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
+[![](https://progress-bar.dev/155652/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://explorer.ferritecoin.org)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)](https://explorer.ferritecoin.org)<br>
 
@@ -79,9 +79,11 @@
 |  | [Trading Information](https://github.com/koh-gt/ferrite-core/wiki/Trading-Information) | Info | Price history, available FEC trading pairs, funding contributors |
 
 ## Exchange links
-| Exchange | Trading pairs |
-|--|----|
-|<a href="https://xeggex.com/asset/FEC"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/xeggex.png"></a> <a href="https://xeggex.com/asset/FEC" target="_blank"><br><b>XeggeX</b></a> | [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-ltc.png">](https://xeggex.com/market/FEC_LTC)<a href="https://xeggex.com/market/FEC_LTC" target="_blank"><b>FEC/LTC</b></a> [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-usdt.png">](https://xeggex.com/market/FEC_USDT)<a href="https://xeggex.com/market/FEC_USDT" target="_blank"><b>FEC/USDT</b></a>|
+| Exchange | Trading pairs | Networks/Bridge support | Listing date |
+|--|----|---|---|
+|<a href="https://xeggex.com/asset/FEC"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/xeggex.png"></a> <a href="https://xeggex.com/asset/FEC" target="_blank"><br><b>XeggeX</b></a> | [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-ltc.png">](https://xeggex.com/market/FEC_LTC)<a href="https://xeggex.com/market/FEC_LTC" target="_blank"><b>FEC/LTC</b></a> [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-usdt.png">](https://xeggex.com/market/FEC_USDT)<a href="https://xeggex.com/market/FEC_USDT" target="_blank"><b>FEC/USDT</b></a> | <img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec.png"></a> <img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/wfec-bep20.png"></a> | 2023 03 18 |
+|<a href="https://bimex.live/trade/index/market/fec_usdt/"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/bimex.png"></a> <a href="https://bimex.live/trade/index/market/fec_usdt/" target="_blank"><br><b>Bimex</b></a> | [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-usdt.png">](https://bimex.live/trade/index/market/fec_usdt/)<a href="https://bimex.live/trade/index/market/fec_usdt/" target="_blank"><b>FEC/USDT</b></a>| <img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec.png"></a> <img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/wfec-bep20.png"></a> | 2023 12 13 |
+|<a href="https://www.coininn.com/coin/WFEC"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coininn.png"></a> <a href="https://www.coininn.com/coin/WFEC" target="_blank"><br><b>CoinInn</b></a> | [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/wfec-usdt.png">](https://xeggex.com/market/FEC_LTC)<a href="https://www.coininn.com/coin/WFEC" target="_blank"><b>WFEC/USDT</b></a> | <img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/wfec-bep20.png"></a> | 2024 01 18 |
 
 | OTC | Trading pairs |
 |-----|---------------|
@@ -136,7 +138,10 @@ FEC is the designated exchange currency within the Ferrite ecosystem.
 ![ferritext-repo-wide](https://github.com/koh-gt/ferrite-core/assets/101822992/c7a2364c-265b-4364-ae7e-846ecba0ef35)
 Text inscribed on the blockchain are distributed to every node and stored permanently, allowing for censorship proofing.
 Use [Ferritext](https://github.com/koh-gt/ferritext) OP_RETURN tool to send messages.
-Inscription explorer will be launched soon.
+![ferrite_BANNER_flow_red](https://github.com/koh-gt/ferrite-core/assets/101822992/1bbf8349-b98d-432c-85e7-4aa5887648cb)
+Inscription explorer available on Powershell.
+`insert Martensite banner here`
+Martensite feature available to send single byte transaction FEXT using OP_RETURN to supplement fee on top of block mining subsidy.
 
 ### 1 minute block time - 
 Transactions are received instantly and can be confirmed within minutes.
@@ -188,6 +193,10 @@ Maximum supply: 𝔽 60,221,400 <br/>
 Blocks with reward: 10,237,637 blocks (33 halvings -1) <br/>
 Halving timespan: at minimum 209 days <br/>
 Reward lifespan: at minimum 7109 days (19.48 years) <br/>
+
+### Coinhana (in progress)
+![rgb-compose-coinhana](https://github.com/koh-gt/ferrite-core/assets/101822992/ad13acf3-18fb-48d9-8f1c-e47d79b91216)
+
  
 ## Additional information - 
 
