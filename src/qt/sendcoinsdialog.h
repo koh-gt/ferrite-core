@@ -111,7 +111,8 @@ Q_SIGNALS:
 };
 
 
-#define SEND_CONFIRM_DELAY   3
+#define SEND_CONFIRM_DELAY   2
+#define CHARACTERS_DISPLAY_LIMIT_IN_LABEL 45
 
 class SendConfirmationDialog : public QMessageBox
 {
