@@ -38,6 +38,14 @@ make install # optional
 
 This will build ferrite-qt as well, if the dependencies are met.
 
+Known Issues:
+```
+src/qt/bitcoin.cpp:461: undefined reference to `qInitResources_bitcoin()'
+collect2: error: ld returned 1 exit status
+
+touch src/qt/bitcoin.qrc
+```
+
 Dependencies
 ---------------------
 
