@@ -31,12 +31,20 @@ sudo chmod +x -R ferrite-core-main
 cd ferrite-core-main
 PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
 ./autogen.sh
-./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp --disable-tests
+./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp --disable-tests --disable-shared
 make -j$(nproc) # -j4 represents 4 threads being used
 make install # optional
 ```
 
 This will build ferrite-qt as well, if the dependencies are met.
+
+Known Issues:
+```
+src/qt/bitcoin.cpp:461: undefined reference to `qInitResources_bitcoin()'
+collect2: error: ld returned 1 exit status
+
+touch src/qt/bitcoin.qrc
+```
 
 Dependencies
 ---------------------

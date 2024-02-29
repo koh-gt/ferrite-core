@@ -329,7 +329,12 @@ bool SendCoinsDialog::PrepareSendText(QString& question_string, QString& informa
         {
             if(rcp.label.length() > 0) // label with address
             {
-                recipientElement.append(tr("%1 to '%2'").arg(amount, GUIUtil::HtmlEscape(rcp.label)));
+                QString displayedLabel = rcp.label;
+                if (rcp.label.length() > CHARACTERS_DISPLAY_LIMIT_IN_LABEL)  
+                {
+                    displayedLabel = displayedLabel.left(CHARACTERS_DISPLAY_LIMIT_IN_LABEL).append("..."); // limit the amount of characters displayed in label
+                }
+                recipientElement = tr("%1 to %2").arg(amount, GUIUtil::HtmlEscape(displayedLabel));
                 recipientElement.append(QString(" (%1)").arg(address));
             }
             else // just address
