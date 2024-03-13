@@ -117,7 +117,7 @@ def get_mweb_header(node, block_hash = None):
 """Creates a HogEx transaction that commits to the provided MWEB hash.
 # TODO: In the future, this should support passing in pegins and pegouts.
 node - The node to use to lookup the latest block.
-mweb_hash - The block to retrieve the MWEB header for. If not provided, the best block hash will be used.
+mweb_hash - The hash of the MWEB to commit to.
 Returns the built HogEx transaction as a 'CTransaction'
 """
 def create_hogex(node, mweb_hash):
