@@ -48,6 +48,8 @@ const char *CFCHECKPT="cfcheckpt";
 const char *WTXIDRELAY="wtxidrelay";
 const char *MWEBHEADER="mwebheader";
 const char *MWEBLEAFSET="mwebleafset";
+const char *GETMWEBUTXOS="getmwebutxos";
+const char *MWEBUTXOS="mwebutxos";
 } // namespace NetMsgType
 
 /** All known message types. Keep this in the same order as the list of
@@ -180,8 +182,8 @@ std::string CInv::GetCommand() const
     case MSG_BLOCK:          return cmd.append(NetMsgType::BLOCK);
     case MSG_FILTERED_BLOCK: return cmd.append(NetMsgType::MERKLEBLOCK);
     case MSG_CMPCT_BLOCK:    return cmd.append(NetMsgType::CMPCTBLOCK);
-    case MSG_MWEB_HEADER: return cmd.append(NetMsgType::MWEBHEADER);
-    case MSG_MWEB_LEAFSET: return cmd.append(NetMsgType::MWEBLEAFSET);
+    case MSG_MWEB_HEADER:    return cmd.append(NetMsgType::MWEBHEADER);
+    case MSG_MWEB_LEAFSET:   return cmd.append(NetMsgType::MWEBLEAFSET);
     default:
         throw std::out_of_range(strprintf("CInv::GetCommand(): type=%d unknown type", type));
     }
