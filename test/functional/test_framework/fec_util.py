@@ -61,11 +61,12 @@ def make_utxo(node, amount, confirmed=True, scriptPubKey=DUMMY_P2WPKH_SCRIPT):
 
     return COutPoint(int(txid, 16), 0)
 
+
 """Generates all pre-MWEB blocks, pegs 1 coin into the MWEB,
 then mines the first MWEB block which includes that pegin.
+
 mining_node - The node to use to generate blocks
 """
-
 def setup_mweb_chain(node):
     # Create all pre-MWEB blocks
     mining_node.generate(FIRST_MWEB_HEIGHT - 1)
@@ -76,12 +77,14 @@ def setup_mweb_chain(node):
     # Create some blocks - activate MWEB
     mining_node.generate(1)
 
+
 """Retrieves the HogEx transaction for the block.
+
 node - The node to use to lookup the transaction.
 block_hash - The block to retrieve the HogEx for. If not provided, the best block hash will be used.
+
 Returns the HogEx as a 'CTransaction'
 """
-
 def get_hogex_tx(node, block_hash = None):
     block_hash = block_hash or node.getbestblockhash()
     hogex_tx_id = node.getblock(block_hash)['tx'][-1]
@@ -91,8 +94,10 @@ def get_hogex_tx(node, block_hash = None):
 
 
 """Retrieves the HogAddr for a block.
+
 node - The node to use to lookup the HogAddr.
 block_hash - The block to retrieve the HogAddr for. If not provided, the best block hash will be used.
+
 Returns the HogAddr as a 'CTxOut'
 """
 def get_hog_addr_txout(node, block_hash = None):
@@ -100,8 +105,10 @@ def get_hog_addr_txout(node, block_hash = None):
 
 
 """Retrieves the MWEB header for a block.
+
 node - The node to use to lookup the MWEB header.
 block_hash - The block to retrieve the MWEB header for. If not provided, the best block hash will be used.
+
 Returns the MWEB header as an 'MWEBHeader' or None if the block doesn't contain MWEB data.
 """
 def get_mweb_header(node, block_hash = None):
@@ -114,10 +121,13 @@ def get_mweb_header(node, block_hash = None):
     mweb_header.from_json(best_block['mweb'])
     return mweb_header
 
+
 """Creates a HogEx transaction that commits to the provided MWEB hash.
 # TODO: In the future, this should support passing in pegins and pegouts.
+
 node - The node to use to lookup the latest block.
 mweb_hash - The hash of the MWEB to commit to.
+
 Returns the built HogEx transaction as a 'CTransaction'
 """
 def create_hogex(node, mweb_hash):
@@ -129,6 +139,7 @@ def create_hogex(node, mweb_hash):
     tx.hogex = True
     tx.rehash()
     return tx
+
 
 """ Create a non-HD wallet from a temporary v15.1.0 node.
 
