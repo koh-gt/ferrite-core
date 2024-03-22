@@ -2,7 +2,6 @@
 // Copyright (c) 2023 The Ferrite Core Developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include <mw/mmr/MMRUtil.h>
 #include <unordered_set>
 
@@ -150,6 +149,16 @@ BOOST_AUTO_TEST_CASE(CalcPrunedParents)
 
     BitSet pruned_parent_hashes = MMRUtil::CalcPrunedParents(unspent_leaf_indices);
     BOOST_REQUIRE(pruned_parent_hashes.str() == "0010100000000101000010000000100000000000000001001000000100000000000000000000000000000000000000000000");
+}
+
+BOOST_AUTO_TEST_CASE(CalcPeakIndices)
+{
+    std::vector<mmr::Index> peak_indices = MMRUtil::CalcPeakIndices(54);
+    BOOST_REQUIRE(peak_indices.size() == 4);
+    BOOST_REQUIRE(peak_indices[0] == 30);
+    BOOST_REQUIRE(peak_indices[1] == 45);
+    BOOST_REQUIRE(peak_indices[2] == 52);
+    BOOST_REQUIRE(peak_indices[3] == 53);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
