@@ -49,7 +49,7 @@
 |--|--|--|--|
 
 ## Ferrite supply - 2024 04 01
-[![](https://progress-bar.dev/15853900/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;26&#183;162&percnt;&#41;)](https://ferritecoin.org:53443)<br>
+[![](https://progress-bar.dev/15853900/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;26&#183;326&percnt;&#41;)](https://ferritecoin.org:53443)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![](https://progress-bar.dev/158539/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://ferritecoin.org:53443)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
