@@ -4522,9 +4522,7 @@ bool PeerManager::SendMessages(CNode* pto)
                     // especially since we have many peers and some will draw much shorter delays.
                     unsigned int nRelayedTransactions = 0;
                     LOCK(pto->m_tx_relay->cs_filter);
-                    size_t broadcast_max{INVENTORY_BROADCAST_MAX + (pto->m_tx_relay->setInventoryTxToSend.size()/1000)*5};
-                    broadcast_max = std::min<size_t>(1000, broadcast_max);
-                    while (!vInvTx.empty() && nRelayedTransactions < broadcast_max) {
+                    while (!vInvTx.empty() && nRelayedTransactions < INVENTORY_BROADCAST_MAX) {
                         // Fetch the top element from the heap
                         std::pop_heap(vInvTx.begin(), vInvTx.end(), compareInvMempoolOrder);
                         std::set<uint256>::iterator it = vInvTx.back();
