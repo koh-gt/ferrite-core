@@ -14,7 +14,6 @@
 #include <hash.h>
 #include <index/blockfilterindex.h>
 #include <merkleblock.h>
-#include <mw/mmr/Segment.h>
 #include <netbase.h>
 #include <netmessagemaker.h>
 #include <policy/fees.h>
@@ -103,10 +102,6 @@ static const unsigned int MAX_HEADERS_RESULTS = 2000;
 static const int MAX_CMPCTBLOCK_DEPTH = 5;
 /** Maximum depth of blocks we're willing to respond to GETBLOCKTXN requests for. */
 static const int MAX_BLOCKTXN_DEPTH = 10;
-/** Maximum depth of blocks we're willing to serve MWEB leafsets for. */
-static const int MAX_MWEB_LEAFSET_DEPTH = 10;
-/** Maximum number of MWEB UTXOs that can be requested in a batch. */
-static const uint16_t MAX_REQUESTED_MWEB_UTXOS = 4096;
 /** Size of the "block download window": how far ahead of our current height do we fetch?
  *  Larger windows tolerate larger download speed differences between peer, but increase the potential
  *  degree of disordering of blocks on disk (which make reindexing and pruning harder). We'll probably
@@ -1541,41 +1536,6 @@ static void RelayAddress(const CAddress& addr, bool fReachable, const CConnman& 
     connman.ForEachNodeThen(std::move(sortfunc), std::move(pushfunc));
 }
 
-static void ActivateBestChainIfNeeded(const CChainParams& chainparams, const CInv& inv)
-{
-    bool need_activate_chain = false;
-    {
-        LOCK(cs_main);
-        const CBlockIndex* pindex = LookupBlockIndex(inv.hash);
-        if (pindex) {
-            if (pindex->HaveTxsDownloaded() && !pindex->IsValid(BLOCK_VALID_SCRIPTS) &&
-                    pindex->IsValid(BLOCK_VALID_TREE)) {
-                // If we have the block and all of its parents, but have not yet validated it,
-                // we might be in the middle of connecting it (ie in the unlock of cs_main
-                // before ActivateBestChain but after AcceptBlock).
-                // In this case, we need to run ActivateBestChain prior to checking the relay
-                // conditions below.
-                need_activate_chain = true;
-            }
-        }
-    } // release cs_main before calling ActivateBestChain
-
-    if (need_activate_chain) {
-	// Grab the current most_recent_block and pass it to ActivateBestChain
-        // which hopefully will prevent needing to load blocks from disk.
-        std::shared_ptr<const CBlock> a_recent_block;
-        {
-            LOCK(cs_most_recent_block);
-            a_recent_block = most_recent_block;
-        }
-	    
-        BlockValidationState state;
-        if (!ActivateBestChain(state, chainparams, a_recent_block)) {
-            LogPrint(BCLog::NET, "failed to activate chain (%s)\n", state.ToString());
-        }
-    }
-}
-
 void static ProcessGetBlockData(CNode& pfrom, const CChainParams& chainparams, const CInv& inv, CConnman& connman)
 {
     bool send = false;
@@ -1592,7 +1552,28 @@ void static ProcessGetBlockData(CNode& pfrom, const CChainParams& chainparams, c
         fMWEBPresentInARecentCompactBlock = fMWEBPresentInMostRecentCompactBlock;
     }
 
-    ActivateBestChainIfNeeded(chainparams, inv);
+    bool need_activate_chain = false;
+    {
+        LOCK(cs_main);
+        const CBlockIndex* pindex = LookupBlockIndex(inv.hash);
+        if (pindex) {
+            if (pindex->HaveTxsDownloaded() && !pindex->IsValid(BLOCK_VALID_SCRIPTS) &&
+                    pindex->IsValid(BLOCK_VALID_TREE)) {
+                // If we have the block and all of its parents, but have not yet validated it,
+                // we might be in the middle of connecting it (ie in the unlock of cs_main
+                // before ActivateBestChain but after AcceptBlock).
+                // In this case, we need to run ActivateBestChain prior to checking the relay
+                // conditions below.
+                need_activate_chain = true;
+            }
+        }
+    } // release cs_main before calling ActivateBestChain
+    if (need_activate_chain) {
+        BlockValidationState state;
+        if (!ActivateBestChain(state, chainparams, a_recent_block)) {
+            LogPrint(BCLog::NET, "failed to activate chain (%s)\n", state.ToString());
+        }
+    }
 
     LOCK(cs_main);
     const CBlockIndex* pindex = LookupBlockIndex(inv.hash);
@@ -1699,11 +1680,6 @@ void static ProcessGetBlockData(CNode& pfrom, const CChainParams& chainparams, c
                 } else {
                     connman.PushMessage(&pfrom, msgMaker.Make(nSendFlags, NetMsgType::BLOCK, *pblock));
                 }
-	    } else if (inv.IsMsgMWEBHeader()) {
-                if (pblock->GetHogEx() != nullptr && !pblock->mweb_block.IsNull()) {
-                    CMerkleBlockWithMWEB merkle_block_with_mweb(*pblock);
-                    connman.PushMessage(&pfrom, msgMaker.Make(NetMsgType::MWEBHEADER, merkle_block_with_mweb));
-                } 
             }
         }
 
@@ -1719,210 +1695,6 @@ void static ProcessGetBlockData(CNode& pfrom, const CChainParams& chainparams, c
             pfrom.hashContinue.SetNull();
         }
     }
-}
-
-struct MWEBLeafsetMsg
-{
-    MWEBLeafsetMsg() = default;
-    MWEBLeafsetMsg(uint256 block_hash_in, BitSet leafset_in)
-        : block_hash(std::move(block_hash_in)), leafset(std::move(leafset_in)) { }
-
-    SERIALIZE_METHODS(MWEBLeafsetMsg, obj) { READWRITE(obj.block_hash, obj.leafset); }
-
-    uint256 block_hash;
-    BitSet leafset;
-};
-
-static void ProcessGetMWEBLeafset(CNode& pfrom, const ChainstateManager& chainman, const CChainParams& chainparams, const CInv& inv, CConnman& connman)
-{
-    ActivateBestChainIfNeeded(chainparams, inv);
-
-    LOCK(cs_main);
-    if (chainman.ActiveChainstate().IsInitialBlockDownload()) {
-        LogPrint(BCLog::NET, "Ignoring mweb leafset request from peer=%d because node is in initial block download\n", pfrom.GetId());
-        return;
-    }
-	
-    CBlockIndex* pindex = LookupBlockIndex(inv.hash);
-    if (!pindex || !chainman.ActiveChain().Contains(pindex)) {
-        LogPrint(BCLog::NET, "Ignoring mweb leafset request from peer=%d because requested block hash is not in active chain\n", pfrom.GetId());
-        return;
-    }
-
-    // TODO: Add an outbound limit
-
-    // For performance reasons, we limit how many blocks can be undone in order to rebuild the leafset
-    if (chainman.ActiveChain().Tip()->nHeight - pindex->nHeight > MAX_MWEB_LEAFSET_DEPTH) {
-        LogPrint(BCLog::NET, "Ignore mweb leafset request below MAX_MWEB_LEAFSET_DEPTH threshold from peer=%d\n", pfrom.GetId());
-
-        // disconnect node and prevent it from stalling (would otherwise wait for the MWEB leafset)
-        if (!pfrom.HasPermission(PF_NOBAN)) {
-            pfrom.fDisconnect = true;
-        }
-
-        return;
-    }
-
-    // Pruned nodes may have deleted the block, so check whether it's available before trying to send.
-    if (!(pindex->nStatus & BLOCK_HAVE_DATA) || !(pindex->nStatus & BLOCK_HAVE_MWEB)) {
-        LogPrint(BCLog::NET, "Ignoring mweb leafset request from peer=%d because block is either pruned or lacking mweb data\n", pfrom.GetId());
-
-        if (!pfrom.HasPermission(PF_NOBAN)) {
-            pfrom.fDisconnect = true;
-        }
-        return;
-    }
-
-    // Rewind leafset to block height
-    BlockValidationState state;
-    CCoinsViewCache temp_view(&chainman.ActiveChainstate().CoinsTip());
-    if (!ActivateArbitraryChain(state, temp_view, chainparams, pindex)) {
-        pfrom.fDisconnect = true;
-        return;
-    }
-
-    // Serve leafset to peer
-    MWEBLeafsetMsg leafset_msg(pindex->GetBlockHash(), temp_view.GetMWEBCacheView()->GetLeafSet()->ToBitSet());
-    connman.PushMessage(&pfrom, CNetMsgMaker(pfrom.GetCommonVersion()).Make(NetMsgType::MWEBLEAFSET, leafset_msg));
-}
-
-struct GetMWEBUTXOsMsg
-{
-    GetMWEBUTXOsMsg() = default;
-
-    SERIALIZE_METHODS(GetMWEBUTXOsMsg, obj)
-    {
-        READWRITE(obj.block_hash, COMPACTSIZE(obj.start_index), obj.num_requested, obj.output_format);
-    }
-
-    uint256 block_hash;
-    uint64_t start_index;
-    uint16_t num_requested;
-    uint8_t output_format;
-};
-
-struct MWEBUTXOsMsg
-{
-    MWEBUTXOsMsg() = default;
-
-    SERIALIZE_METHODS(MWEBUTXOsMsg, obj)
-    {
-        READWRITE(obj.block_hash, COMPACTSIZE(obj.start_index), obj.output_format, obj.utxos, obj.proof_hashes);
-    }
-
-    uint256 block_hash;
-    uint64_t start_index;
-    uint8_t output_format;
-    std::vector<NetUTXO> utxos;
-    std::vector<mw::Hash> proof_hashes;
-};
-
-static void ProcessGetMWEBUTXOs(CNode& pfrom, const ChainstateManager& chainman, const CChainParams& chainparams, CConnman& connman, const GetMWEBUTXOsMsg& get_utxos)
-{
-    if (get_utxos.num_requested > MAX_REQUESTED_MWEB_UTXOS) {
-        LogPrint(BCLog::NET, "getmwebutxos num_requested %u > %u, disconnect peer=%d\n", get_utxos.num_requested, MAX_REQUESTED_MWEB_UTXOS, pfrom.GetId());
-        if (!pfrom.HasPermission(PF_NOBAN)) {
-            pfrom.fDisconnect = true;
-        }
-        return;
-    }
-
-    static const std::set<uint8_t> supported_formats{
-        NetUTXO::HASH_ONLY,
-        NetUTXO::FULL_UTXO,
-        NetUTXO::COMPACT_UTXO};
-    if (supported_formats.count(get_utxos.output_format) == 0) {
-        LogPrint(BCLog::NET, "getmwebutxos output_format %u not supported, disconnect peer=%d\n", get_utxos.output_format, pfrom.GetId());
-        if (!pfrom.HasPermission(PF_NOBAN)) {
-            pfrom.fDisconnect = true;
-        }
-        return;
-    }
-
-    LOCK(cs_main);
-
-    if (chainman.ActiveChainstate().IsInitialBlockDownload()) {
-        LogPrint(BCLog::NET, "Ignoring getmwebutxos from peer=%d because node is in initial block download\n", pfrom.GetId());
-        return;
-    }
-
-    CBlockIndex* pindex = LookupBlockIndex(get_utxos.block_hash);
-    if (!pindex || !chainman.ActiveChain().Contains(pindex)) {
-        LogPrint(BCLog::NET, "Ignoring getmwebutxos from peer=%d because requested block hash is not in active chain\n", pfrom.GetId());
-        return;
-    }
-
-    // TODO: Add an outbound limit
-
-    // For performance reasons, we limit how many blocks can be undone in order to rebuild the leafset
-    if (chainman.ActiveChain().Tip()->nHeight - pindex->nHeight > MAX_MWEB_LEAFSET_DEPTH) {
-        LogPrint(BCLog::NET, "Ignore getmwebutxos below MAX_MWEB_LEAFSET_DEPTH threshold from peer=%d\n", pfrom.GetId());
-
-        if (!pfrom.HasPermission(PF_NOBAN)) {
-            pfrom.fDisconnect = true;
-        }
-
-        return;
-    }
-
-    // Pruned nodes may have deleted the block, so check whether it's available before trying to send.
-    if (!(pindex->nStatus & BLOCK_HAVE_DATA) || !(pindex->nStatus & BLOCK_HAVE_MWEB)) {
-        LogPrint(BCLog::NET, "Ignoring getmwebutxos request from peer=%d because block is either pruned or lacking mweb data\n", pfrom.GetId());
-
-        if (!pfrom.HasPermission(PF_NOBAN)) {
-            pfrom.fDisconnect = true;
-        }
-        return;
-    }
-
-    // Rewind leafset to block height
-    BlockValidationState state;
-    CCoinsViewCache temp_view(&chainman.ActiveChainstate().CoinsTip());
-    if (!ActivateArbitraryChain(state, temp_view, chainparams, pindex)) {
-        pfrom.fDisconnect = true;
-        return;
-    }
-
-    auto mweb_cache = temp_view.GetMWEBCacheView();
-
-    mmr::Segment segment = mmr::SegmentFactory::Assemble(
-        *mweb_cache->GetOutputPMMR(),
-        *mweb_cache->GetLeafSet(),
-        mmr::LeafIndex::At(get_utxos.start_index),
-        get_utxos.num_requested
-    );
-    if (segment.leaves.empty()) {
-        LogPrint(BCLog::NET, "Could not build segment requested by getmwebutxos from peer=%d\n", pfrom.GetId());
-        pfrom.fDisconnect = true;
-        return;
-    }
-
-    std::vector<NetUTXO> utxos;
-    utxos.reserve(segment.leaves.size());
-    for (const mmr::Leaf& leaf : segment.leaves) {
-        UTXO::CPtr utxo = mweb_cache->GetUTXO(leaf.vec());
-        if (!utxo) {
-            LogPrint(BCLog::NET, "Could not build segment requested by getmwebutxos from peer=%d\n", pfrom.GetId());
-            pfrom.fDisconnect = true;
-            return;
-        }
-
-        utxos.push_back(NetUTXO(get_utxos.output_format, utxo));
-    }
-
-        std::vector<mw::Hash> proof_hashes = segment.hashes;
-    if (segment.lower_peak) {
-        proof_hashes.push_back(*segment.lower_peak);
-    }
-
-    MWEBUTXOsMsg utxos_msg{
-        get_utxos.block_hash,
-        get_utxos.start_index,
-        get_utxos.output_format,
-        std::move(utxos),
-        std::move(proof_hashes)
-    };
-    connman.PushMessage(&pfrom, CNetMsgMaker(pfrom.GetCommonVersion()).Make(NetMsgType::MWEBUTXOS, utxos_msg));
 }
 
 //! Determine whether or not a peer can request a transaction, and return it (or nullptr if not found or not allowed).
@@ -1953,7 +1725,7 @@ static CTransactionRef FindTxForGetData(const CTxMemPool& mempool, const CNode& 
     return {};
 }
 
-void static ProcessGetData(CNode& pfrom, Peer& peer, const ChainstateManager& chainman, const CChainParams& chainparams, CConnman& connman, CTxMemPool& mempool, const std::atomic<bool>& interruptMsgProc) EXCLUSIVE_LOCKS_REQUIRED(!cs_main, peer.m_getdata_requests_mutex)
+void static ProcessGetData(CNode& pfrom, Peer& peer, const CChainParams& chainparams, CConnman& connman, CTxMemPool& mempool, const std::atomic<bool>& interruptMsgProc) EXCLUSIVE_LOCKS_REQUIRED(!cs_main, peer.m_getdata_requests_mutex)
 {
     AssertLockNotHeld(cs_main);
 
@@ -2021,8 +1793,6 @@ void static ProcessGetData(CNode& pfrom, Peer& peer, const ChainstateManager& ch
         const CInv &inv = *it++;
         if (inv.IsGenBlkMsg()) {
             ProcessGetBlockData(pfrom, chainparams, inv, connman);
-	} else if (inv.IsMsgMWEBLeafset()) {
-            ProcessGetMWEBLeafset(pfrom, chainman, chainparams, inv, connman);	
         }
         // else: If the first item on the queue is an unknown type, we erase it
         // and continue processing the queue on the next call.
@@ -3087,7 +2857,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
         {
             LOCK(peer->m_getdata_requests_mutex);
             peer->m_getdata_requests.insert(peer->m_getdata_requests.end(), vInv.begin(), vInv.end());
-            ProcessGetData(pfrom, *peer, m_chainman, m_chainparams, m_connman, m_mempool, interruptMsgProc);
+            ProcessGetData(pfrom, *peer, m_chainparams, m_connman, m_mempool, interruptMsgProc);
         }
 
         return;
@@ -4120,13 +3890,6 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
         return;
     }
 
-    if (msg_type == NetMsgType::GETMWEBUTXOS) {
-        GetMWEBUTXOsMsg get_utxos;
-        vRecv >> get_utxos;
-        ProcessGetMWEBUTXOs(pfrom, m_chainman, m_chainparams, m_connman, get_utxos);
-        return;
-    }
-
     // Ignore unknown commands for extensibility
     LogPrint(BCLog::NET, "Unknown command \"%s\" from peer=%d\n", SanitizeString(msg_type), pfrom.GetId());
     return;
@@ -4184,7 +3947,7 @@ bool PeerManager::ProcessMessages(CNode* pfrom, std::atomic<bool>& interruptMsgP
     {
         LOCK(peer->m_getdata_requests_mutex);
         if (!peer->m_getdata_requests.empty()) {
-            ProcessGetData(*pfrom, *peer, m_chainman, m_chainparams, m_connman, m_mempool, interruptMsgProc);
+            ProcessGetData(*pfrom, *peer, m_chainparams, m_connman, m_mempool, interruptMsgProc);
         }
     }
 
@@ -4759,7 +4522,9 @@ bool PeerManager::SendMessages(CNode* pto)
                     // especially since we have many peers and some will draw much shorter delays.
                     unsigned int nRelayedTransactions = 0;
                     LOCK(pto->m_tx_relay->cs_filter);
-                    while (!vInvTx.empty() && nRelayedTransactions < INVENTORY_BROADCAST_MAX) {
+                    size_t broadcast_max{INVENTORY_BROADCAST_MAX + (pto->m_tx_relay->setInventoryTxToSend.size()/1000)*5};
+                    broadcast_max = std::min<size_t>(1000, broadcast_max);
+                    while (!vInvTx.empty() && nRelayedTransactions < broadcast_max) {
                         // Fetch the top element from the heap
                         std::pop_heap(vInvTx.begin(), vInvTx.end(), compareInvMempoolOrder);
                         std::set<uint256>::iterator it = vInvTx.back();
