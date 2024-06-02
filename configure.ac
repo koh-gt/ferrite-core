@@ -1,7 +1,7 @@
 AC_PREREQ([2.69])
 define(_CLIENT_VERSION_MAJOR, 3)
-define(_CLIENT_VERSION_MINOR, 1)
-define(_CLIENT_VERSION_REVISION, 5)
+define(_CLIENT_VERSION_MINOR, 2)
+define(_CLIENT_VERSION_REVISION, 0)
 define(_CLIENT_VERSION_BUILD, 0)
 define(_CLIENT_VERSION_RC, 0)
 define(_CLIENT_VERSION_IS_RELEASE, true)
@@ -1772,7 +1772,7 @@ if test x$need_bundled_univalue = xyes; then
   AC_CONFIG_SUBDIRS([src/univalue])
 fi
 
-ac_configure_args="${ac_configure_args} --disable-shared --with-pic --enable-benchmark=no --with-bignum=no --enable-module-generator --enable-module-recovery --enable-module-commitment --enable-module-bulletproof --enable-module-aggsig --enable-module-schnorrsig --enable-module-extrakeys --enable-experimental --disable-jni"
+ac_configure_args="${ac_configure_args} --disable-shared --with-pic --enable-benchmark=no --with-bignum=no --enable-module-generator --enable-module-recovery --enable-module-commitment --enable-module-bulletproof --enable-module-aggsig --enable-module-schnorrsig --enable-module-extrakeys --enable-experimental --disable-jni --disable-openssl-tests"
 AC_CONFIG_SUBDIRS([src/secp256k1-zkp])
 
 AC_OUTPUT
