@@ -48,14 +48,14 @@
 | [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | <a href="https://x.com/ferritecoin"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/x-fec-logo-transparent.gif?raw=true"></a> [X / Twitter](https://x.com/ferritecoin) |
 |--|--|--|--|
 
-## Ferrite supply - 2024 06 17
-[![](https://progress-bar.dev/16404400/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;27&#183;240&percnt;&#41;)](https://ferritecoin.org:53443)<br>
+## Ferrite supply - 2024 07 01
+[![](https://progress-bar.dev/16524900/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;27&#183;440&percnt;&#41;)](https://ferritecoin.org:53443)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![](https://progress-bar.dev/164044/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://ferritecoin.org:53443)<br>
+[![](https://progress-bar.dev/165249/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://ferritecoin.org:53443)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)](https://ferritecoin.org:53443)<br><br>
 &nbsp;&nbsp;
-[![](https://progress-bar.dev/164044/?scale=250000&title=DGWv3&nbsp;Activation&width=300&color=007FFF&suffix=&nbsp;&sol;&nbsp;250000&nbsp;blocks)](https://ferritecoin.org:53443)<br>
+[![](https://progress-bar.dev/165249/?scale=250000&title=DGWv3&nbsp;Activation&width=300&color=007FFF&suffix=&nbsp;&sol;&nbsp;250000&nbsp;blocks)](https://ferritecoin.org:53443)<br>
 ### Announcement
 #### If you have installed Ferrite Core before Apr 2023, please update to v3+ by height $250,000$.** <br>
 
@@ -72,15 +72,27 @@
 
 
 ## Trading information links
-| | Name                      | Type     | Description                                                                |
-|-|---------------------------|----------|----------------------------------------------------------------------------| 
-| <a href="https://coinpaprika.com/coin/fec-ferrite"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coinpaprika.png"></a> | [CoinPaprika](https://coinpaprika.com/coin/fec-ferrite/) | Info | Price information and charts |
-| <a href="https://www.livecoinwatch.com/price/Ferritecoin-FEC"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/livecoinwatch.png"></a> | [LiveCoinWatch](https://www.livecoinwatch.com/price/Ferritecoin-FEC) | Info | Price information and charts | 
-| <a href="https://coincodex.com/crypto/ferrite/"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coincodex.png"></a> | [Coincodex](https://coincodex.com/crypto/ferrite/) | Info | Price information and charts |
-| <a href="https://coinmarketleague.com/coin/feritecoin"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coinmarketleague.svg"></a> | [CoinMarketLeague](https://coinmarketleague.com/coin/feritecoin) | Info | Price information and charts |
-| <a href="https://coincheckup.com/coins/ferrite"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coincheckup.png"></a> | [CoinCheckup](https://coincheckup.com/coins/ferrite) | Info | Price information and charts |
-| <a href="https://blockspot.io/coin/ferrite/"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/blockspot.png"></a> | [Blockspot](https://blockspot.io/coin/ferrite/) | Info | Price information and charts |
-|  | [Trading Information](https://github.com/koh-gt/ferrite-core/wiki/Trading-Information) | Info | Price history, available FEC trading pairs, funding contributors |
+| | Name  | Type     | Description | Listing date |
+|-|-------|----------|-------------|--------------|
+| <a href="https://coinpaprika.com/coin/fec-ferrite"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coinpaprika.png"></a> | [CoinPaprika] | Info | Price information and charts | 2023 02 16 |
+| <a href="https://www.livecoinwatch.com/price/Ferritecoin-FEC"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/livecoinwatch.png"></a> | [LiveCoinWatch] | Info | Price information and charts | 2023 04 20 |
+| <a href="https://coincodex.com/crypto/ferrite/"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coincodex.png"></a> | [Coincodex] | Info | Price information and charts | 2023 04 29 |
+| <a href="https://coincheckup.com/coins/ferrite"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coincheckup.png"></a> | [CoinCheckup] | Info | Price information and charts | 2023 04 29 |
+| <a href="https://coinmarketleague.com/coin/feritecoin"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coinmarketleague.svg"></a> | [CoinMarketLeague] | Info | About Ferritecoin, links, voting | 2023 05 18 |
+| <a href="https://blockspot.io/coin/ferrite/"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/blockspot.png"></a> | [Blockspot] | Info | Price information and charts | 2023 10 18 |
+| <a href="https://coinranking.com/coin/FB6AJAY69+ferritecoin-fec"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coinranking.png"></a> | [Coinranking] | Info | Price information and charts | 2024 04 08 |
+| <a href="https://coincu.com/crypto-price-prediction/fec-ferritecoin"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/coincu.png"></a> | [Coincu] | Info | Price prediction | _2024 06 29_ |
+|  | [Trading Information] | Info | Price history, available FEC trading pairs, funding contributors | - |
+
+[CoinPaprika]:https://coinpaprika.com/coin/fec-ferrite  
+[LiveCoinWatch]:https://www.livecoinwatch.com/price/Ferritecoin-FEC  
+[Coincodex]:https://coincodex.com/crypto/ferrite/
+[CoinMarketLeague]:https://coinmarketleague.com/coin/feritecoin
+[CoinCheckup]:https://coincheckup.com/coins/ferrite
+[Blockspot]:https://blockspot.io/coin/ferrite/
+[Coinranking]:https://coinranking.com/coin/FB6AJAY69+ferritecoin-fec
+[Coincu]:https://coincu.com/crypto-price-prediction/fec-ferritecoin
+[Trading Information]:https://github.com/koh-gt/ferrite-core/wiki/Trading-Information
 
 ## Exchange links
 | Exchange | Trading pairs | Networks/Bridge support | Listing date |
@@ -99,7 +111,7 @@ For third party mobile wallets - add custom token CA to Metamask or Trust Wallet
 | Token | Network | Contract address (CA) |
 |-------|--------------------------------------------------------------------------|------------------|
 | <a href="https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/ferrite-core-main-4k-bep20.png"></a> | <a href="https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/bsc.png"></a> [BEP-20](https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D) | `0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D` |
-| <a href=""><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/ferrite-core-main-4k-erc20.png"></a> | <a href="https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/eth.png"></a> [ERC-20]() | `---` |
+| <a href=""><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/ferrite-core-main-4k-erc20.png"></a> | <a href="https://bscscan.com/token/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/eth.png"></a> [ERC-20]() | `-----` |
 
 ### wFEC liquidity pools / DEX
 |  Name                      | Swap | Add liquidity |
@@ -121,6 +133,7 @@ For third party mobile wallets - add custom token CA to Metamask or Trust Wallet
 | Website                   | [View](https://ferritecoin.org) | Ferrite website with mining calculator |
 | Ferrite Forum             | [View](https://ferritecoin.org:52443) | Ferrite Forum for discussions |
 | Explorer                  | [View](https://ferritecoin.org:53443) | Blockchain explorer to view latest transactions, circulating supply and rich list distribution |
+| Ordinals Explorer         | `-----`                                   | Blockchain explorer to view ordinal inscriptions |
 | CryptoID Explorer         | [View](https://btc.cryptoid.info/fec/) | An advanced explorer with block mining history and node version data |
 | Merchandise               | [View](http://shop.ferritecoin.org) | Redirect link to Teespring shop with Ferrite coin themed merchandise |
 
