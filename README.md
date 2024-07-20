@@ -48,14 +48,14 @@
 | [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | <a href="https://x.com/ferritecoin"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/x-fec-logo-transparent.gif?raw=true"></a> [X / Twitter](https://x.com/ferritecoin) |
 |--|--|--|--|
 
-## Ferrite supply - 2024 07 08
-[![](https://progress-bar.dev/16555100/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;27&#183;490&percnt;&#41;)](https://ferritecoin.org:53443)<br>
+## Ferrite supply - 2024 07 21
+[![](https://progress-bar.dev/16617100/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;27&#183;593&percnt;&#41;)](https://ferritecoin.org:53443)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![](https://progress-bar.dev/165551/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://ferritecoin.org:53443)<br>
+[![](https://progress-bar.dev/166171/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://ferritecoin.org:53443)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)](https://ferritecoin.org:53443)<br><br>
 &nbsp;&nbsp;
-[![](https://progress-bar.dev/165551/?scale=250000&title=DGWv3&nbsp;Activation&width=300&color=007FFF&suffix=&nbsp;&sol;&nbsp;250000&nbsp;blocks)](https://ferritecoin.org:53443)<br>
+[![](https://progress-bar.dev/166171/?scale=250000&title=DGWv3&nbsp;Activation&width=300&color=007FFF&suffix=&nbsp;&sol;&nbsp;250000&nbsp;blocks)](https://ferritecoin.org:53443)<br>
 ### Announcement
 #### Ferrite Core versions released on Dec 2022 and earlier will no longer guarantee compatibility by Jan 2026.** <br>
 
@@ -136,6 +136,7 @@ For third party mobile wallets - add custom token CA to Metamask or Trust Wallet
 
 ## Blockchain information links
 > Provides transaction details, block information, wallet balances, smart contract interactions, network status, and analytics. They are essential tools for exploring and analyzing blockchain data.
+> 
 | Name                      | Link                                            | Description                                                          |
 |---------------------------|-------------------------------------------------|----------------------------------------------------------------------|
 | Website                   | [View](https://ferritecoin.org) | Ferrite website with mining calculator |
@@ -234,20 +235,24 @@ Reward lifespan: at minimum 7109 days (19.48 years) <br/>
 The humble ferrite core is cheap and hidden from view. Most people have never heard about it, yet it is what allows our electric generators, switches and radio antennas to function. It has high magnetic permeability allowing for magnetic fields to pass through, yet has low electrical conductivity which reduces eddy current losses. Most importantly, the ferrite core possesses these properties while being cheap and safe to use. This makes the ferrite core suitable for being used as magnetic cores for electromagnet coils. 
 
 Bitcoin is considered as digital gold, Litecoin as digital silver. Ferrite is ferrite. 
-> In the real world, we use coins made of ferrous base metals because gold and silver are too precious for circulation. 
+> In the real world, we use coins made of ferrous base metals because gold and silver are too precious for circulation. [Aristophanes](https://github.com/koh-gt/ferrite-core/wiki/About-Ferrite-Core#transaction-reports)
 
 A cheap and low barrier to entry will allow for mass adoption.
 Similarly, I hope that Ferrite Core will be used for fast, low volume transactions as well as small amount remittances for the unbanked people in developing nations to avoid exuberant remittance costs. 
 A low price will ensure that Ferrite coins and its fees stay affordable.  
 The Ferrite coin logo is the IEEE-315 circuit diagram symbol for a ferrite bead.
 
-There are so many coins out there, what makes this special? - Nothing for now. This coin is created as a non-profit experimental software. Ferrite Core is just copied code, pre-generated code, and lines of edited code from multiple sources. Ferrite coins, like other cryptocurrencies, have zero intrinsic value. Do not invest more than what you can afford to lose.
+There are so many coins out there, what makes this special? - 
+As of 2024, we have introduced/scheduled multiple new features into Ferritecoin including MWEB from Litecoin and [DGWv3](https://github.com/koh-gt/ferrite-core/wiki/About-Ferrite-Core#difficulty-algorithm-hardfork) from Dash. FEXT is an experimental script for sending and viewing OP_RETURN inscriptions on the blockchain. Currently only text is supported.
+In an era full of memecoins and coins with developer and marketing fees/reserves, Ferritecoin has no premine.
+100% of the supply is accessible from mining, and every mined coin goes directly to the miner, with 100 coins per block at the beginning and halving every 301,107 blocks. 
+Every wallet or "account" is equal. There are no special or administrative/developer addresses.
 
 High adoption rates need not be expensive, and high market cap is not the way to having high adoption.
 How many people are in cryptocurrency for its technological features rather than its profit potential?
 
 ### Graphs
-This coin would either be very active or completely inactive in a year or two. For the sake of practicality the graphs will not extend beyond the time scope of 750 days. This should be enough to capture the first 3 halvings.  
+This coin would either be very active or completely inactive in a year or two assuming constant block times. For the sake of practicality the graphs will not extend beyond the time scope of 750 days. This should be enough to capture the first 3 halvings.  
 
 The total coin supply per halving epoch can be found using this equation.
 
