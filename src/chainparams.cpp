@@ -46,8 +46,8 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
  *
  * CBlock(hash=000000000019d6, ver=1, hashPrevBlock=00000000000000, hashMerkleRoot=4a5e1e, nTime=1231006505, nBits=1d00ffff, nNonce=2083236893, vtx=1)
  *   CTransaction(hash=4a5e1e, ver=1, vin.size=1, vout.size=1, nLockTime=0)
- *     CTxIn(COutPoint(000000, -1), coinbase 04ffff001d01044053542032324e6f7632322053696e6761706f726520776173207365636f6e6420626967676573742075736572206f66204654582070726520636f6c6c61707365)
- *     CTxOut(nValue=100.00000000, scriptPubKey=0x5F1DF16B2B704C8A578D0B)
+ *     CTxIn(COutPoint(000000, -1), coinbase 04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73)
+ *     CTxOut(nValue=50.00000000, scriptPubKey=0x5F1DF16B2B704C8A578D0B)
  *   vMerkleTree: 4a5e1e
  */
 
@@ -105,9 +105,11 @@ public:
         // MWEB will be automatically activated after block 99999999 for now.
 
         // The best chain should have at least this much work.
-	consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000088358036fda6c15"); 
-        // A total of 613430 746037 251093 hashes (613.4 PH) of work as of block 154000. MWEB Activation height 150120
-	
+	consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000001aba64d960a7fb79"); 
+        // A total of 1 925962 675446 610809 hashes (1.926 EH) of work as of block 178000.
+	    
+	//consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000001aba64d960a7fb79"); 
+        // A total of 1 925962 675446 610809 hashes (1.926 EH) of work as of block 178000. 
 	// consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000088358036fda6c15"); 
         // A total of 613430 746037 251093 hashes (613.4 PH) of work as of block 154000. MWEB Activation height 150120
 	// consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000050c151ee81a40c9");  
@@ -122,9 +124,11 @@ public:
         // A total of    187 976044 125601 hashes (188.0 TH) of work as of block 10000.
         
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2");  
-        // Block 154000
+        consensus.defaultAssumeValid = uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb");  
+        // Block 178000
 	    
+	// consensus.defaultAssumeValid = uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb");  
+        // Block 178000    
 	// consensus.defaultAssumeValid = uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2");  
         // Block 154000    
         // consensus.defaultAssumeValid = uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1");  
@@ -206,13 +210,14 @@ public:
                 {   100000, uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297")},
 		{   149000, uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1")},
 		{   154000, uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2")},
+		{   178000, uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb")},
             }
         };
 
         chainTxData = ChainTxData{
-            /* nTime    */ 1701118087,
-            /* nTxCount */ 173084,
-            /* dTxRate  */ 0.00237163
+            /* nTime    */ 1723658292,
+            /* nTxCount */ 224653,
+            /* dTxRate  */ 0.00411921
         };
     }
 };
