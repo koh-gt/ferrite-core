@@ -16,14 +16,15 @@ the usage of the absolute path.
 
 YOU NEED fmt v9.0           - 8.0 wont cut it, so if you are using Ubuntu <= Jammy Jellyfish
 
+```bash
 wget -c https://launchpad.net/ubuntu/+archive/primary/+files/libfmt9_9.1.0+ds1-2_amd64.deb
 wget -c https://launchpad.net/ubuntu/+archive/primary/+files/libfmt-dev_9.1.0+ds1-2_amd64.deb
-
+```
 install fmt before fmt-dev
-
+```bash
 sudo apt install ./libfmt9_9.1.0+ds1-2_amd64.deb
 sudo apt install ./libfmt-dev_9.1.0+ds1-2_amd64.deb
-
+```
 To Build (64 bit x86 Ubuntu Linux)
 ---------------------
 ```bash
