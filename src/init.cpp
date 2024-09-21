@@ -1044,7 +1044,11 @@ bool AppInitParameterInteraction(const ArgsManager& args)
     }
 
     // parse and validate enabled filter types
+    bool fReindexChainState = args.GetBoolArg("-reindex-chainstate", false);
     std::string blockfilterindex_value = args.GetArg("-blockfilterindex", DEFAULT_BLOCKFILTERINDEX);
+    if (fReindexChainState && !args.IsArgSet("-blockfilterindex")) {
+        blockfilterindex_value = "0";
+    }
     if (blockfilterindex_value == "" || blockfilterindex_value == "1") {
         g_enabled_filter_types = AllBlockFilterTypes();
     } else if (blockfilterindex_value != "0") {
@@ -1059,7 +1063,11 @@ bool AppInitParameterInteraction(const ArgsManager& args)
     }
 
     // Signal NODE_COMPACT_FILTERS if peerblockfilters and basic filters index are both enabled.
-    if (args.GetBoolArg("-peerblockfilters", DEFAULT_PEERBLOCKFILTERS)) {
+    bool peerblockfilters = args.GetBoolArg("-peerblockfilters", DEFAULT_PEERBLOCKFILTERS);
+    if (fReindexChainState && !args.IsArgSet("-peerblockfilters")) {
+        peerblockfilters = false;
+    }
+    if (peerblockfilters) {
         if (g_enabled_filter_types.count(BlockFilterType::BASIC) != 1) {
             return InitError(_("Cannot set -peerblockfilters without -blockfilterindex."));
         }
@@ -1965,7 +1973,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
         nLocalServices = ServiceFlags(nLocalServices | NODE_WITNESS);
 
         // NODE_MWEB requires NODE_WITNESS, so we shouldn't signal for NODE_MWEB without NODE_WITNESS
-        nLocalServices = ServiceFlags(nLocalServices | NODE_MWEB);
+        nLocalServices = ServiceFlags(nLocalServices | NODE_MWEB | NODE_MWEB_LIGHT_CLIENT);
     }
 
     // ********************************************************* Step 11: import blocks
