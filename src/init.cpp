@@ -598,12 +598,14 @@ void SetupServerArgs(NodeContext& node)
 
 std::string LicenseInfo()
 {
-    const std::string URL_SOURCE_CODE = "<https://github.com/koh-gt/ferrite-core>";
+    const std::string URL_SOURCE_CODE = "<https://github.com/ferritecoin/ferrite-core>";
     const std::string URL_WEBSITE = "<https://ferritecoin.org>";
     const std::string URL_FORUM = "<https://ferritecoin.org:52443>";
     const std::string URL_BLOCK_EXPLORER = "<https://ferritecoin.org:53443>";
     const std::string FEXT_URL_WEBSITE = "<https://github.com/koh-gt/ferritext/>";
     const std::string FEXT_HELP_URL_WEBSITE = "<https://github.com/koh-gt/ferritext/wiki>";
+
+    const std::string URL_MOBILE_WALLET = "<https://github.com/koh-gt/ferrite-wallet/releases>";
 
     return CopyrightHolders(strprintf(_("Copyright (C) %i-%i").translated, 2022, COPYRIGHT_YEAR) + " ") +
            strprintf(_("\nCopyright (C) %i-%i The Dash Core developers").translated, 2014, COPYRIGHT_YEAR) +
@@ -627,6 +629,9 @@ std::string LicenseInfo()
 
            strprintf(_("\nThe block explorer is available from %s.").translated,
                URL_BLOCK_EXPLORER) +
+
+           strprintf(_("\n\nThe mobile wallet is available from %s.").translated,
+               URL_MOBILE_WALLET) +
 
            _("\n\nThis is experimental software.").translated +
            strprintf(_("\nDistributed under the MIT software license, see the accompanying file %s or %s").translated, "COPYING", "<https://opensource.org/licenses/MIT>") +

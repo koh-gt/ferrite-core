@@ -81,7 +81,7 @@ public:
         consensus.nPowTargetTimespan = 10 * 60;                   // A target Timespan of 1h. Not 10 blocks. If blocks take longer than usual, difficulty will adjust earlier than usual.
         consensus.nPowTargetSpacing = 1 * 60;                    // Block confirmation time of 60 seconds.
         consensus.nPowKGWHeight = 250000;
-	consensus.nPowDGWHeight = 250000;
+	    consensus.nPowDGWHeight = 250000;
         consensus.fPowAllowMinDifficultyBlocks = false;         // All blocks must have minimum difficulty of 1
         consensus.fPowNoRetargeting = false;                   // Difficulty will be dynamically adjusted.
         consensus.nRuleChangeActivationThreshold = 39;        // 97.5% of 40 to count as consensus
@@ -105,31 +105,35 @@ public:
         // MWEB will be automatically activated after block 99999999 for now.
 
         // The best chain should have at least this much work.
-	consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000001aba64d960a7fb79"); 
-        // A total of 1 925962 675446 610809 hashes (1.926 EH) of work as of block 178000.
+	    consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000023343814f3f8d19a"); 
+        // A total of 2 536 714 152 760 103 322 hashes (2.537 EH) of work as of block 200 000.
 	    
-	//consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000001aba64d960a7fb79"); 
-        // A total of 1 925962 675446 610809 hashes (1.926 EH) of work as of block 178000. 
-	// consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000088358036fda6c15"); 
-        // A total of 613430 746037 251093 hashes (613.4 PH) of work as of block 154000. MWEB Activation height 150120
-	// consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000050c151ee81a40c9");  
-        // A total of 363688 892397 404361 hashes (363.7 PH) of work as of block 149000.
+        // consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000023343814f3f8d19a"); 
+        // A total of 2 536 714 152 760 103 322 hashes (2.537 EH) of work as of block 200 000.
+	    //consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000001aba64d960a7fb79"); 
+        // A total of 1 925 962 675 446 610 809 hashes (1.926 EH) of work as of block 178 000. 
+	    // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000088358036fda6c15"); 
+        // A total of   613 430 746 037 251 093 hashes (613.4 PH) of work as of block 154 000. MWEB Activation height 150 120.
+	    // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000050c151ee81a40c9");  
+        // A total of   363 688 892 397 404 361 hashes (363.7 PH) of work as of block 149 000.
         // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000009cec62dc44b76d");  
-        // A total of  44170 005713 303405 hashes (44.17 PH) of work as of block 100000.
+        // A total of    44 170 005 713 303 405 hashes (44.17 PH) of work as of block 100 000.
         // consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000025004406a93795");  
-        // A total of  10414 866307 823509 hashes (10.41 PH) of work as of block 60000.
+        // A total of    10 414 866 307 823 509 hashes (10.41 PH) of work as of block  60 000.
         // consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000003f1caaf8e7d1f");  
-        // A total of   1110 277761 170719 hashes (1.110 PH) of work as of block 30000.
+        // A total of     1 110 277 761 170 719 hashes (1.110 PH) of work as of block  30 000.
         // consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000aaf695561da1");  
-        // A total of    187 976044 125601 hashes (188.0 TH) of work as of block 10000.
+        // A total of       187 976 044 125 601 hashes (188.0 TH) of work as of block  10 000.
         
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb");  
+        consensus.defaultAssumeValid = uint256S("0xf2ac05fbd6974e9292ca462368a15bbb1818a442c2f5e72a4035165f3ae9ea01");  
         // Block 178000
-	    
-	// consensus.defaultAssumeValid = uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb");  
+
+        // consensus.defaultAssumeValid = uint256S("0xf2ac05fbd6974e9292ca462368a15bbb1818a442c2f5e72a4035165f3ae9ea01");  
+        // Block 200000
+	    // consensus.defaultAssumeValid = uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb");  
         // Block 178000    
-	// consensus.defaultAssumeValid = uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2");  
+	    // consensus.defaultAssumeValid = uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2");  
         // Block 154000    
         // consensus.defaultAssumeValid = uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1");  
         // Block 149000
@@ -208,17 +212,18 @@ public:
                 {    30000, uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95")},
                 {    60000, uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286")},
                 {   100000, uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297")},
-		{   149000, uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1")},
-		{   154000, uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2")},
-		{   178000, uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb")},
+		        {   149000, uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1")},
+		        {   154000, uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2")},
+		        {   178000, uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb")},
+                {   200000, uint256S("0xf2ac05fbd6974e9292ca462368a15bbb1818a442c2f5e72a4035165f3ae9ea01")},  // added 20240922
             }
         };
 
         chainTxData = ChainTxData{
-            /* nTime    */ 1723658292,
-            /* nTxCount */ 224653,
-            /* dTxRate  */ 0.00411921
-        };
+            /* nTime    */ 1726928677,
+            /* nTxCount */ 273404,
+            /* dTxRate  */ 0.00587725
+        };  // height 201408
     }
 };
 
