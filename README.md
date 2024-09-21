@@ -43,27 +43,27 @@
 > Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2.2 codebase.<br>
 
 ### <a href="https://github.com/koh-gt/ferrite-core/releases/tag/v3.1.4" target="_blank"><img width=512 src="https://github.com/koh-gt/ferrite-core/assets/101822992/e0a14905-5779-437b-b936-30fa7361342c" /></a>
+### [Universal build guide](https://github.com/koh-gt/ferrite-core/wiki/Universal-Build-Guide)
 
-## Community group links
+## 💬 Community group links
 | [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | <a href="https://x.com/ferritecoin"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/x-fec-logo-transparent.gif?raw=true"></a> [X / Twitter](https://x.com/ferritecoin) |
 |--|--|--|--|
 
-## Ferrite supply - 2024 09 17
-[![](https://progress-bar.dev/17844600/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;29&#183;631&percnt;&#41;)](https://ferritecoin.org:53443)<br>
+## 🪙 Ferrite supply - 2024 09 22
+[![](https://progress-bar.xyz/20145700/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;33&#183;453&percnt;&#41;)](https://ferritecoin.org:53443)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![](https://progress-bar.dev/178446/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://ferritecoin.org:53443)<br>
+[![](https://progress-bar.xyz/201457/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://ferritecoin.org:53443)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![](https://progress-bar.dev/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)](https://ferritecoin.org:53443)<br><br>
+[![](https://progress-bar.xyz/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)](https://ferritecoin.org:53443)<br><br>
 &nbsp;&nbsp;
-[![](https://progress-bar.dev/178446/?scale=250000&title=DGWv3&nbsp;Activation&width=300&color=007FFF&suffix=&nbsp;&sol;&nbsp;250000&nbsp;blocks)](https://ferritecoin.org:53443)<br>
+[![](https://progress-bar.xyz/178446/?scale=250000&title=DGWv3&nbsp;Activation&width=300&color=007FFF&suffix=&nbsp;&sol;&nbsp;250000&nbsp;blocks)](https://ferritecoin.org:53443)<br>
 
-Supply: 20,039,500 / 60,221,400 (33.276%)
-Next halving: 200,395 / 301,107
+## 📣 Announcements
+#### Ferrite Core versions v1.x.x or v2.x.x will no longer guarantee compatibility by Jan 2026.** <br>
+#### Ferrite Wallet for Android has been released on 2024 09 21
+##### <p align=left><a href="https://github.com/koh-gt/ferrite-wallet/releases" target="_blank"><img width=256 src="https://github.com/user-attachments/assets/635dcef7-fa5b-4618-a481-1a0657d5341f" /></a></p>
 
-### Announcement
-#### Ferrite Core versions released on Dec 2022 and earlier will no longer guarantee compatibility by Jan 2026.** <br>
-
-## Exchange links
+## 🏛️ Exchange links
 > Cryptocurrency exchanges enable users to buy, sell, and trade Ferritecoin. 
 
 | Exchange | Trading pairs | Networks/Bridge support | Listing date |
@@ -79,7 +79,7 @@ Next halving: 200,395 / 301,107
 |-----|---------------|
 |<a href="https://discord.com/channels/859575137560297533/859831040213909554" target="_blank"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/caldera-trade.png" /><br><b>Caldera</b></a>| <a href="https://discord.com/channels/1066663020257882182/1107052872736198676" target="_blank"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-inv512.png" /><b>FEC OTC</b></a> | 
 
-## Market Aggregators
+## 📈 Market Aggregators
 > Provides comprehensive information on cryptocurrencies, including market capitalization, real-time and historical price data, trading volume, market rankings, exchange details, charts, and fundamental information about Ferritecoin.
 
 | | Name  | Type     | Description | Listing date | 
@@ -104,7 +104,7 @@ Next halving: 200,395 / 301,107
 [Coincu]:https://coincu.com/crypto-price-prediction/fec-ferritecoin
 [Trading Information]:https://github.com/koh-gt/ferrite-core/wiki/Trading-Information
 
-## Mining information links
+## ⛏️ Mining information links
 > Mineable with or without MWEB support.
 
 | Name                      | Link                                            | Description                                                                |
@@ -115,7 +115,7 @@ Next halving: 200,395 / 301,107
 | Rent ASIC mining hardware | [Github Wiki](https://github.com/koh-gt/ferrite-core/wiki/Rent-an-ASIC-miner) |
 | Quick setup guide (WIP)   | [Github Wiki](https://github.com/koh-gt/ferrite-core/wiki/Getting-Started) |
 
-## [Wrapped Ferrite](https://github.com/koh-gt/wrapped-ferrite) Token
+## 📦 [Wrapped Ferrite](https://github.com/koh-gt/wrapped-ferrite) Token
 ![wrapped_ferrite_banner_narrow](https://github.com/koh-gt/ferrite-core/assets/101822992/c1380ab6-acd4-4ca6-8019-1dc4fbd4890c)
 For third party mobile wallets - add custom token CA to Metamask or Trust Wallet
 ### Contract addresses
@@ -138,7 +138,7 @@ For third party mobile wallets - add custom token CA to Metamask or Trust Wallet
 [PancakeSwap BEP-20 WFEC/USDT v2 0.25% 0-inf]:https://pancakeswap.finance/v2/pair/0x55d398326f99059fF775485246999027B3197955/0xA846ab3673dfb3d27F81EcFe5BcA79c06120eE6D
 [Uniswap BEP-20 WFEC/USDT 0.30% 0-inf]:https://app.uniswap.org/pools/55980
 
-## Blockchain information links
+## 📌 Blockchain information links
 > Provides transaction details, block information, wallet balances, smart contract interactions, network status, and analytics. They are essential tools for exploring and analyzing blockchain data.
 > 
 | Name                      | Link                                            | Description                                                          |
@@ -154,7 +154,7 @@ For third party mobile wallets - add custom token CA to Metamask or Trust Wallet
 
 ![ferrite-core-main-Banner art 1280-640](https://user-images.githubusercontent.com/101822992/204157973-5025ca19-d12b-4656-9b7a-2f3956b34c9f.png)
 
-### Description
+## 📝 Description
 Ferritecoin (FEC) is designed for frequent low-cost microtransactions. Network fees are denominated in 1/100,000,000 atomic subdivisions of FEC, ensuring that even the smallest transactions remain economically viable for users. Ferrite seeks to democratise access to cryptocurrency by integrating affordability and ease of use.
 
 A unique feature of FEC is its inclusion of an on-chain text messaging layer where users can communicate anonymously directly on the blockchain itself. The distributed ledger system prevents any attempts at censorship of text data. This is crucial for maintaining a truly decentralized and open social ecosystem, where communication is free from external control or interference.
@@ -205,7 +205,7 @@ With Litecoin's MWEB implementation on Ferrite transactions can be made private 
 ### Scrypt Algorithm -  
 Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite. Originally designed to be ASIC resistant. 
 
-## Ferrite coin specifications
+## 📐 Ferrite coin specifications
 ### Technical specifications: <br/>
 ### Start Date: 22 Nov 2022
 
@@ -231,7 +231,7 @@ Reward lifespan: at minimum 7109 days (19.48 years) <br/>
 ![rgb-compose-coinhana](https://github.com/koh-gt/ferrite-core/assets/101822992/ad13acf3-18fb-48d9-8f1c-e47d79b91216)
 
  
-## Additional information - 
+## ℹ️ Additional information - 
 
 [![ferrite-core-main-512px](https://user-images.githubusercontent.com/101822992/204157969-c910673a-44a3-42a8-be9c-957907c05b39.png)](https://www.ferritecoin.org)
 
