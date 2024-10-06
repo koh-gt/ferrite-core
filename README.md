@@ -42,27 +42,34 @@
 
 > Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2.2 codebase.<br>
 
-##### <a href="https://github.com/koh-gt/ferrite-core/releases/tag/v3.1.4" target="_blank"><img width=512 src="https://github.com/koh-gt/ferrite-core/assets/101822992/e0a14905-5779-437b-b936-30fa7361342c" /></a>
+
+##### <a href="https://github.com/koh-gt/ferrite-core/releases" target="_blank"><img width=512 src="https://github.com/koh-gt/ferrite-core/assets/101822992/e0a14905-5779-437b-b936-30fa7361342c" /></a>
+##### <p align=left><a href="https://github.com/koh-gt/ferrite-wallet/releases" target="_blank"><img width=256 src="https://github.com/user-attachments/assets/635dcef7-fa5b-4618-a481-1a0657d5341f" /></a></p>
+
 ### 📖 [Universal build guide](https://github.com/koh-gt/ferrite-core/wiki/Universal-Build-Guide)
 
 ## 💬 Community group links
 | [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | <a href="https://x.com/ferritecoin"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/x-fec-logo-transparent.gif?raw=true"></a> [X / Twitter](https://x.com/ferritecoin) |
 |--|--|--|--|
 
-## 🪙 Ferrite supply - 2024 09 29
-[![](https://progress-bar.xyz/20772100/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;34&#183;493&percnt;&#41;)](https://ferritecoin.org:53443)<br>
+## 🪙 Ferrite supply - 2024 10 07
+[![](https://progress-bar.xyz/21054600/?scale=60221400&title=Circulating&nbsp;Supply&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;60221400&nbsp;&nbsp;&#40;34&#183;962&percnt;&#41;)](https://ferritecoin.org:53443)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![](https://progress-bar.xyz/207721/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://ferritecoin.org:53443)<br>
+[![](https://progress-bar.xyz/210546/?scale=301107&title=Next&nbsp;Halving&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;301107&nbsp;blocks)](https://ferritecoin.org:53443)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![](https://progress-bar.xyz/100/?scale=100&title=Block&nbsp;Subsidy&width=300&color=323040&suffix=&nbsp;&sol;&nbsp;&#120125;100&nbsp;)](https://ferritecoin.org:53443)<br><br>
 &nbsp;&nbsp;
-[![](https://progress-bar.xyz/207721/?scale=250000&title=DGWv3&nbsp;Activation&width=300&color=007FFF&suffix=&nbsp;&sol;&nbsp;250000&nbsp;blocks)](https://ferritecoin.org:53443)<br>
-[![](https://progress-bar.xyz/207721/?scale=450000&title=Taproot&nbsp;Activation&width=300&color=FF7F00&suffix=&nbsp;&sol;&nbsp;450000&nbsp;blocks)](https://ferritecoin.org:53443)<br>
+[![](https://progress-bar.xyz/210546/?scale=250000&title=DGWv3&nbsp;Activation&width=300&color=007FFF&suffix=&nbsp;&sol;&nbsp;250000&nbsp;blocks)](https://ferritecoin.org:53443)<br>
+[![](https://progress-bar.xyz/210546/?scale=450000&title=Taproot&nbsp;Activation&width=300&color=FF7F00&suffix=&nbsp;&sol;&nbsp;450000&nbsp;blocks)](https://ferritecoin.org:53443)<br>
 
 ## 📣 Announcements
-#### Ferrite Core versions v1.x.x or v2.x.x will no longer guarantee compatibility by Jan 2026.** <br>
 #### Ferrite Wallet for Android has been released on 2024 09 21
-##### <p align=left><a href="https://github.com/koh-gt/ferrite-wallet/releases" target="_blank"><img width=256 src="https://github.com/user-attachments/assets/635dcef7-fa5b-4618-a481-1a0657d5341f" /></a></p>
+Users holding Ferritecoins before the fork will have coins on both new Ferritecoin and old Ferrite Classic chain.  
+Your keys in the wallet.dat file allows access to coins on both clients.  
+Ferrite Core v1.x.x and Ferrite Core v2.x.x (before 2 Apr 2023) will become Ferrite Classic clients. They can only send Ferrite Classic coins.  
+Ferrite Core v3.0.0+ (after Apr 2023) will be unaffected. They will continue to work as normal.  
+More details will be sent later regarding the height 250,000 hard fork event.  
+
 
 ## 🏛️ Exchange links
 > Cryptocurrency exchanges enable users to buy, sell, and trade Ferritecoin. 
