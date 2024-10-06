@@ -178,9 +178,9 @@ FEC is the designated exchange currency within the Ferrite ecosystem.
 ### Uncensorable text messaging storage -
 ![ferritext-repo-wide](https://github.com/koh-gt/ferrite-core/assets/101822992/c7a2364c-265b-4364-ae7e-846ecba0ef35)
 Text inscribed on the blockchain are distributed to every node and stored permanently, allowing for censorship proofing.
-Use [Ferritext](https://github.com/koh-gt/ferritext) OP_RETURN tool to send messages.
+Use the free [Web FEXT](https://fext.ferritecoin.org)  to send immutable private messages.
 ![ferrite_BANNER_flow_red](https://github.com/koh-gt/ferrite-core/assets/101822992/1bbf8349-b98d-432c-85e7-4aa5887648cb)
-Inscription explorer available on Powershell.
+Inscription explorer available on Powershell and Python.
 `insert Martensite banner here`
 Martensite feature available to send single byte transaction FEXT using OP_RETURN to supplement fee on top of block mining subsidy.
 
