@@ -1366,7 +1366,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
 
         FILE* configFile = fopen(GetConfigFile(gArgs.GetArg("-conf", BITCOIN_CONF_FILENAME)).string().c_str(), "a");
         if (configFile != NULL) {
-            std::string strHeader = "# Ferrite Core configuration file:\n"
+            std::string strHeader = "# Ferrite Core configuration file v3.2.1 10kb:\n"
                                     "\n"            
                                     "# Node settings (default: Full Node with no pruning):\n"
                                     "prune=0\n"
@@ -1389,6 +1389,7 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
                                     "maxfeerate=1000\n"
                                     "minrelaytxfee=0.00001\n"
                                     "maxconnections=500\n"
+				    "datacarriersize=10000\n"
                                     "\n"
                                     "# Depreciated RPCs for compatibility\n"
                                     "deprecatedrpc=accounts\n"
