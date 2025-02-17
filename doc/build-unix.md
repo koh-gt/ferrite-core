@@ -28,7 +28,7 @@ sudo apt install ./libfmt-dev_9.1.0+ds1-2_amd64.deb
 To Build (64 bit x86 Ubuntu Linux)
 ---------------------
 ```bash
-sudo chmod +x -R ferrite-core-ferrite-main
+sudo chmod -R +rwx ferrite-core-ferrite-main
 cd ferrite-core-ferrite-main
 PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
 ./autogen.sh
