@@ -25,14 +25,24 @@ install fmt before fmt-dev
 sudo apt install ./libfmt9_9.1.0+ds1-2_amd64.deb
 sudo apt install ./libfmt-dev_9.1.0+ds1-2_amd64.deb
 ```
+build libfmt from source with static lib support
+```bash
+git clone https://github.com/fmtlib/fmt.git
+cd fmt
+mkdir build && cd build
+cmake .. -DBUILD_SHARED_LIBS=OFF
+make
+sudo make install
+```
+
 To Build (64 bit x86 Ubuntu Linux)
 ---------------------
 ```bash
-sudo chmod -R +rwx ferrite-core-ferrite-main
+sudo chmod -R +x ferrite-core-ferrite-main
 cd ferrite-core-ferrite-main
 PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
 ./autogen.sh
-./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp --disable-tests --disable-shared --enable-static
+./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp --disable-tests --disable-shared --enable-static LDFLAGS="-static -lfmt"
 make -j$(nproc) STATIC=all # -j4 represents 4 threads being used
 strip src/ferrite-cli src/ferrited src/ferrite-tx src/ferrite-wallet src/qt/ferrite-qt
 make install # optional
