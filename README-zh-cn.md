@@ -12,7 +12,7 @@
 [![GitHub Forks](https://img.shields.io/github/forks/koh-gt/ferrite-core.svg)](https://github.com/koh-gt/ferrite-core/network)
 
 <p align="center">
-    英文 | <a href="README-zh-cn.md">中文</a>
+    <a href="README.md">English</a> | 中文
 </div>
 
 ```mermaid
