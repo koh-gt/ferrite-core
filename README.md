@@ -4,8 +4,7 @@
 <a href="https://ferritecoin.org/" target="_blank"><img width=192 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-ferrite.png" /></a>
 
 # ferrite-core
-
-<br>  
+_Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2.2 codebase._
 
 [![GitHub Stars](https://img.shields.io/github/stars/koh-gt/ferrite-core.svg)](https://github.com/koh-gt/ferrite-core/stargazers)
 [![GitHub Issues](https://img.shields.io/github/issues/koh-gt/ferrite-core.svg)](https://github.com/koh-gt/ferrite-core/issues)
@@ -13,75 +12,59 @@
 [![GitHub Forks](https://img.shields.io/github/forks/koh-gt/ferrite-core.svg)](https://github.com/koh-gt/ferrite-core/network)
 
 <p align="center">
-    English | <a href="README-zh-cn.md">中文</a>
+    <b>English</b> | <a href="README-zh-cn.md">中文</a>
+
 </div>
 
-```mermaid
-    %%{init: { 'logLevel': 'debug', 'theme': 'base', 'gitGraph': {'showBranches': true, 'showCommitLabel':true,'mainBranchName': 'Ferrite 18', 'mainBranchOrder':5}} }%%
-      gitGraph
-        commit id:"1.0.0"
-        commit id:"1.1.0"
-        commit id:"1.2.0"
-        commit id:"1.2.1"
-        commit id:"1.2.2"
-        commit id:"1.2.3"
-        commit id:"1.2.4"
-        commit id:"1.3.0"
-        branch "Ferrite 21" order: 4
-        commit id:"2.0.0"
-        checkout "Ferrite 18"
-        commit id:"1.3.1 (x86)"
-        checkout "Ferrite 21"
-        commit id:"2.1.0"
-        commit id:"2.1.1"
-        commit id:"2.1.2"
-        branch "Ferrite 21 DGW" order: 2
-        commit id:"3.0.0"
-        commit id:"3.0.1"
-        commit id:"3.1.0"
-        checkout "Ferrite 18"
-        branch "Ferrite 18 DGW (x86)" order: 3
-        commit id:"1.3.30"
-        checkout "Ferrite 21 DGW"
-        commit id:"3.1.1"
-        commit id:"3.1.2"
-        commit id:"3.1.3"
-        commit id:"3.1.4"
-        commit id:"3.1.5" type: HIGHLIGHT
-        branch "Ferrite 21 FEXT" order: 1
-        commit id:"4.0.0a" type: HIGHLIGHT
-        checkout "Ferrite 21 DGW"
-        commit id:"3.2.0" type: HIGHLIGHT
 
-```
+## 🪙 Ferrite live statistics  
+<div align="center">
 
-> Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Core 21.2.2 codebase.<br>
+[![progsupply](http://118.189.201.104/progress_supply.svg)](https://ferritecoin.org/progress_supply.svg)
+[![proghalving](http://118.189.201.104/progress_halving.svg)](https://ferritecoin.org/progress_halving.svg)
+[![progreward](http://118.189.201.104/progress_blockreward.svg)](https://ferritecoin.org/progress_blockreward.svg)
 
+</div>
 
-##### <a href="https://github.com/koh-gt/ferrite-core/releases" target="_blank"><img width=512 src="https://github.com/koh-gt/ferrite-core/assets/101822992/e0a14905-5779-437b-b936-30fa7361342c" /></a>
-##### <p align=left><a href="https://github.com/koh-gt/ferrite-wallet/releases" target="_blank"><img width=256 src="https://github.com/user-attachments/assets/635dcef7-fa5b-4618-a481-1a0657d5341f" /></a></p>
+<div align="right">  
+    
+## Community group links 💬
+</div>
 
-### 📖 [Universal build guide](https://github.com/koh-gt/ferrite-core/wiki/Universal-Build-Guide)
-
-## 💬 Community group links
+<div align="center">  
+    
 | [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | <a href="https://x.com/ferritecoin"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/x-fec-logo-transparent.gif?raw=true"></a> [X / Twitter](https://x.com/ferritecoin) |
 |--|--|--|--|
+</div>
 
+## 📌 Pinned links
+<div align="center">  
+    
+> Provides transaction details, block information, wallet balances, smart contract interactions, network status, and analytics. They are essential tools for exploring and analyzing blockchain data.
+> 
+| Name                      | Link                                            | Description                                                          |
+|---------------------------|-------------------------------------------------|----------------------------------------------------------------------|
+| Website                   | [View](https://ferritecoin.org) | Ferrite website with navigation bar links |
+| Web Wallet                | [View](https://ferritecoin.org/wallet) | Ferrite website with navigation bar links |
+| FEXT Messenger            | [View](https://ferritecoin.org/fext) | Ferrite website with navigation bar links |
+| Faucet                    | [View](https://ferritecoin.org/wallet) | Ferrite website with navigation bar links |
+| L2 Wallet                 | [View](https://ferritecoin.org/wallet_advanced) | Ferrite website with navigation bar links |
+| Explorer                  | [View](https://ferritecoin.org:53443) | Blockchain explorer to view latest transactions, circulating supply and rich list distribution |
+| Merchandise               | [View](http://shop.ferritecoin.org) | Redirect link to Teespring shop with Ferrite coin themed merchandise |
+</div>
 
-## 🪙 Ferrite L1 chain statistics  
+## Releases
+<div align="center">  
+    <a href="https://github.com/koh-gt/ferrite-core/releases" target="_blank"><img width=512 src="https://github.com/koh-gt/ferrite-core/assets/101822992/e0a14905-5779-437b-b936-30fa7361342c" /></a>
+</div>
 
-![:progsupply](https://ferritecoin.org/progress_supply.svg)
-![:proghalving](https://ferritecoin.org/progress_halving.svg)
-![:progreward](https://ferritecoin.org/progress_blockreward.svg)
-
+## Mobile Wallet
+<p align=left><a href="https://github.com/koh-gt/ferrite-wallet/releases" target="_blank"><img width=256 src="https://github.com/user-attachments/assets/635dcef7-fa5b-4618-a481-1a0657d5341f" /></a></p>
 
 ## 📣 Announcements
 #### Ferrite Wallet for Android has been released on 2024 09 21
 Ferrite Core v3.0.0+ (after Apr 2023) will be unaffected. They will continue to work as normal.  
 ![hard_fork](https://github.com/user-attachments/assets/472844d0-e207-45fa-a072-217efdb2cf53)
-
-
-
 
 ## 🏛️ Exchange links
 > Cryptocurrency exchanges enable users to buy, sell, and trade Ferritecoin. 
@@ -161,17 +144,46 @@ For third party mobile wallets - add custom token CA to Metamask or Trust Wallet
 [Add liquidity WFEC/TON]:https://app.ston.fi/liquidity/provide?ft=EQCGQjLgjaSwzLezrRtKKelUwN4zpMVhNOrRjphELoAmGdoM&tt=TON
 [STON.fi TEP-74 to WFEC]:
 
-## 📌 Blockchain information links
-> Provides transaction details, block information, wallet balances, smart contract interactions, network status, and analytics. They are essential tools for exploring and analyzing blockchain data.
-> 
-| Name                      | Link                                            | Description                                                          |
-|---------------------------|-------------------------------------------------|----------------------------------------------------------------------|
-| Website                   | [View](https://ferritecoin.org) | Ferrite website with mining calculator |
-| Ferrite Forum             | [View](https://ferritecoin.org:52443) | Ferrite Forum for discussions |
-| Explorer                  | [View](https://ferritecoin.org:53443) | Blockchain explorer to view latest transactions, circulating supply and rich list distribution |
-| Ordinals Explorer         | `-----`                                   | Blockchain explorer to view ordinal inscriptions |
-| CryptoID Explorer         | [View](https://btc.cryptoid.info/fec/) | An advanced explorer with block mining history and node version data |
-| Merchandise               | [View](http://shop.ferritecoin.org) | Redirect link to Teespring shop with Ferrite coin themed merchandise |
+## Version roadmap
+
+```mermaid
+    %%{init: { 'logLevel': 'debug', 'theme': 'base', 'gitGraph': {'showBranches': true, 'showCommitLabel':true,'mainBranchName': 'Ferrite 18', 'mainBranchOrder':5}} }%%
+      gitGraph
+        commit id:"1.0.0"
+        commit id:"1.1.0"
+        commit id:"1.2.0"
+        commit id:"1.2.1"
+        commit id:"1.2.2"
+        commit id:"1.2.3"
+        commit id:"1.2.4"
+        commit id:"1.3.0"
+        branch "Ferrite 21" order: 4
+        commit id:"2.0.0"
+        checkout "Ferrite 18"
+        commit id:"1.3.1 (x86)"
+        checkout "Ferrite 21"
+        commit id:"2.1.0"
+        commit id:"2.1.1"
+        commit id:"2.1.2"
+        branch "Ferrite 21 DGW" order: 2
+        commit id:"3.0.0"
+        commit id:"3.0.1"
+        commit id:"3.1.0"
+        checkout "Ferrite 18"
+        branch "Ferrite 18 DGW (x86)" order: 3
+        commit id:"1.3.30"
+        checkout "Ferrite 21 DGW"
+        commit id:"3.1.1"
+        commit id:"3.1.2"
+        commit id:"3.1.3"
+        commit id:"3.1.4"
+        commit id:"3.1.5" type: HIGHLIGHT
+        branch "Ferrite 21 FEXT" order: 1
+        commit id:"4.0.0a" type: HIGHLIGHT
+        checkout "Ferrite 21 DGW"
+        commit id:"3.2.0" type: HIGHLIGHT
+
+```
 
 ## Ferrite is a cryptocurrency that seeks to enable fast and free payments.  <br>
 
