@@ -67,16 +67,13 @@
 | [![telegram-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Telegram.svg)](https://t.me/ferrite_core) [Ferrite Core ](https://t.me/ferrite_core) | [![reddit-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Reddit.svg)](https://www.reddit.com/r/Ferritecoin) [r/Ferritecoin](https://www.reddit.com/r/Ferritecoin) | [![discord-logo](https://raw.githubusercontent.com/gauravghongde/social-icons/9d939e1c5b7ea4a24ac39c3e4631970c0aa1b920/SVG/Color/Discord.svg)](https://discord.gg/qKgF5xhS5p) [Discord](https://discord.gg/qKgF5xhS5p) | <a href="https://x.com/ferritecoin"><img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/x-fec-logo-transparent.gif?raw=true"></a> [X / Twitter](https://x.com/ferritecoin) |
 |--|--|--|--|
 
-<div align="center">
-    
+
 ## 🪙 Ferrite L1 chain statistics  
 
-[![](https://ferritecoin.org/progress_supply.svg)](https://ferritecoin.org)  
-[![](https://ferritecoin.org/progress_halving.svg)](https://ferritecoin.org)  
-[![](https://ferritecoin.org/progress_blockreward.svg)](https://ferritecoin.org)  
+![:progsupply](https://ferritecoin.org/progress_supply.svg)
+![:proghalving](https://ferritecoin.org/progress_halving.svg)
+![:progreward](https://ferritecoin.org/progress_blockreward.svg)
 
-
-</div>
 
 ## 📣 Announcements
 #### Ferrite Wallet for Android has been released on 2024 09 21
