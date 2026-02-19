@@ -44,12 +44,12 @@ _Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Cor
 > 
 | Name                      | Link                                            | Description                                                          |
 |---------------------------|-------------------------------------------------|----------------------------------------------------------------------|
-| Website                   | [View](https://ferritecoin.org) | Ferrite website with navigation bar links |
-| Web Wallet                | [View](https://ferritecoin.org/wallet) | Ferrite website with navigation bar links |
+| Website                   | [View](https://ferritecoin.org) | Ferritecoin Main Website |
+| FEC Web Wallet            | [Main](https://ferritecoin.org/wallet)  | [L2](https://ferritecoin.org/wallet_advanced) | Ferritecoin only wallet |
+| Multiwallet               | [View](https://ferritecoin.org/multiwallet) | Multicoin web wallet compatible with Bitcoin and Litecoin |
+| Faucet                    | [View](https://ferritecoin.org/faucet) | Get free Ferritecoins here |
+| Explorer                  | [View](https://explorer.ferritecoin.org) | Blockchain explorer to view latest transactions, circulating supply and rich list distribution |
 | FEXT Messenger            | [View](https://ferritecoin.org/fext) | Ferrite website with navigation bar links |
-| Faucet                    | [View](https://ferritecoin.org/wallet) | Ferrite website with navigation bar links |
-| L2 Wallet                 | [View](https://ferritecoin.org/wallet_advanced) | Ferrite website with navigation bar links |
-| Explorer                  | [View](https://ferritecoin.org:53443) | Blockchain explorer to view latest transactions, circulating supply and rich list distribution |
 | Merchandise               | [View](http://shop.ferritecoin.org) | Redirect link to Teespring shop with Ferrite coin themed merchandise |
 </div>
 
@@ -71,10 +71,10 @@ Ferrite Core v3.0.0+ (after Apr 2023) will be unaffected. They will continue to 
 
 | Exchange | Trading pairs | Networks/Bridge support | Listing date |
 |--|----|---|---|
-|<a href="https://xeggex.com/asset/FEC"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/xeggex.png"><br></a> [XeggeX] | [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-ltc.png">](https://xeggex.com/market/FEC_LTC)<a href="https://xeggex.com/market/FEC_LTC" target="_blank"><b>FEC/LTC</b></a> [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-usdt.png">](https://xeggex.com/market/FEC_USDT)<a href="https://xeggex.com/market/FEC_USDT" target="_blank"><b>FEC/USDT</b></a> | <img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec.png"></a> <img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/wfec-bep20.png"></a> | 2023 03 18 |
-| WIP: DEX | | | |
+|<a href="https://anonex.io/asset/FEC"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/anonex.png"><br></a> [XeggeX] | [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-ltc.png">](https://anonex.io/market/FEC_LTC)<a href="https://anonex.io/market/FEC_LTC" target="_blank"><b>FEC/LTC</b></a> [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-usdt.png">](https://anonex.io/market/FEC_USDT)<a href="https://anonex.io/market/FEC_USDT" target="_blank"><b>FEC/USDT</b></a> | <img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec.png"></a> <img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/wfec-bep20.png"></a> | 2026 02 19 |
+| WIP: Coinhana-FE | | | |
 
-[XeggeX]:https://xeggex.com/asset/FEC/
+[AnonEx]:https://anonex.io/asset/FEC/
 
 | OTC | Trading pairs |
 |-----|---------------|
@@ -247,7 +247,7 @@ Reuse obsolete Litecoin, Dogecoin and Ethereum / Classic miners to mine Ferrite.
 Algorithm type: Scrypt, Proof of Work <br/>
 Ports: 9573 (RPC), 9574 (P2P) <br/>
 Block time: 1 minute <br/>
-Difficulty adjustment time: 1 block or 1 hour <br/>
+Difficulty adjustment time: Every block <br/>
 Halving time: 301,107 blocks <br/>
 Propagation time: 5 seconds (8.3% detached rate) <br/>
 Block size: 3.8147 MiB <br/>
@@ -276,22 +276,15 @@ The humble ferrite core is cheap and hidden from view. Most people have never he
 Bitcoin is considered as digital gold, Litecoin as digital silver. Ferrite is ferrite. 
 > In the real world, we use coins made of ferrous base metals because gold and silver are too precious for circulation. [Aristophanes](https://github.com/koh-gt/ferrite-core/wiki/About-Ferrite-Core#transaction-reports)
 
-A cheap and low barrier to entry will allow for mass adoption.
-Similarly, I hope that Ferrite Core will be used for fast, low volume transactions as well as small amount remittances for the unbanked people in developing nations to avoid exuberant remittance costs. 
+I hope that Ferrite Core will be used for fast, low volume transactions as well as small amount remittances for the unbanked people in developing nations to avoid exuberant remittance costs. 
 A low price will ensure that Ferrite coins and its fees stay affordable.  
 The Ferrite coin logo is the IEEE-315 circuit diagram symbol for a ferrite bead.
 
-There are so many coins out there, what makes this special? - 
+What makes this special? - 
 As of 2024, we have introduced/scheduled multiple new features into Ferritecoin including MWEB from Litecoin and [DGWv3](https://github.com/koh-gt/ferrite-core/wiki/About-Ferrite-Core#difficulty-algorithm-hardfork) from Dash. FEXT is an experimental script for sending and viewing OP_RETURN inscriptions on the blockchain. Currently only text is supported.
 In an era full of memecoins and coins with developer and marketing fees/reserves, Ferritecoin has no premine.
 100% of the supply is accessible from mining, and every mined coin goes directly to the miner, with 100 coins per block at the beginning and halving every 301,107 blocks. 
 Every wallet or "account" is equal. There are no special or administrative/developer addresses.
-
-High adoption rates need not be expensive, and high market cap is not the way to having high adoption.
-How many people are in cryptocurrency for its technological features rather than its profit potential?
-
-### Graphs
-This coin would either be very active or completely inactive in a year or two assuming constant block times. For the sake of practicality the graphs will not extend beyond the time scope of 750 days. This should be enough to capture the first 3 halvings.  
 
 The total coin supply per halving epoch can be found using this equation.
 
