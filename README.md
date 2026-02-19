@@ -45,7 +45,7 @@ _Ferrite Core full node + wallet based on Bitcoin Core 23.0 and new Litecoin Cor
 | Name                      | Link                                            | Description                                                          |
 |---------------------------|-------------------------------------------------|----------------------------------------------------------------------|
 | Website                   | [View](https://ferritecoin.org) | Ferritecoin Main Website |
-| FEC Web Wallet            | [Main](https://ferritecoin.org/wallet)  | [L2](https://ferritecoin.org/wallet_advanced) | Ferritecoin only wallet |
+| FEC Web Wallet            | [Main](https://ferritecoin.org/wallet) - [L2](https://ferritecoin.org/wallet_advanced) | Ferritecoin only wallet |
 | Multiwallet               | [View](https://ferritecoin.org/multiwallet) | Multicoin web wallet compatible with Bitcoin and Litecoin |
 | Faucet                    | [View](https://ferritecoin.org/faucet) | Get free Ferritecoins here |
 | Explorer                  | [View](https://explorer.ferritecoin.org) | Blockchain explorer to view latest transactions, circulating supply and rich list distribution |
@@ -71,7 +71,7 @@ Ferrite Core v3.0.0+ (after Apr 2023) will be unaffected. They will continue to 
 
 | Exchange | Trading pairs | Networks/Bridge support | Listing date |
 |--|----|---|---|
-|<a href="https://anonex.io/asset/FEC"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/anonex.png"><br></a> [XeggeX] | [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-ltc.png">](https://anonex.io/market/FEC_LTC)<a href="https://anonex.io/market/FEC_LTC" target="_blank"><b>FEC/LTC</b></a> [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-usdt.png">](https://anonex.io/market/FEC_USDT)<a href="https://anonex.io/market/FEC_USDT" target="_blank"><b>FEC/USDT</b></a> | <img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec.png"></a> <img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/wfec-bep20.png"></a> | 2026 02 19 |
+|<a href="https://anonex.io/asset/FEC"><img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/anonex.png"></a> [AnonEx] | [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-ltc.png">](https://anonex.io/market/FEC_LTC)<a href="https://anonex.io/market/FEC_LTC" target="_blank"><b>FEC/LTC</b></a> [<img width=64 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec-usdt.png">](https://anonex.io/market/FEC_USDT)<a href="https://anonex.io/market/FEC_USDT" target="_blank"><b>FEC/USDT</b></a> | <img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/fec.png"></a> <img width=48 src="https://github.com/koh-gt/koh-gt/blob/main/img/wfec-bep20.png"></a> | 2026 02 19 |
 | WIP: Coinhana-FE | | | |
 
 [AnonEx]:https://anonex.io/asset/FEC/
