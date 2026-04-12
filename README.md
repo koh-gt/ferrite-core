@@ -13,7 +13,7 @@
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/koh-gt/ferrite-core?style=for-the-badge&logo=github&color=4ECDC4)](https://github.com/koh-gt/ferrite-core/pulls)
 [![GitHub Forks](https://img.shields.io/github/forks/koh-gt/ferrite-core?style=for-the-badge&logo=github&color=A78BFA)](https://github.com/koh-gt/ferrite-core/network)
 
-**🌐 Language:** **English** | [中文](README-zh-cn.md)
+**🌐 Language:** 🇬🇧 English | **[🇨🇳 中文](README-zh.md)** | [🇪🇸 Español](README-es.md) | [🇮🇳 हिंदी](README-hi.md)
 
 </div>
 
