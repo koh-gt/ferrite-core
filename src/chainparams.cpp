@@ -62,7 +62,7 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
 static std::vector<uint256> GetFrozenMWEBOutputIDs()
 {
     return {
-        uint256S("0x0000000000000000000000000000000000000000000000000000000000000fec"),
+		uint256(ParseHex("0000000000000000000000000000000000000000000000000000000000000fec")),
     };
 }
 
