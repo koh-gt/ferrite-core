@@ -59,6 +59,13 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
 
+static std::vector<uint256> GetFrozenMWEBOutputIDs()
+{
+    return {
+        uint256S("0x0000000000000000000000000000000000000000000000000000000000000fec"),
+    };
+}
+
 /**
  * Main network
  */
@@ -147,6 +154,10 @@ public:
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 32-bit integer with any alignment.
          */
+
+		consensus.mweb_input_metadata_grandfather_blockhash = uint256S("0x0000000000000000000000000000000000000000000000000000000000000fec");
+        consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
+		
         pchMessageStart[0] = 0x4a;
         pchMessageStart[1] = 0x82;
         pchMessageStart[2] = 0x10;
