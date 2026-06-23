@@ -269,6 +269,8 @@ public:
         consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000000000019a894b");
 	// 26 904907  (26.9 MH) hashes of work since block 250. (testnet)
         consensus.defaultAssumeValid = uint256S("0xd710251db07b4b5ad58ff59edcda83642af83e757fdf791424cf9d85e977bd65");
+		consensus.mweb_input_metadata_grandfather_blockhash = uint256S("0x0000000000000000000000000000000000000000000000000000000000000fec");
+        consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
 
         pchMessageStart[0] = 0xba;
         pchMessageStart[1] = 0x76;
