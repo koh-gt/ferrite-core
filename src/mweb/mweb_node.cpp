@@ -233,6 +233,20 @@ bool Node::ConnectBlock(const CBlock& block, const Consensus::Params& consensus_
             !consensus_params.mweb_input_metadata_grandfather_blockhash.IsNull()
             && block.GetHash() == consensus_params.mweb_input_metadata_grandfather_blockhash;
 
+        for (const auto& input : block.mweb_block.m_block->GetInputs()) {
+            // Verify that none of the MWEB inputs are spending frozen MWEB outputs.
+            for (const uint256& frozen_output_id : consensus_params.frozen_mweb_output_ids) {
+                if (uint256(input.GetOutputID().vec()) == frozen_output_id) {
+                    return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "frozen-mweb-output-spent",
+                        strprintf("MWEB::Node::ConnectBlock(): Frozen MWEB output spent: %s", input.GetOutputID().ToHex()));
+                }
+            }
+        }
+
+        const bool allow_historical_metadata_mismatch =
+            !consensus_params.mweb_input_metadata_grandfather_blockhash.IsNull()
+            && block.GetHash() == consensus_params.mweb_input_metadata_grandfather_blockhash;
+
         try {
             blockundo.mwundo = mweb_view.ApplyBlock(block.mweb_block.m_block, allow_historical_metadata_mismatch);
         } catch (const std::exception& e) {
