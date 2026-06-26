@@ -42,7 +42,7 @@ sudo chmod -R +x ferrite-core-ferrite-main
 cd ferrite-core-ferrite-main
 PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
 ./autogen.sh
-./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp --disable-tests --disable-shared --enable-static LDFLAGS="-static -lfmt"
+./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp --disable-tests --disable-shared --enable-static LDFLAGS="-static"
 make -j$(nproc) STATIC=all # -j4 represents 4 threads being used
 strip src/ferrite-cli src/ferrited src/ferrite-tx src/ferrite-wallet src/qt/ferrite-qt
 make install # optional
@@ -116,6 +116,16 @@ Now, you can either build from self-compiled [depends](/depends/README.md) or in
     sudo apt-get install libevent-dev libboost-system-dev libboost-filesystem-dev libboost-test-dev libboost-thread-dev libfmt-dev
 
 BerkeleyDB is required for the wallet.
+
+```
+wget http://download.oracle.com/berkeley-db/db-4.8.30.zip
+unzip db-4.8.30.zip
+cd db-4.8.30
+cd build_unix/
+../dist/configure --prefix=/usr/local --enable-cxx
+make
+make install
+```
 
 Ubuntu and Debian have their own `libdb-dev` and `libdb++-dev` packages, but these will install
 BerkeleyDB 5.1 or later. This will break binary wallet compatibility with the distributed executables, which
