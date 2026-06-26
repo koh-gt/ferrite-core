@@ -12,7 +12,8 @@ TxBuilder::TxBuilder()
 
 TxBuilder& TxBuilder::AddInput(const TxOutput& input)
 {
-    return AddInput(input.GetAmount(), SecretKey::Random(), input.GetBlind(), input.GetOutputID());
+    const SecretKey output_key = input.GetSpendKey().IsNull() ? SecretKey::Random() : input.GetSpendKey();
+    return AddInput(input.GetAmount(), output_key, input.GetBlind(), input.GetOutputID());
 }
 
 TxBuilder& TxBuilder::AddInput(const CAmount amount)
@@ -40,7 +41,7 @@ TxBuilder& TxBuilder::AddInput(
 
 TxBuilder& TxBuilder::AddOutput(const CAmount amount)
 {
-    return AddOutput(amount, SecretKey::Random(), StealthAddress::Random());
+    return AddOutput(amount, SecretKey::Random(), SecretKey::Random(), SecretKey::Random());
 }
 
 TxBuilder& TxBuilder::AddOutput(
@@ -57,7 +58,22 @@ TxBuilder& TxBuilder::AddOutput(
     return *this;
 }
 
-TxBuilder& TxBuilder::AddPlainKernel(const CAmount fee, const bool add_stealth_excess)
+TxBuilder& TxBuilder::AddOutput(
+    const CAmount amount,
+    const SecretKey& sender_privkey,
+    const SecretKey& receiver_scan_key,
+    const SecretKey& receiver_spend_key)
+{
+    TxOutput output = TxOutput::Create(sender_privkey, receiver_scan_key, receiver_spend_key, amount);
+    m_kernelOffset.Add(output.GetBlind());
+    m_stealthOffset.Add(sender_privkey);
+
+    m_outputs.push_back(std::move(output));
+    m_amount -= (int64_t)amount;
+    return *this;
+}
+
+TxBuilder& TxBuilder::AddPlainKernel(const CAmount fee, const bool add_stealth_excess, const boost::optional<int32_t>& lock_height)
 {
     BlindingFactor kernel_excess = BlindingFactor::Random();
     m_kernelOffset.Sub(kernel_excess);
@@ -75,7 +91,7 @@ TxBuilder& TxBuilder::AddPlainKernel(const CAmount fee, const bool add_stealth_e
         fee,
         boost::none,
         std::vector<PegOutCoin>{},
-        boost::none
+        lock_height
     );
 
     m_kernels.push_back(std::move(kernel));
@@ -112,7 +128,7 @@ TxBuilder& TxBuilder::AddPegoutKernel(const CAmount amount, const CAmount fee, c
 {
     BlindingFactor kernel_excess = BlindingFactor::Random();
     m_kernelOffset.Sub(kernel_excess);
-    std::vector<uint8_t> fec_address = SecretKey::Random().vec();
+    std::vector<uint8_t> ltc_address = SecretKey::Random().vec();
 
     boost::optional<SecretKey> stealth_excess = boost::none;
     if (add_stealth_excess) {
@@ -120,7 +136,7 @@ TxBuilder& TxBuilder::AddPegoutKernel(const CAmount amount, const CAmount fee, c
         m_stealthOffset.Sub(stealth_excess.value());
     }
     
-    PegOutCoin pegout(amount, CScript{ fec_address.begin(), fec_address.end() });
+    PegOutCoin pegout(amount, CScript{ ltc_address.begin(), ltc_address.end() });
     Kernel kernel = Kernel::Create(
         kernel_excess,
         stealth_excess,

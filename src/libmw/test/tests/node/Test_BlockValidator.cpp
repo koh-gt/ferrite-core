@@ -83,6 +83,32 @@ BOOST_AUTO_TEST_CASE(BlockValidator_Test_PeginMismatch)
         );
         BOOST_CHECK(!is_valid);
     }
+
+    {
+        test::Tx pegin_tx = test::Tx::CreatePegIn(5'000'000);
+        mw::Block::CPtr pBlock = miner.MineBlock(3, {pegin_tx}).GetBlock();
+        PegInCoin pegin_coin = pegin_tx.GetPegInCoin();
+
+        bool is_valid = BlockValidator::ValidateBlock(
+            pBlock,
+            std::vector<PegInCoin>{
+                pegin_coin,
+                pegin_coin,
+            },
+            std::vector<PegOutCoin>{}
+        );
+        BOOST_CHECK(!is_valid);
+
+        is_valid = BlockValidator::ValidateBlock(
+            pBlock,
+            std::vector<PegInCoin>{
+                pegin_coin,
+                PegInCoin{0, pegin_coin.GetKernelID()},
+            },
+            std::vector<PegOutCoin>{}
+        );
+        BOOST_CHECK(!is_valid);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(BlockValidator_Test_PegoutMismatch)
@@ -252,7 +278,11 @@ BOOST_AUTO_TEST_CASE(BlockValidator_Test_KernelSorting)
     kernels[0] = kernels[1];
     kernels[1] = tmp;
 
-    BOOST_REQUIRE(kernels[0].GetSupplyChange() < kernels[1].GetSupplyChange());
+    const auto first_supply_change = kernels[0].GetSupplyChange();
+    const auto second_supply_change = kernels[1].GetSupplyChange();
+    BOOST_REQUIRE(first_supply_change.has_value());
+    BOOST_REQUIRE(second_supply_change.has_value());
+    BOOST_REQUIRE(*first_supply_change < *second_supply_change);
     mw::Block::CPtr pUnsortedBlock = mw::MutBlock(pBlock)
         .SetKernels(std::move(kernels))
         .Build();

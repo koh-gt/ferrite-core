@@ -1,5 +1,4 @@
-// Copyright (c) 2021-2023 The Litecoin Core developers
-// Copyright (c) 2023 The Ferrite Core Developers
+// Copyright (c) 2021 The Litecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,6 +6,8 @@
 #include <mw/models/tx/Kernel.h>
 
 #include <test_framework/TestMWEB.h>
+
+#include <limits>
 
 BOOST_FIXTURE_TEST_SUITE(TestKernel, MWEBTestingSetup)
 
@@ -58,10 +59,10 @@ BOOST_AUTO_TEST_CASE(NonStandardKernel_Test)
 {
     CAmount fee = 1000;
     CAmount pegin = 10000;
-    std::vector<uint8_t> rand1 = secret_key_t<30>::Random().vec();
+    std::vector<uint8_t> rand1 = RandomBytes<30>();
     PegOutCoin pegout(2000, CScript(rand1.data(), rand1.data() + rand1.size()));
     int32_t lock_height = 123456;
-    std::vector<uint8_t> rand2 = secret_key_t<30>::Random().vec();
+    std::vector<uint8_t> rand2 = RandomBytes<30>();
     Kernel standard_kernel(
         Kernel::FEE_FEATURE_BIT | Kernel::PEGIN_FEATURE_BIT | Kernel::PEGOUT_FEATURE_BIT | Kernel::HEIGHT_LOCK_FEATURE_BIT | Kernel::STEALTH_EXCESS_FEATURE_BIT,
         fee,
@@ -71,9 +72,9 @@ BOOST_AUTO_TEST_CASE(NonStandardKernel_Test)
         PublicKey::Random(),
         std::vector<uint8_t>{},
         Commitment::Random(),
-        Signature(SecretKey64::Random().GetBigInt())
+        Signature(RandomBigInt<Signature::SIZE>())
     );
-    std::vector<uint8_t> rand3 = secret_key_t<30>::Random().vec();
+    std::vector<uint8_t> rand3 = RandomBytes<30>();
     Kernel nonstandard_kernel1(
         Kernel::ALL_FEATURE_BITS,
         fee,
@@ -81,7 +82,7 @@ BOOST_AUTO_TEST_CASE(NonStandardKernel_Test)
         std::vector<PegOutCoin>{PegOutCoin(2000, CScript(rand3.data(), rand3.data() + rand3.size()))},
         lock_height,
         PublicKey::Random(),
-        secret_key_t<20>::Random().vec(),
+        RandomBytes<20>(),
         standard_kernel.GetCommitment(),
         standard_kernel.GetSignature()
     );
@@ -101,6 +102,40 @@ BOOST_AUTO_TEST_CASE(NonStandardKernel_Test)
     BOOST_REQUIRE(standard_kernel.IsStandard());
     BOOST_REQUIRE(!nonstandard_kernel1.IsStandard());
     BOOST_REQUIRE(!nonstandard_kernel2.IsStandard());
+}
+
+BOOST_AUTO_TEST_CASE(PegOutAmountOutOfRange_Test)
+{
+    std::vector<uint8_t> script_bytes = RandomBytes<30>();
+    CScript script(script_bytes.data(), script_bytes.data() + script_bytes.size());
+
+    Kernel kernel = Kernel::Create(
+        BlindingFactor::Random(),
+        boost::none,
+        boost::none,
+        boost::none,
+        std::vector<PegOutCoin>{ PegOutCoin(MAX_MONEY, script), PegOutCoin(1, script) },
+        boost::none
+    );
+
+    BOOST_REQUIRE(!kernel.GetPegOutAmount().has_value());
+}
+
+BOOST_AUTO_TEST_CASE(SupplyChangeOutOfRange_Test)
+{
+    std::vector<uint8_t> script_bytes = RandomBytes<30>();
+    CScript script(script_bytes.data(), script_bytes.data() + script_bytes.size());
+
+    Kernel kernel = Kernel::Create(
+        BlindingFactor::Random(),
+        boost::none,
+        std::numeric_limits<CAmount>::max(),
+        boost::none,
+        std::vector<PegOutCoin>{ PegOutCoin(1, script) },
+        boost::none
+    );
+
+    BOOST_REQUIRE(!kernel.GetSupplyChange().has_value());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

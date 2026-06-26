@@ -1,5 +1,4 @@
-// Copyright (c) 2021-2023 The Litecoin Core developers
-// Copyright (c) 2023 The Ferrite Core Developers
+// Copyright (c) 2021 The Litecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -26,7 +25,7 @@ BOOST_AUTO_TEST_CASE(Create)
 
     // Generate receiver sub-address (i = 10)
     SecretKey b_i = SecretKeys::From(b)
-        .Add(Hasher().Append(A).Append(10).Append(a).hash())
+        .Add(SecretKey::FromHash(Hasher().Append(A).Append(10).Append(a).hash()))
         .Total();
     StealthAddress receiver_subaddr(
         PublicKey::From(b_i).Mul(a),
@@ -78,27 +77,27 @@ BOOST_AUTO_TEST_CASE(Create)
         BOOST_REQUIRE(Hashed(EHashTag::TAG, output.Ke().Mul(a))[0] == output.GetViewTag());
 
         // Make sure B belongs to wallet
-        SecretKey t = Hashed(EHashTag::DERIVE, output.Ke().Mul(a));
-        BOOST_REQUIRE(receiver_subaddr.B() == output.Ko().Div(Hashed(EHashTag::OUT_KEY, t)));
+        SecretKey t = SecretKey::FromHash(Hashed(EHashTag::DERIVE, output.Ke().Mul(a)));
+        BOOST_REQUIRE(receiver_subaddr.B() == output.Ko().Div(SecretKey::FromHash(Hashed(EHashTag::OUT_KEY, t))));
 
-        SecretKey r = Hashed(EHashTag::BLIND, t);
+        BlindingFactor r(SecretKey::FromHash(Hashed(EHashTag::BLIND, t)));
         uint64_t value = output.GetMaskedValue() ^ *((uint64_t*)Hashed(EHashTag::VALUE_MASK, t).data());
         BigInt<16> n = output.GetMaskedNonce() ^ BigInt<16>(Hashed(EHashTag::NONCE_MASK, t).data());
 
         BOOST_REQUIRE(Commitment::Switch(r, value) == output.GetCommitment());
 
         // Calculate Carol's sending key 's' and check that s*B ?= Ke
-        SecretKey s = Hasher(EHashTag::SEND_KEY)
+        SecretKey s = SecretKey::FromHash(Hasher(EHashTag::SEND_KEY)
             .Append(receiver_subaddr.A())
             .Append(receiver_subaddr.B())
             .Append(value)
             .Append(n)
-            .hash();
+            .hash());
         BOOST_REQUIRE(output.Ke() == receiver_subaddr.B().Mul(s));
 
         // Make sure receiver can generate the spend key
         SecretKey spend_key = SecretKeys::From(b_i)
-            .Mul(Hashed(EHashTag::OUT_KEY, t))
+            .Mul(SecretKey::FromHash(Hashed(EHashTag::OUT_KEY, t)))
             .Total();
         BOOST_REQUIRE(output.GetReceiverPubKey() == PublicKey::From(spend_key));
     }

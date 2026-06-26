@@ -34,9 +34,21 @@ UTXO::CPtr CoinsViewCache::GetUTXO(const mw::Hash& output_id) const noexcept
     return pUTXO;
 }
 
-mw::BlockUndo::CPtr CoinsViewCache::ApplyBlock(const mw::Block::CPtr& pBlock)
+mw::BlockUndo::CPtr CoinsViewCache::ApplyBlock(const mw::Block::CPtr& pBlock, const bool allow_historical_metadata_mismatch)
 {
     assert(pBlock != nullptr);
+
+    // Create a temporary cache to ensure the block is fully validated before mutating the state of this CoinsViewCache.
+    mw::ICoinsView::Ptr pSelf(this, [](mw::ICoinsView*) {});
+    mw::CoinsViewCache validation_cache(pSelf);
+
+    mw::BlockUndo::CPtr pUndo = validation_cache.ApplyBlockChanges(pBlock, allow_historical_metadata_mismatch);
+    validation_cache.Flush();
+    return pUndo;
+}
+
+mw::BlockUndo::CPtr CoinsViewCache::ApplyBlockChanges(const mw::Block::CPtr& pBlock, const bool allow_historical_metadata_mismatch)
+{
 
     auto pPreviousHeader = GetBestHeader();
     SetBestHeader(pBlock->GetHeader());
@@ -56,7 +68,20 @@ mw::BlockUndo::CPtr CoinsViewCache::ApplyBlock(const mw::Block::CPtr& pBlock)
     std::vector<UTXO> coinsSpent;
     std::for_each(
         pBlock->GetInputs().cbegin(), pBlock->GetInputs().cend(),
-        [this, &coinsSpent](const Input& input) {
+        [this, &coinsSpent, allow_historical_metadata_mismatch](const Input& input) {
+            // Block validation must rebind serialized input metadata to the real spent UTXO.
+            UTXO::CPtr pUTXO = GetUTXO(input.GetOutputID());
+            if (pUTXO == nullptr) {
+                ThrowValidation(EConsensusError::UTXO_MISSING);
+            }
+
+            if (!allow_historical_metadata_mismatch
+                && (pUTXO->GetCommitment() != input.GetCommitment()
+                    || pUTXO->GetReceiverPubKey() != input.GetOutputPubKey()))
+            {
+                ThrowValidation(EConsensusError::UTXO_MISMATCH);
+            }
+
             UTXO spentUTXO = SpendUTXO(input.GetOutputID());
             coinsSpent.push_back(std::move(spentUTXO));
         }

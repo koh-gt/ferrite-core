@@ -29,7 +29,7 @@ import socket
 import struct
 import time
 
-import ferrite_scrypt
+import litecoin_scrypt
 from test_framework.siphash import siphash256
 from test_framework.util import hex_str_to_bytes, assert_equal
 
@@ -44,11 +44,11 @@ MAX_BLOOM_FILTER_SIZE = 36000
 MAX_BLOOM_HASH_FUNCS = 50
 
 COIN = 100000000  # 1 btc in satoshis
-MAX_MONEY = 60221400 * COIN
+MAX_MONEY = 84000000 * COIN
 
 BIP125_SEQUENCE_NUMBER = 0xfffffffd  # Sequence number that is BIP 125 opt-in and BIP 68-opt-out
 
-MAX_PROTOCOL_MESSAGE_LENGTH = 4000000  # Maximum length of incoming protocol messages
+MAX_PROTOCOL_MESSAGE_LENGTH = 32 * 1000 * 1000 # Maximum length of incoming protocol messages
 MAX_HEADERS_RESULTS = 2000  # Number of headers sent in one getheaders result
 MAX_INV_SIZE = 50000  # Maximum number of entries in an 'inv' protocol message
 
@@ -58,6 +58,7 @@ NODE_BLOOM = (1 << 2)
 NODE_WITNESS = (1 << 3)
 NODE_COMPACT_FILTERS = (1 << 6)
 NODE_NETWORK_LIMITED = (1 << 10)
+NODE_MWEB_LIGHT_CLIENT = (1 << 23)
 NODE_MWEB = (1 << 24)
 
 MSG_TX = 1
@@ -73,6 +74,10 @@ MSG_MWEB_BLOCK = MSG_BLOCK | MSG_WITNESS_FLAG | MSG_MWEB_FLAG
 MSG_MWEB_TX = MSG_WITNESS_TX | MSG_MWEB_FLAG
 MSG_MWEB_HEADER = 8 | MSG_MWEB_FLAG
 MSG_MWEB_LEAFSET = 9 | MSG_MWEB_FLAG
+
+MWEB_UTXO_FORMAT_FULL = 0
+MWEB_UTXO_FORMAT_HASH_ONLY = 1
+MWEB_UTXO_FORMAT_COMPACT = 2
 
 FILTER_TYPE_BASIC = 0
 
@@ -157,7 +162,7 @@ def ser_fixed_bytes(u, size):
         #rs += struct.pack("B", u & 0xFF)
         #u >>= 8
     return rs
-
+    
 
 def deser_pubkey(f):
     r = 0
@@ -172,7 +177,7 @@ def ser_pubkey(u):
         rs += struct.pack("B", u & 0xFF)
         u >>= 8
     return rs
-
+    
 
 def deser_signature(f):
     r = 0
@@ -187,7 +192,7 @@ def ser_signature(u):
         rs += struct.pack("B", u & 0xFF)
         u >>= 8
     return rs
-
+        
 
 
 # deser_function_name: Allow for an alternate deserialization function on the
@@ -698,7 +703,7 @@ class CTransaction:
             % (self.nVersion, repr(self.vin), repr(self.vout), repr(self.wit), self.nLockTime)
 
     def __eq__(self, other):
-            return isinstance(other, CTransaction) and repr(self) == repr(other)
+        return isinstance(other, CTransaction) and repr(self) == repr(other)
 
 class CBlockHeader:
     __slots__ = ("hash", "hashMerkleRoot", "hashPrevBlock", "nBits", "nNonce",
@@ -762,7 +767,7 @@ class CBlockHeader:
             r += struct.pack("<I", self.nNonce)
             self.sha256 = uint256_from_str(hash256(r))
             self.hash = encode(hash256(r)[::-1], 'hex_codec').decode('ascii')
-            self.scrypt256 = uint256_from_str(ferrite_scrypt.getPoWHash(r))
+            self.scrypt256 = uint256_from_str(litecoin_scrypt.getPoWHash(r))
 
     def rehash(self):
         self.sha256 = None
@@ -924,7 +929,7 @@ class P2PHeaderAndShortIDs:
         self.prefilled_txn = deser_vector(f, PrefilledTransaction)
         self.prefilled_txn_length = len(self.prefilled_txn)
         
-        if len(self.prefilled_txn) > 0 and self.prefilled_txn[-1].tx.hogex:
+        if f.tell() < len(f.getbuffer()):
             self.mweb_block = deser_mweb_block(f)
                 
     # When using version 2 compact blocks, we must serialize with_witness.
@@ -1934,7 +1939,7 @@ class Hash:
 
     def __init__(self, val = 0):
         self.val = val
-
+        
     @classmethod
     def from_hex(cls, hex_str):
         return cls(int(hex_str, 16))
@@ -1942,11 +1947,11 @@ class Hash:
     @classmethod
     def from_rev_hex(cls, hex_str):
         return cls(int(hex_reverse(hex_str), 16))
-
+        
     @classmethod
     def from_byte_arr(cls, b):
         return cls(deser_uint256(BytesIO(b)))
-
+    
     def to_hex(self):
         return self.serialize().hex()
 
@@ -2030,7 +2035,7 @@ def deser_mweb_tx(f):
         return mweb_tx.deserialize(f)
     else:
         return None
-
+        
 
 class MWEBInput:
     __slots__ = ("features", "output_id", "commitment", "input_pubkey",
@@ -2072,7 +2077,7 @@ class MWEBInput:
             r += ser_fixed_bytes(self.extradata, len(self.extradata))
         r += ser_signature(self.signature)
         return r
-
+    
     def rehash(self):
         self.hash = blake3(self.serialize())
         return self.hash.to_hex()
@@ -2114,7 +2119,7 @@ class MWEBOutputMessage:
             r += ser_compact_size(len(self.extradata))
             r += ser_fixed_bytes(self.extradata, len(self.extradata))
         return r
-
+    
     def rehash(self):
         self.hash = blake3(self.serialize())
         return self.hash.to_hex()
@@ -2150,7 +2155,7 @@ class MWEBOutput:
         r += ser_fixed_bytes(self.proof, 675)
         r += ser_signature(self.signature)
         return r
-
+    
     def rehash(self):
         self.hash = blake3(self.serialize())
         return self.hash.to_hex()
@@ -2190,6 +2195,36 @@ class MWEBCompactOutput:
     def __repr__(self):
         return "MWEBCompactOutput(commitment=%s)" % (repr(self.commitment))
 
+class MWEBNetUTXO:
+    __slots__ = ("leaf_index", "output", "output_format")
+
+    def __init__(self, output_format=MWEB_UTXO_FORMAT_HASH_ONLY):
+        self.leaf_index = 0
+        self.output = None
+        self.output_format = output_format
+
+    def deserialize(self, f):
+        self.leaf_index = deser_compact_size(f)
+        if self.output_format == MWEB_UTXO_FORMAT_FULL:
+            self.output = MWEBOutput()
+            self.output.deserialize(f)
+        elif self.output_format == MWEB_UTXO_FORMAT_HASH_ONLY:
+            self.output = Hash.deserialize(f)
+        elif self.output_format == MWEB_UTXO_FORMAT_COMPACT:
+            self.output = MWEBCompactOutput()
+            self.output.deserialize(f)
+        else:
+            raise ValueError("Unsupported MWEB UTXO serialization format %d" % self.output_format)
+
+    def serialize(self):
+        r = ser_compact_size(self.leaf_index)
+        r += self.output.serialize()
+        return r
+
+    def __repr__(self):
+        return "MWEBNetUTXO(leaf_index=%d, output=%s)" % (self.leaf_index, repr(self.output))
+
+
 class MWEBKernel:
     __slots__ = ("features", "fee", "pegin", "pegouts", "lock_height",
                 "stealth_excess", "extradata", "excess", "signature", "hash")
@@ -2216,13 +2251,13 @@ class MWEBKernel:
             self.pegin = deser_varint(f)
         self.pegouts = None
         if self.features & 4:
-            self.pegouts =  []# TODO: deser_vector(f, CPegout)
+            self.pegouts = deser_vector(f, MWEBPegOut)
         self.lock_height = None
         if self.features & 8:
             self.lock_height = deser_varint(f)
         self.stealth_excess = None
         if self.features & 16:
-            self.stealth_excess = Hash.deserialize(f)
+            self.stealth_excess = deser_pubkey(f)
         self.extradata = None
         if self.features & 32:
             self.extradata = deser_fixed_bytes(f, deser_compact_size(f))
@@ -2242,20 +2277,41 @@ class MWEBKernel:
         if self.features & 8:
             r += ser_varint(self.lock_height)
         if self.features & 16:
-            r += self.stealth_excess.serialize()
+            r += ser_pubkey(self.stealth_excess)
         if self.features & 32:
             r += ser_compact_size(len(self.extradata))
             r += ser_fixed_bytes(self.extradata, len(self.extradata))
         r += ser_pubkey(self.excess)
         r += ser_signature(self.signature)
         return r
-
+    
     def rehash(self):
         self.hash = blake3(self.serialize())
         return self.hash.to_hex()
 
     def __repr__(self):
         return "MWEBKernel(features=%d, excess=%s)" % (self.features, repr(self.excess))
+
+
+class MWEBPegOut:
+    __slots__ = ("amount", "script_pubkey")
+
+    def __init__(self):
+        self.amount = 0
+        self.script_pubkey = b""
+
+    def deserialize(self, f):
+        self.amount = deser_varint(f)
+        self.script_pubkey = deser_string(f)
+
+    def serialize(self):
+        r = b""
+        r += ser_varint(self.amount)
+        r += ser_string(self.script_pubkey)
+        return r
+
+    def __repr__(self):
+        return "MWEBPegOut(amount=%d, script_pubkey=%s)" % (self.amount, repr(self.script_pubkey))
 
 class MWEBTxBody:
     __slots__ = ("inputs", "outputs", "kernels")
@@ -2302,7 +2358,7 @@ class MWEBTransaction:
         r += self.stealth_offset.serialize()
         r += self.body.serialize()
         return r
-
+    
     def rehash(self):
         self.hash = blake3(self.serialize())
         return self.hash.to_hex()
@@ -2474,15 +2530,15 @@ class msg_getmwebutxos:
 
     def deserialize(self, f):
         self.block_hash = Hash.deserialize(f)
-        self.start_index = deser_varint(f)
-        self.num_requested = (struct.unpack("<B", f.read(1))[0] << 8) + struct.unpack("<B", f.read(1))[0]
+        self.start_index = deser_compact_size(f)
+        self.num_requested = struct.unpack("<H", f.read(2))[0]
         self.output_format = struct.unpack("B", f.read(1))[0]
 
     def serialize(self):
         r = b""
         r += self.block_hash.serialize()
-        r += ser_varint(self.start_index)
-        r += struct.pack("B", self.num_requested >> 8) + struct.pack("B", self.num_requested & 0xFF)
+        r += ser_compact_size(self.start_index)
+        r += struct.pack("<H", self.num_requested)
         r += struct.pack("B", self.output_format)
         return r
 
@@ -2504,22 +2560,22 @@ class msg_mwebutxos:
 
     def deserialize(self, f):
         self.block_hash = Hash.deserialize(f)
-        self.start_index = deser_varint(f)
+        self.start_index = deser_compact_size(f)
         self.output_format = struct.unpack("B", f.read(1))[0]
 
-        if self.output_format == 0:
-            self.utxos = deser_vector(f, Hash)
-        elif self.output_format == 1:
-            self.utxos = deser_vector(f, MWEBOutput)
-        else:
-            self.utxos = deser_vector(f, MWEBCompactOutput)
+        utxos_len = deser_compact_size(f)
+        self.utxos = []
+        for _ in range(utxos_len):
+            utxo = MWEBNetUTXO(self.output_format)
+            utxo.deserialize(f)
+            self.utxos.append(utxo)
 
         self.proof_hashes = deser_vector(f, Hash)
 
     def serialize(self):
         r = b""
         r += self.block_hash.serialize()
-        r += ser_varint(self.start_index)
+        r += ser_compact_size(self.start_index)
         r += struct.pack("B", self.output_format)
         r += ser_vector(self.utxos)
         r += ser_vector(self.proof_hashes)

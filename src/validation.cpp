@@ -1829,7 +1829,7 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
         try {
             view.GetMWEBCacheView()->UndoBlock(blockUndo.mwundo);
         } catch (const std::exception& e) {
-            error("DisconnectBlock(): Failed to disconnect MWEB block");
+            error("DisconnectBlock(): Failed to disconnect MWEB block: %s", e.what());
             return DISCONNECT_FAILED;
         }
     }
@@ -2711,7 +2711,14 @@ bool CChainState::ConnectTip(BlockValidationState& state, const CChainParams& ch
         bool rv = ConnectBlock(blockConnecting, state, pindexNew, view, chainparams);
         GetMainSignals().BlockChecked(blockConnecting, state);
         if (!rv) {
-            if (state.IsInvalid())
+            if (state.IsInvalid()) {
+                InvalidBlockFound(pindexNew, state);
+                if (state.GetResult() == BlockValidationResult::BLOCK_MUTATED) {
+                    // The same block hash may be valid with different
+                    // non-committed data, so do not retain these bytes.
+                    EraseBlockData(pindexNew);
+                }
+            }
                 InvalidBlockFound(pindexNew, state);
             return error("%s: ConnectBlock %s failed, %s", __func__, pindexNew->GetBlockHash().ToString(), state.ToString());
         }
@@ -4523,6 +4530,16 @@ bool CChainState::RollforwardBlock(const CBlockIndex* pindex, CCoinsViewCache& i
         // Pass check = true as every addition may be an overwrite.
         AddCoins(inputs, *tx, pindex->nHeight, true);
     }
+
+	    if (!block.mweb_block.IsNull()) {
+        // ReplayBlocks recovers after undo data was already written, so the
+        // MWEB undo produced here is only needed transiently while applying state.
+        CBlockUndo blockundo;
+        BlockValidationState state;
+        if (!MWEB::Node::ConnectBlock(block, params.GetConsensus(), pindex->pprev, blockundo, *inputs.GetMWEBCacheView(), state)) {
+            return error("ReplayBlock(): MWEB ConnectBlock failed at %d, hash=%s (%s)", pindex->nHeight, pindex->GetBlockHash().ToString(), state.ToString());
+        }
+    }
     return true;
 }
 
@@ -4557,6 +4574,10 @@ bool CChainState::ReplayBlocks(const CChainParams& params)
         pindexFork = LastCommonAncestor(pindexOld, pindexNew);
         assert(pindexFork != nullptr);
     }
+
+	// DB_BEST_BLOCK is erased while DB_HEAD_BLOCKS marks an interrupted flush, so
+    // initialize the MWEB replay cache from the old head tracked in DB_HEAD_BLOCKS.
+    cache.GetMWEBCacheView()->SetBestHeader(pindexOld ? pindexOld->mweb_header : nullptr);
 
     // Rollback along the old branch.
     while (pindexOld != pindexFork) {

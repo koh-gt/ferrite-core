@@ -59,6 +59,13 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
 
+static std::vector<uint256> GetFrozenMWEBOutputIDs()
+{
+    return {
+		uint256(ParseHex("0000000000000000000000000000000000000000000000000000000000000fec")),
+    };
+}
+
 /**
  * Main network
  */
@@ -105,16 +112,19 @@ public:
         // MWEB will be automatically activated after block 99999999 for now.
 
         // The best chain should have at least this much work.
-	    consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000023343814f3f8d19a"); 
-        // A total of 2 536 714 152 760 103 322 hashes (2.537 EH) of work as of block 200 000.
+
+	consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000064294d02b1db55a8"); 
+	// A total of 7 217 384 551 807 145 384 hashes (7.217 EH) of work as of block 292 000.
 	    
+	// consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000064294d02b1db55a8"); 
+	// A total of 7 217 384 551 807 145 384 hashes (7.217 EH) of work as of block 292 000.    
         // consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000023343814f3f8d19a"); 
         // A total of 2 536 714 152 760 103 322 hashes (2.537 EH) of work as of block 200 000.
-	    //consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000001aba64d960a7fb79"); 
-        // A total of 1 925 962 675 446 610 809 hashes (1.926 EH) of work as of block 178 000. 
-	    // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000088358036fda6c15"); 
+	//consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000001aba64d960a7fb79"); 
+	// A total of 1 925 962 675 446 610 809 hashes (1.926 EH) of work as of block 178 000. 
+	// consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000088358036fda6c15"); 
         // A total of   613 430 746 037 251 093 hashes (613.4 PH) of work as of block 154 000. MWEB Activation height 150 120.
-	    // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000050c151ee81a40c9");  
+	// consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000050c151ee81a40c9");  
         // A total of   363 688 892 397 404 361 hashes (363.7 PH) of work as of block 149 000.
         // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000009cec62dc44b76d");  
         // A total of    44 170 005 713 303 405 hashes (44.17 PH) of work as of block 100 000.
@@ -126,31 +136,28 @@ public:
         // A total of       187 976 044 125 601 hashes (188.0 TH) of work as of block  10 000.
         
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0xf2ac05fbd6974e9292ca462368a15bbb1818a442c2f5e72a4035165f3ae9ea01");  
-        // Block 178000
-
-        // consensus.defaultAssumeValid = uint256S("0xf2ac05fbd6974e9292ca462368a15bbb1818a442c2f5e72a4035165f3ae9ea01");  
-        // Block 200000
-	    // consensus.defaultAssumeValid = uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb");  
-        // Block 178000    
-	    // consensus.defaultAssumeValid = uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2");  
-        // Block 154000    
-        // consensus.defaultAssumeValid = uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1");  
-        // Block 149000
-        // consensus.defaultAssumeValid = uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297");  
-        // Block 100000
-        // consensus.defaultAssumeValid = uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286");  
-        // Block 60000
-        // consensus.defaultAssumeValid = uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95");  
-        // Block 30000
-        // consensus.defaultAssumeValid = uint256S("0xf5da0fabe25733a186805366c0fdede73e2454e782083676e7627b8ec991ef9b");  
-        // Block 10000
+        consensus.defaultAssumeValid = uint256S("0xb42d405513ca11a37bda4420f99577861258a593627401c6143026799e63d1e3");  
+	// Block 292000
+	
+	// consensus.defaultAssumeValid = uint256S("0xb42d405513ca11a37bda4420f99577861258a593627401c6143026799e63d1e3");  // Block 292000
+        // consensus.defaultAssumeValid = uint256S("0xf2ac05fbd6974e9292ca462368a15bbb1818a442c2f5e72a4035165f3ae9ea01");  // Block 200000
+	// consensus.defaultAssumeValid = uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb");  // Block 178000    
+	// consensus.defaultAssumeValid = uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2");  // Block 154000    
+        // consensus.defaultAssumeValid = uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1");  // Block 149000
+        // consensus.defaultAssumeValid = uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297");  // Block 100000
+        // consensus.defaultAssumeValid = uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286");  // Block 60000
+        // consensus.defaultAssumeValid = uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95");  // Block 30000
+        // consensus.defaultAssumeValid = uint256S("0xf5da0fabe25733a186805366c0fdede73e2454e782083676e7627b8ec991ef9b");  // Block 10000
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 32-bit integer with any alignment.
          */
+
+		consensus.mweb_input_metadata_grandfather_blockhash = uint256S("0x0000000000000000000000000000000000000000000000000000000000000fec");
+        consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
+		
         pchMessageStart[0] = 0x4a;
         pchMessageStart[1] = 0x82;
         pchMessageStart[2] = 0x10;
@@ -201,18 +208,19 @@ public:
                 {    30000, uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95")},
                 {    60000, uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286")},
                 {   100000, uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297")},
-		        {   149000, uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1")},
-		        {   154000, uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2")},
-		        {   178000, uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb")},
+		{   149000, uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1")},
+		{   154000, uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2")},
+		{   178000, uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb")},
                 {   200000, uint256S("0xf2ac05fbd6974e9292ca462368a15bbb1818a442c2f5e72a4035165f3ae9ea01")},  // added 20240922
+		{   292000, uint256S("0xb42d405513ca11a37bda4420f99577861258a593627401c6143026799e63d1e3")},  // added 20250216
             }
         };
 
         chainTxData = ChainTxData{
-            /* nTime    */ 1726928677,
-            /* nTxCount */ 273404,
-            /* dTxRate  */ 0.00587725
-        };  // height 201408
+            /* nTime    */ 1739659360,
+            /* nTxCount */ 470349,
+            /* dTxRate  */ 0.02641943
+        };  // height 292107
     }
 };
 
@@ -261,6 +269,8 @@ public:
         consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000000000019a894b");
 	// 26 904907  (26.9 MH) hashes of work since block 250. (testnet)
         consensus.defaultAssumeValid = uint256S("0xd710251db07b4b5ad58ff59edcda83642af83e757fdf791424cf9d85e977bd65");
+		consensus.mweb_input_metadata_grandfather_blockhash = uint256S("0x0000000000000000000000000000000000000000000000000000000000000fec");
+        consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
 
         pchMessageStart[0] = 0xba;
         pchMessageStart[1] = 0x76;
