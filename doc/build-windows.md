@@ -5,7 +5,7 @@ Below are some notes on how to build Ferrite Core for Windows.
 
 The options known to work for building Ferrite Core on Windows are:
 
-* On Linux, using the [Mingw-w64](https://mingw-w64.org/doku.php) cross compiler tool chain. Ubuntu Bionic 18.04 is required
+* On Linux, using the [Mingw-w64](https://mingw-w64.org/doku.php) cross compiler tool chain. Ubuntu Jammy Jellyfish 22.04 is required
 and is the platform used to build the Ferrite Core Windows release binaries.
 * On Windows, using [Windows
 Subsystem for Linux (WSL)](https://docs.microsoft.com/windows/wsl/about) and the Mingw-w64 cross compiler tool chain.
@@ -38,7 +38,7 @@ To install WSL on Windows 10 with Fall Creators Update installed (version >= 162
   * Enable 'Windows Subsystem for Linux'
   * Click 'OK' and restart if necessary
 2. Install Ubuntu
-  * Open Microsoft Store and search for "Ubuntu 18.04" or use [this link](https://www.microsoft.com/store/productId/9N9TNGVNDL3Q)
+  * Open Microsoft Store and search for "Ubuntu 22.04" or use [this link](https://www.microsoft.com/store/productId/9N9TNGVNDL3Q)
   * Click Install
 3. Complete Installation
   * Open a cmd prompt and type "Ubuntu1804"
@@ -55,7 +55,7 @@ The steps below can be performed on Ubuntu (including in a VM) or WSL. The depen
 will also work on other Linux distributions, however the commands for
 installing the toolchain will be different.
 
-First, install the general dependencies:
+First, install the general dependencies (you need to get the dependencies in build-unix first!):
 
     sudo apt update
     sudo apt upgrade
