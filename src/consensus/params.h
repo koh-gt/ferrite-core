@@ -100,6 +100,9 @@ struct Params {
     /** Optional one-block grandfather for the known MWEB input-metadata exploit. */
     uint256 mweb_input_metadata_grandfather_blockhash;
 
+    /** MWEB kernels signaling pegouts must contain at least one pegout at and after this height. */
+    int mweb_pegout_feature_activation_height;
+
     /** Frozen MWEB output IDs that may not be spent. */
     /** such as 0x0000000000000000000000000000000000000000000000000000000000000fec */
     std::vector<uint256> frozen_mweb_output_ids;
