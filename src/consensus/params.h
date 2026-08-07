@@ -103,6 +103,9 @@ struct Params {
     /** MWEB kernels signaling pegouts must contain at least one pegout at and after this height. */
     int mweb_pegout_feature_activation_height;
 
+    /** MWEB kernels signaling extra data must contain non-empty extra data at and after this height. */
+    int mweb_extradata_feature_activation_height;
+
     /** Frozen MWEB output IDs that may not be spent. */
     /** such as 0x0000000000000000000000000000000000000000000000000000000000000fec */
     std::vector<uint256> frozen_mweb_output_ids;

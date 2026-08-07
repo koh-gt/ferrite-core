@@ -167,6 +167,9 @@ public:
         // MWEB kernels that set the pegout feature must carry a pegout from this height on (upstream b250b016a).
         // Provisional: not active until set to a height shortly after the release, as upstream did.
         consensus.mweb_pegout_feature_activation_height = 99'999'999;
+        // MWEB kernels that set the extra-data feature must carry non-empty extra data from this height on
+        // (upstream a399fc4ca). Provisional, same as above.
+        consensus.mweb_extradata_feature_activation_height = 99'999'999;
 
         pchMessageStart[0] = 0x4a;
         pchMessageStart[1] = 0x82;
@@ -282,6 +285,7 @@ public:
         consensus.mweb_input_metadata_grandfather_blockhash = uint256();
         consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
         consensus.mweb_pegout_feature_activation_height = 0;
+        consensus.mweb_extradata_feature_activation_height = 0;
 
         pchMessageStart[0] = 0xba;
         pchMessageStart[1] = 0x76;
@@ -391,6 +395,7 @@ public:
         consensus.nMinimumChainWork = uint256{};
         consensus.defaultAssumeValid = uint256{};
         consensus.mweb_pegout_feature_activation_height = 0;
+        consensus.mweb_extradata_feature_activation_height = 0;
         consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
         pchMessageStart[0] = 0xfa;
         pchMessageStart[1] = 0xbf;
