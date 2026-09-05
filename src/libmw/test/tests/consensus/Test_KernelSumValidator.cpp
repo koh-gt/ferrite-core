@@ -5,6 +5,7 @@
 
 #include <mw/consensus/KernelSumValidator.h>
 #include <mw/consensus/Aggregation.h>
+#include <mw/consensus/StealthSumValidator.h>
 #include <mw/crypto/Pedersen.h>
 #include <mw/node/CoinsView.h>
 
@@ -175,6 +176,9 @@ BOOST_AUTO_TEST_CASE(ValidateForBlockWithoutBuilder)
 
 BOOST_AUTO_TEST_CASE(ValidateForTx)
 {
+    KernelSumValidator::SumState incremental_sums;
+    StealthSumValidator::SumState incremental_stealth_sums;
+
     // Standard transaction - 2 inputs, 2 outputs, 1 kernel
     mw::Transaction::CPtr tx1 = test::TxBuilder()
         .AddInput(5'000'000).AddInput(6'000'000)
@@ -182,6 +186,10 @@ BOOST_AUTO_TEST_CASE(ValidateForTx)
         .AddPlainKernel(500'000)
         .Build().GetTransaction();
     KernelSumValidator::ValidateForTx(*tx1);
+    incremental_sums = KernelSumValidator::ValidateAndAdd(*tx1, incremental_sums);
+    incremental_stealth_sums = StealthSumValidator::ValidateAndAdd(
+        tx1->GetStealthOffset(), tx1->GetBody(), incremental_stealth_sums
+    );
 
     // Pegin transaction - 1 output, 1 kernel
     mw::Transaction::CPtr tx2 = test::TxBuilder()
@@ -189,6 +197,10 @@ BOOST_AUTO_TEST_CASE(ValidateForTx)
         .AddPeginKernel(8'000'000)
         .Build().GetTransaction();
     KernelSumValidator::ValidateForTx(*tx2);
+    incremental_sums = KernelSumValidator::ValidateAndAdd(*tx2, incremental_sums);
+    incremental_stealth_sums = StealthSumValidator::ValidateAndAdd(
+        tx2->GetStealthOffset(), tx2->GetBody(), incremental_stealth_sums
+    );
 
     // Pegout transaction - 2 inputs, 1 output, 1 kernel
     mw::Transaction::CPtr tx3 = test::TxBuilder()
@@ -197,10 +209,31 @@ BOOST_AUTO_TEST_CASE(ValidateForTx)
         .AddPegoutKernel(4'500'000, 500'000)
         .Build().GetTransaction();
     KernelSumValidator::ValidateForTx(*tx3);
+    incremental_sums = KernelSumValidator::ValidateAndAdd(*tx3, incremental_sums);
+    incremental_stealth_sums = StealthSumValidator::ValidateAndAdd(
+        tx3->GetStealthOffset(), tx3->GetBody(), incremental_stealth_sums
+    );
 
     // Aggregate all 3
     mw::Transaction::CPtr pAggregated = Aggregation::Aggregate({ tx1, tx2, tx3 });
     KernelSumValidator::ValidateForTx(*pAggregated);
+
+    const KernelSumValidator::SumState aggregate_sums = KernelSumValidator::ValidateAndAdd(
+        *pAggregated, KernelSumValidator::SumState{}
+    );
+    BOOST_CHECK(incremental_sums.utxo_sum == aggregate_sums.utxo_sum);
+    BOOST_CHECK(incremental_sums.kernel_sum == aggregate_sums.kernel_sum);
+    BOOST_CHECK(incremental_sums.kernel_offset == aggregate_sums.kernel_offset);
+    BOOST_CHECK_EQUAL(incremental_sums.positive_supply, aggregate_sums.positive_supply);
+    BOOST_CHECK_EQUAL(incremental_sums.negative_supply, aggregate_sums.negative_supply);
+
+    const StealthSumValidator::SumState aggregate_stealth_sums = StealthSumValidator::ValidateAndAdd(
+        pAggregated->GetStealthOffset(),
+        pAggregated->GetBody(),
+        StealthSumValidator::SumState{}
+    );
+    BOOST_CHECK(incremental_stealth_sums.lhs == aggregate_stealth_sums.lhs);
+    BOOST_CHECK(incremental_stealth_sums.rhs == aggregate_stealth_sums.rhs);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
