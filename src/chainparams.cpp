@@ -165,12 +165,11 @@ public:
         // No block is exempt from the MWEB input-metadata check (null = disabled), and no MWEB outputs are frozen.
         consensus.mweb_input_metadata_grandfather_blockhash = uint256();
         consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
-        // MWEB kernels that set the pegout feature must carry a pegout from this height on (upstream b250b016a).
-        // Provisional: not active until set to a height shortly after the release, as upstream did.
-        consensus.mweb_pegout_feature_activation_height = 99'999'999;
-        // MWEB kernels that set the extra-data feature must carry non-empty extra data from this height on
-        // (upstream a399fc4ca). Provisional, same as above.
-        consensus.mweb_extradata_feature_activation_height = 99'999'999;
+        // MWEB soft fork in v3.3.0, from height 1,150,000 (expected late December 2026): kernels that set the
+        // pegout feature must carry a pegout (upstream b250b016a), and kernels that set the extra-data feature
+        // must carry non-empty extra data (upstream a399fc4ca).
+        consensus.mweb_pegout_feature_activation_height = 1'150'000;
+        consensus.mweb_extradata_feature_activation_height = 1'150'000;
 
         pchMessageStart[0] = 0x4a;
         pchMessageStart[1] = 0x82;
