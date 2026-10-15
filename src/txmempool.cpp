@@ -892,7 +892,7 @@ void CTxMemPool::check(const CCoinsViewCache *pcoins) const
         uint64_t nSizeCheck = it->GetTxSize();
         CAmount nFeesCheck = it->GetModifiedFee();
         int64_t nSigOpCheck = it->GetSigOpCost();
-		uint64_t nMWEBWeightCheck = it->GetMWEBWeight();
+        uint64_t nMWEBWeightCheck = it->GetMWEBWeight();
 
         for (txiter ancestorIt : setAncestors) {
             nSizeCheck += ancestorIt->GetTxSize();
