@@ -59,11 +59,17 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
 
+/**
+ * MWEB output IDs that consensus forbids spending.
+ *
+ * Litecoin Core v0.21.5.4+ freezes one output on Litecoin's chain after its 2026
+ * MWEB incident. Ferrite does not blacklist any outputs or addresses, so this
+ * list is intentionally empty. The consensus and wallet plumbing is kept so the
+ * code stays in sync with upstream.
+ */
 static std::vector<uint256> GetFrozenMWEBOutputIDs()
 {
-    return {
-		uint256(ParseHex("0000000000000000000000000000000000000000000000000000000000000fec")),
-    };
+    return {};
 }
 
 /**
@@ -155,9 +161,10 @@ public:
          * a large 32-bit integer with any alignment.
          */
 
-		consensus.mweb_input_metadata_grandfather_blockhash = uint256S("0x0000000000000000000000000000000000000000000000000000000000000fec");
+        // No block is exempt from the MWEB input-metadata check (null = disabled), and no MWEB outputs are frozen.
+        consensus.mweb_input_metadata_grandfather_blockhash = uint256();
         consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
-		
+
         pchMessageStart[0] = 0x4a;
         pchMessageStart[1] = 0x82;
         pchMessageStart[2] = 0x10;
@@ -269,7 +276,7 @@ public:
         consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000000000019a894b");
 	// 26 904907  (26.9 MH) hashes of work since block 250. (testnet)
         consensus.defaultAssumeValid = uint256S("0xd710251db07b4b5ad58ff59edcda83642af83e757fdf791424cf9d85e977bd65");
-		consensus.mweb_input_metadata_grandfather_blockhash = uint256S("0x0000000000000000000000000000000000000000000000000000000000000fec");
+        consensus.mweb_input_metadata_grandfather_blockhash = uint256();
         consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
 
         pchMessageStart[0] = 0xba;
