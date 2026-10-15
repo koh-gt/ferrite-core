@@ -18,7 +18,7 @@
 #define CLIENT_VERSION_MAJOR 3
 
 /* Minor version */
-#define CLIENT_VERSION_MINOR 2
+#define CLIENT_VERSION_MINOR 3
 
 /* Build revision */
 #define CLIENT_VERSION_REVISION 0
@@ -33,7 +33,7 @@
 #define COPYRIGHT_HOLDERS_SUBSTITUTION "Ferrite Core"
 
 /* Copyright year */
-#define COPYRIGHT_YEAR 2024
+#define COPYRIGHT_YEAR 2026
 
 /* Define to 1 to enable wallet functions */
 #define ENABLE_WALLET 1
@@ -253,7 +253,7 @@
 #define PACKAGE_NAME "Ferrite Core"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Ferrite Core 3.2.0"
+#define PACKAGE_STRING "Ferrite Core 3.3.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "ferrite"
@@ -262,7 +262,7 @@
 #define PACKAGE_URL "https://ferritecoin.org/"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "3.2.0"
+#define PACKAGE_VERSION "3.3.0"
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
