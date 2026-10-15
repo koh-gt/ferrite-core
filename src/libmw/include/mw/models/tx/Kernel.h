@@ -138,7 +138,7 @@ public:
         return total;
     }
 
-   boost::optional<CAmount> GetSupplyChange() const noexcept
+    boost::optional<CAmount> GetSupplyChange() const noexcept
     {
         const CAmount pegin = m_pegin.value_or(0);
         const CAmount fee = m_fee.value_or(0);

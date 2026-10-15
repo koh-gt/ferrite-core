@@ -340,7 +340,7 @@ class P2PInterface(P2PConnection):
         vt.addrFrom.ip = "0.0.0.0"
         vt.addrFrom.port = 0
         self.on_connection_send_msg = vt  # Will be sent in connection_made callback
-        
+
     def peer_connect(self, *args, services=NODE_NETWORK|NODE_WITNESS|NODE_MWEB, send_version=True, **kwargs):
         create_conn = super().peer_connect(*args, **kwargs)
 
@@ -446,7 +446,7 @@ class P2PInterface(P2PConnection):
     def wait_for_connect(self, timeout=60):
         test_function = lambda: self.is_connected
         wait_until_helper(test_function, timeout=timeout, lock=p2p_lock)
-  
+
     def wait_for_disconnect(self, timeout=60):
         test_function = lambda: not self.is_connected
         self.wait_until(test_function, timeout=timeout, check_connected=False)

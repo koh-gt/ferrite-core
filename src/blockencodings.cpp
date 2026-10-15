@@ -61,7 +61,7 @@ ReadStatus PartiallyDownloadedBlock::InitData(const CBlockHeaderAndShortTxIDs& c
         return READ_STATUS_INVALID;
 
     if (!header.IsNull() || !txn_available.empty()) return READ_STATUS_INVALID;
-        
+
     header = cmpctblock.header;
     mweb_block = cmpctblock.mweb_block;
     txn_available.resize(cmpctblock.BlockTxCount());
@@ -188,7 +188,7 @@ bool PartiallyDownloadedBlock::IsTxAvailable(size_t index) const
 ReadStatus PartiallyDownloadedBlock::FillBlock(CBlock& block, const std::vector<CTransactionRef>& vtx_missing)
 {
     if (header.IsNull()) return READ_STATUS_INVALID;
-        
+
     uint256 hash = header.GetHash();
     block = header;
     block.mweb_block = mweb_block;

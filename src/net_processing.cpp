@@ -563,12 +563,12 @@ static void PushNodeVersion(CNode& pnode, CConnman& connman, int64_t nTime)
 static bool MarkBlockAsReceived(const uint256& hash, Optional<NodeId> from_peer) EXCLUSIVE_LOCKS_REQUIRED(cs_main) {
     std::map<uint256, std::pair<NodeId, std::list<QueuedBlock>::iterator> >::iterator itInFlight = mapBlocksInFlight.find(hash);
     if (itInFlight != mapBlocksInFlight.end()) {
-		auto node_id = itInFlight->second.first;
+        auto node_id = itInFlight->second.first;
         if (from_peer && node_id != *from_peer) {
             // Block was requested by another peer
             return true;
         }
-		
+
         CNodeState *state = State(itInFlight->second.first);
         assert(state != nullptr);
         state->nBlocksInFlightValidHeaders -= itInFlight->second.second->fValidatedHeaders;
@@ -1603,14 +1603,14 @@ static void ActivateBestChainIfNeeded(const CChainParams& chainparams, const CIn
     } // release cs_main before calling ActivateBestChain
 
     if (need_activate_chain) {
-	// Grab the current most_recent_block and pass it to ActivateBestChain
+        // Grab the current most_recent_block and pass it to ActivateBestChain
         // which hopefully will prevent needing to load blocks from disk.
         std::shared_ptr<const CBlock> a_recent_block;
         {
             LOCK(cs_most_recent_block);
             a_recent_block = most_recent_block;
         }
-	    
+
         BlockValidationState state;
         if (!ActivateBestChain(state, chainparams, a_recent_block)) {
             LogPrint(BCLog::NET, "failed to activate chain (%s)\n", state.ToString());
@@ -1741,11 +1741,11 @@ void static ProcessGetBlockData(CNode& pfrom, const CChainParams& chainparams, c
                 } else {
                     connman.PushMessage(&pfrom, msgMaker.Make(nSendFlags, NetMsgType::BLOCK, *pblock));
                 }
-	    } else if (inv.IsMsgMWEBHeader()) {
+            } else if (inv.IsMsgMWEBHeader()) {
                 if (pblock->GetHogEx() != nullptr && !pblock->mweb_block.IsNull()) {
                     CMerkleBlockWithMWEB merkle_block_with_mweb(*pblock);
                     connman.PushMessage(&pfrom, msgMaker.Make(NetMsgType::MWEBHEADER, merkle_block_with_mweb));
-                } 
+                }
             }
         }
 
@@ -1816,7 +1816,7 @@ static void ProcessGetMWEBLeafset(CNode& pfrom, const ChainstateManager& chainma
         LogPrint(BCLog::NET, "Ignoring mweb leafset request from peer=%d because node is in initial block download\n", pfrom.GetId());
         return;
     }
-	
+
     CBlockIndex* pindex = LookupBlockIndex(inv.hash);
     if (!pindex || !chainman.ActiveChain().Contains(pindex)) {
         LogPrint(BCLog::NET, "Ignoring mweb leafset request from peer=%d because requested block hash is not in active chain\n", pfrom.GetId());
@@ -1994,7 +1994,7 @@ static void ProcessGetMWEBUTXOs(CNode& pfrom, const ChainstateManager& chainman,
         utxos.push_back(NetUTXO(get_utxos.output_format, utxo));
     }
 
-        std::vector<mw::Hash> proof_hashes = segment.hashes;
+    std::vector<mw::Hash> proof_hashes = segment.hashes;
     if (segment.lower_peak) {
         proof_hashes.push_back(*segment.lower_peak);
     }
@@ -2105,8 +2105,8 @@ void static ProcessGetData(CNode& pfrom, Peer& peer, const ChainstateManager& ch
         const CInv &inv = *it++;
         if (inv.IsGenBlkMsg()) {
             ProcessGetBlockData(pfrom, chainparams, inv, connman);
-	} else if (inv.IsMsgMWEBLeafset()) {
-            ProcessGetMWEBLeafset(pfrom, chainman, chainparams, inv, connman);	
+        } else if (inv.IsMsgMWEBLeafset()) {
+            ProcessGetMWEBLeafset(pfrom, chainman, chainparams, inv, connman);
         }
         // else: If the first item on the queue is an unknown type, we erase it
         // and continue processing the queue on the next call.
@@ -2826,7 +2826,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
             // Get recent addresses
             m_connman.PushMessage(&pfrom, CNetMsgMaker(greatest_common_version).Make(NetMsgType::GETADDR));
             pfrom.fGetAddr = true;
-	    // When requesting a getaddr, accept an additional MAX_ADDR_TO_SEND addresses in response
+            // When requesting a getaddr, accept an additional MAX_ADDR_TO_SEND addresses in response
             // (bypassing the MAX_ADDR_PROCESSING_TOKEN_BUCKET limit).
             peer->m_addr_token_bucket += MAX_ADDR_TO_SEND;
         }
@@ -2986,7 +2986,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
         int64_t nNow = GetAdjustedTime();
         int64_t nSince = nNow - 10 * 60;
 
-	// Update/increment addr rate limiting bucket.
+        // Update/increment addr rate limiting bucket.
         const auto current_time{GetTime<std::chrono::microseconds>()};
         if (peer->m_addr_token_bucket < MAX_ADDR_PROCESSING_TOKEN_BUCKET) {
             // Don't increment bucket if it's already full
@@ -2999,13 +2999,13 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
         const bool rate_limited = !pfrom.HasPermission(NetPermissionFlags::PF_ADDR);
         uint64_t num_proc = 0;
         uint64_t num_rate_limit = 0;
-        Shuffle(vAddr.begin(), vAddr.end(), FastRandomContext());    
+        Shuffle(vAddr.begin(), vAddr.end(), FastRandomContext());
         for (CAddress& addr : vAddr)
         {
             if (interruptMsgProc)
                 return;
-		
-	    // Apply rate limiting.
+
+            // Apply rate limiting.
             if (peer->m_addr_token_bucket < 1.0) {
                 if (rate_limited) {
                     ++num_rate_limit;
@@ -3027,7 +3027,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
                 // Do not process banned/discouraged addresses beyond remembering we received them
                 continue;
             }
-	    ++num_proc;
+            ++num_proc;
             bool fReachable = IsReachable(addr);
             if (addr.nTime > nSince && !pfrom.fGetAddr && vAddr.size() <= 10 && addr.IsRoutable())
             {
@@ -3038,11 +3038,11 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
             if (fReachable)
                 vAddrOk.push_back(addr);
         }
-	peer->m_addr_processed += num_proc;
+        peer->m_addr_processed += num_proc;
         peer->m_addr_rate_limited += num_rate_limit;
         LogPrint(BCLog::NET, "Received addr: %u addresses (%u processed, %u rate-limited) from peer=%d\n",
                  vAddr.size(), num_proc, num_rate_limit, pfrom.GetId());
-	    
+
         m_connman.AddNewAddresses(vAddrOk, pfrom.addr, 2 * 60 * 60);
         if (vAddr.size() < 1000)
             pfrom.fGetAddr = false;
