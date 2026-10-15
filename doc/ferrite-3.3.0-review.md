@@ -1,8 +1,9 @@
-# Ferrite Core v3.2.1 draft: review, fixes and suggestions
+# Ferrite Core v3.3.0: review of the v3.2.1 draft, fixes and suggestions
 
 | | |
 |---|---|
 | Branch reviewed | `ferrite-backup-3.2.1-draft` at `9406190` (160 commits ahead of `ferrite-main`, 17 behind) |
+| Release | **v3.3.0** (maintainer's decision, 2026-10-15), MWEB soft fork at height **1,150,000** |
 | Added by this review | fixes (§2), the Litecoin v0.21.5.6–v0.21.5.8 port (§5), clean-ups; listed in Appendix B |
 | Merge base with `ferrite-main` | `fa52e12` (2024-12-20, "add h250000 graphic") |
 | Upstream reference | Litecoin Core `v0.21.3`, `v0.21.4`, `v0.21.5.4` … `v0.21.5.8` (github.com/litecoin-project/litecoin) |
@@ -38,8 +39,8 @@ The commands the maintainer needs (mainnet node queries, pushing the branch) are
 5. **Upstream v0.21.5.6 – v0.21.5.8 is now ported (§5).** The range has 26 upstream commits (an
    earlier draft of this review said 32): 22 code commits were cherry-picked with `-x`, and the 4
    Litecoin-only ones (three version bumps and a DNS seed) were skipped. Two of the ported rules are
-   new soft forks. They are switched off on mainnet (height 99,999,999) until Ferrite picks an
-   activation height (**MANUAL REVIEW**, §5.2).
+   new soft forks. They activate on mainnet at height **1,150,000** (expected 24–29 December 2026);
+   miners and pools must run v3.3.0 before then (§5.2).
 6. **RPC contract (§6).** No RPC was added or removed, no argument changed, and the `help` output of
    every command is identical to `ferrite-main`. Five behaviour differences (one new error, one
    nullable field, one bug fix and two test-chain/wallet-file details) are listed for
@@ -57,8 +58,8 @@ The commands the maintainer needs (mainnet node queries, pushing the branch) are
 10. **Build tooling** that is still broken but out of scope here (missing executable bits, depends
     Boost recipe, BDB instructions) is listed in §10.
 11. **Roadmap** analysis for a 1 FEC tail emission, difficulty-algorithm changes, post-quantum
-    options and a CPU-oriented proof of work is in §11, together with a version-number suggestion
-    for this release (v3.3.0 rather than v3.2.1, §11.7).
+    options and a CPU-oriented proof of work is in §11. This release is **v3.3.0** (§11.7), with
+    draft release notes in `doc/ferrite-release-notes/release-notes-3.3.0.md`.
 
 ---
 
@@ -134,7 +135,7 @@ Ferrite-specific commits in the range, all reviewed:
 | Commit | Change | Assessment |
 |---|---|---|
 | `4887eb6` | Checkpoint 292,000; chain stats; min-chain-work / assumevalid at 292,000 | OK (now ~20 months old; refresh in §8) |
-| `03bccc7`, `5030ce1` | Version 3.2.1, copyright 2026 | OK |
+| `03bccc7`, `5030ce1` | Version 3.2.1, copyright 2026 | OK (version now 3.3.0, `f98423e`) |
 | `e23911c` | Re-applies Ferrite names in `test_framework.py` after the upstream paste | OK |
 | `c260888` | `KERNEL_LOCK_HEIGHT_GRANDFATHER_HEIGHT = 903'321` (3rd halving) | **MANUAL REVIEW M2** |
 | `f6e10cf`, `e1ff9d9`, `190b983` | Frozen-output / grandfather placeholders | Replaced by P1 |
@@ -153,7 +154,7 @@ Ferrite exempts no block, which is correct only if Ferrite's own history contain
 
 | ID | Rule | Upstream commit | Applies to Ferrite blocks | Risk if a past block violates it |
 |---|---|---|---|---|
-| M1 | MWEB input commitment/pubkey must equal the spent UTXO (`UTXO_MISMATCH`) | `e7cbf1d56`, grandfather `1dcbf3fce` | All MWEB blocks since activation (≈150,120) | v3.2.1 nodes stop at that block (chain split from v3.2.0 nodes) |
+| M1 | MWEB input commitment/pubkey must equal the spent UTXO (`UTXO_MISMATCH`) | `e7cbf1d56`, grandfather `1dcbf3fce` | All MWEB blocks since activation (≈150,120) | v3.3.0 nodes stop at that block (chain split from v3.2.0 nodes) |
 | M2 | Kernel lock height ≤ block height | `a54900438`, Ferrite height `c260888` | Heights > 903,321 (already in the past) | Same |
 | M3 | No HogEx marker before MWEB activation; HogEx fee/amount mismatch = consensus error; duplicate peg-in guards; kernel fee overflow | `b9bd99a4e`, `7564f05e6`, `8f8ad64d0`, `42e7071a4` | All blocks | Same, though honest history should never trip these |
 
@@ -219,7 +220,7 @@ Upstream requires GBT callers to declare both `segwit` and `mweb`. Ferrite comme
 requires `segwit`.
 
 **Decision (maintainer, 2026-10-15): keep the relaxed check.** Several Ferrite pools are not fully
-MWEB-aware yet, so v3.2.1 keeps accepting segwit-only callers. `mweb_mining.py` now asserts this
+MWEB-aware yet, so v3.3.0 keeps accepting segwit-only callers. `mweb_mining.py` now asserts this
 policy (a segwit-only request succeeds and the template still carries the MWEB block) instead of
 upstream's strict check (`4dbcc3a`).
 
@@ -281,7 +282,7 @@ Litecoin's), `60ba533` (`MalformedMWEBOutputKeys` uses a Ferrite-encoded key), `
 | `b250b016a`, `a399fc4ca`, `b4313c34d` | `chainparams.cpp`: Litecoin's activation heights, grandfather hash and frozen-output list | New parameters added with Ferrite values (§5.2); P1 (no frozen outputs, no grandfathered block) unchanged |
 | `f6afd2682` | `BlockBuilder.cpp` whitespace around D4's restored guard | Upstream text taken; the file is now identical to upstream v0.21.5.8 |
 
-### 5.2 Two new soft-fork rules need an activation height (MANUAL REVIEW)
+### 5.2 Two new soft-fork rules, active from height 1,150,000
 
 `b250b016a` and `a399fc4ca` make two kernel encodings invalid: the pegout feature bit with an empty
 pegout list, and the extra-data feature bit with empty extra data. Both encodings are malleable
@@ -289,18 +290,19 @@ variants of a kernel, which is what the mutated-block fixes above are about. Ups
 height (Litecoin mainnet: 3,154,440, "one expected week after height 3,150,408" per upstream's comment,
 and 3,172,640, which `b4313c34d` moved forward from 3,200,000).
 
-In this branch, Ferrite mainnet uses **99,999,999 for both, so neither rule is active**. Testnet and
-regtest use 0, as upstream does. Standardness policy keeps both encodings out of v3.2.1 mempools and
+**Decision (maintainer, 2026-10-15): both rules activate on mainnet at height 1,150,000** (`8e4538f`;
+the rule applies to blocks at height ≥ 1,150,000). Testnet and regtest use 0, as upstream does.
+`Test_Kernel` pins the mainnet value. Standardness policy keeps both encodings out of v3.3.0 mempools and
 templates (empty pegout kernels since `67580d6e3`; any kernel with the extra-data bit was already
 non-standard on v3.2.0), so the rules only matter against a miner who includes them on purpose.
 
-Choosing the height:
-- It must be in the future when v3.2.1 is released, and miners holding most of the hash rate must
-  run v3.2.1 by then. Otherwise a v3.2.0 pool can mine such a kernel and split from upgraded nodes.
+How the height was chosen:
+- It must be in the future when v3.3.0 is released, and miners holding most of the hash rate must
+  run v3.3.0 by then. Otherwise a v3.2.0 pool can mine such a kernel and split from upgraded nodes.
 - Ferrite ships both rules in one release, so one height for both is simpler than Litecoin's two.
-- Suggested: the next multiple of 10,000 at least **six weeks** of blocks after the planned release
-  (pools upgrade slowly). If pools cannot commit to that, keep 99,999,999 and activate in a later
-  release. Before activation, the mutated-block handling in this port already protects nodes.
+- Rule of thumb: the next multiple of 10,000 at least **six weeks** of blocks after the release,
+  because pools upgrade slowly. Until activation, the mutated-block handling in this port already
+  protects nodes.
 - Block rate from the maintainer's node: 64.3 s per block over the last 10,080 blocks (about 1,340
   blocks a day, 9,400 a week); 69.4 s over the 4,096 blocks before that. Tip on 2026-10-15
   21:32 UTC: 1,057,002. Candidate heights:
@@ -312,9 +314,9 @@ Choosing the height:
   | 1,140,000 | 82,998 (~8.8 weeks) | 2026-12-16 .. 2026-12-21 |
   | 1,150,000 | 92,998 (~9.9 weeks) | 2026-12-24 .. 2026-12-29 |
 
-  With a release by early November, 1,140,000 leaves about six weeks for pools.
-- When the height is chosen, change both lines in `CMainParams` and the pinned values in
-  `src/libmw/test/tests/models/tx/Test_Kernel.cpp` in the same commit.
+  The maintainer chose **1,150,000**, about ten weeks after the 2026-10-15 tip, which leaves pools
+  more than six weeks even if the release slips into November. Announce the height to pools with
+  the release.
 - `mweb_history_check.py` reports past kernels that would break either rule (X1/P1). They are
   harmless for the history, since the rules only start at the activation height, but any recent
   hits mean someone is producing such kernels on Ferrite.
@@ -322,9 +324,9 @@ Choosing the height:
 ### 5.3 Undo-data format change (release-notes item)
 
 `22a916236` stores the peg-out flag of spent coins in the block undo files (`rev*.dat`, bit 31 of
-the height code). A v3.2.0 binary reading undo data written by v3.2.1 decodes a wrong height for spent
-peg-out coins if it disconnects such a block in a reorg. Release notes should say: after running
-v3.2.1, a downgrade needs `-reindex-chainstate` to be safe.
+the height code). A v3.2.0 binary reading undo data written by v3.3.0 decodes a wrong height for spent
+peg-out coins if it disconnects such a block in a reorg. The release notes say: after running
+v3.3.0, a downgrade needs `-reindex-chainstate` to be safe.
 
 ---
 
@@ -340,7 +342,7 @@ v3.2.1, a downgrade needs `-reindex-chainstate` to be safe.
 
 **Result: same 139 commands on both builds, and the `help` output of every command is byte-identical**
 (both dumps have MD5 `2a66b2212bc5fb8bcf7cba450b656d13`). No argument, type, default or documented
-result field changed.
+result field changed. Re-checked on the final v3.3.0 build: still identical.
 
 The source differences, all marked **MANUAL REVIEW** because they change behaviour, not shape:
 
@@ -370,7 +372,8 @@ Environment: Ubuntu 24.04, GCC 13.3, Boost 1.83, system BerkeleyDB 5.3 (`--with-
 `./configure --enable-tests --disable-bench`, with and without `--with-gui=qt5`, Python 3.12 with
 `blake3` installed (needed by the MWEB functional tests).
 
-**Build:** `make` exits 0 on the final tree (all commits in Appendix B). `ferrited`, `ferrite-cli`,
+**Build:** `make` exits 0 on the final tree (all commits in Appendix B; `ferrited -version` reports
+v3.3.0). The unit and functional results below were re-run on that build and did not change. `ferrited`, `ferrite-cli`,
 `ferrite-tx`, `ferrite-wallet`, `test_ferrite` and, with `--with-gui=qt5` (Qt 5.15, QR codes on),
 `ferrite-qt` link. The only warnings are GCC 13 `-Wdangling-reference` false positives in
 `rpc/mining.cpp`, Boost filesystem deprecations and Qt deprecations, all in unchanged upstream code.
@@ -546,13 +549,14 @@ for older soft forks) in a later release. That simplifies code and removes signa
   1. CI green: build, MWEB functional tests (a starter workflow is below).
   2. §4 mainnet re-validation: the RPC scan (step 1) passed on 2026-10-15; the
      `-reindex-chainstate` with the release build (step 2) remains before tagging.
-  3. Activation height for the two new MWEB rules decided (§5.2), pools informed.
+  3. Activation height for the two new MWEB rules: decided, 1,150,000 (§5.2). Inform the pools.
   4. Checkpoints and chain statistics refreshed (§8): done; confirm the five hashes on a second,
      independent node or explorer.
   5. A depends build verified for each release platform (B2/B3).
-  6. Release notes: MWEB fixes, the undo-format note (§5.3), "no frozen outputs" (P1), the
-     `getblocktemplate` policy (M4), the activation height, and that miners and pools should
-     upgrade before it.
+  6. Release notes: drafted in `doc/ferrite-release-notes/release-notes-3.3.0.md` (MWEB fixes,
+     the activation height and upgrade notice, "no frozen outputs", the `getblocktemplate` policy,
+     RPC differences, the undo-format note). Add the download table and SHA-256 hashes when the
+     binaries are built, and check the "Full Changelog" link (it assumes a `v3.2.0` tag).
 - Use a merge commit (`--no-ff`) rather than a squash. The 160-commit history is already public on the
   backup branch, and Appendices A and B refer to those hashes.
 
@@ -781,8 +785,8 @@ estimated attack cost (rentable hash rate × price × hours needed) for each opt
 
 ### 11.6 Ordering
 
-1. This release (v3.3.0 or v3.2.1, §11.7): fixes in this branch, the §5 port, §4 re-validation,
-   checkpoints (§8), the §5.2 activation height. No hard fork.
+1. This release (v3.3.0, §11.7): fixes in this branch, the §5 port, §4 re-validation,
+   checkpoints (§8), the §5.2 soft fork at 1,150,000. No hard fork.
 2. Soft forks that need no pool changes, in a later minor release: bury Taproot if active (§8),
    `COINBASE_MATURITY` (§11.4), the post-quantum output type once the scheme is chosen (§11.3).
 3. v4.0.0 hard fork with one activation height, announced months ahead and run on testnet first:
@@ -791,13 +795,13 @@ estimated attack cost (rentable hash rate × price × hours needed) for each opt
 
 ### 11.7 Version number for this release
 
-v3.3.0 describes this release better than v3.2.1. It brings new consensus checks that apply to all
-blocks (§4), two soft-fork rules waiting for an activation height (§5.2), a change to the undo-data
-format that makes downgrades need a reindex (§5.3), new peer-discouragement rules, and new mempool
-policy. A patch-level number suggests a drop-in bug fix, while pools and exchanges need to plan for
-this upgrade. The P2P protocol version (70017) is unchanged either way. To switch, set
-`_CLIENT_VERSION_MINOR` to 3 and `_CLIENT_VERSION_REVISION` to 0 in `configure.ac`; the user agent
-becomes `/FerriteCore:3.3.0/`.
+**Decision (maintainer, 2026-10-15): v3.3.0** (`f98423e`). It describes this release better than
+v3.2.1. It brings new consensus checks that apply to all blocks (§4), a soft fork at 1,150,000
+(§5.2), a change to the undo-data format that makes downgrades need a reindex (§5.3), new
+peer-discouragement rules, and new mempool policy. A patch-level number would suggest a drop-in bug
+fix, while pools and exchanges need to plan for this upgrade. The P2P protocol version (70017) is
+unchanged. The version is set in `configure.ac` and in `build_msvc/bitcoin_config.h` (which was
+still at 3.2.0); the user agent is now `/FerriteCore:3.3.0/`.
 
 ---
 
@@ -865,20 +869,20 @@ summary ending in `RESULT: no M1/M2 violations` or a list of problems; paste the
 
 ### 12.3 Pushing this branch (Windows Command Prompt)
 
-The branch is delivered as a git bundle, `ferrite-3.2.1-review.bundle`: 47 commits on top of
+The branch is delivered as a git bundle, `ferrite-3.3.0.bundle`: 51 commits on top of
 `origin/ferrite-backup-3.2.1-draft` at `9406190`, ending with this document's update. Save it to
 your Downloads folder, then in your clone:
 
 ```bat
 cd /d C:\path\to\ferrite-core
 git fetch origin
-git bundle verify "%USERPROFILE%\Downloads\ferrite-3.2.1-review.bundle"
-git fetch "%USERPROFILE%\Downloads\ferrite-3.2.1-review.bundle" ferrite-backup-3.2.1-draft:review-fixes
+git bundle verify "%USERPROFILE%\Downloads\ferrite-3.3.0.bundle"
+git fetch "%USERPROFILE%\Downloads\ferrite-3.3.0.bundle" ferrite-backup-3.2.1-draft:review-fixes
 git log --oneline origin/ferrite-backup-3.2.1-draft..review-fixes
 git push origin review-fixes:ferrite-backup-3.2.1-draft
 ```
 
-`git log` should list 47 commits, the newest being the update of this document. The push
+`git log` should list 51 commits, the newest being the update of this document. The push
 only succeeds as a fast-forward; if it is rejected, someone pushed to the branch after `9406190`.
 Stop there, because the bundle then has to be rebased on the new commits. To bring your local branch
 along afterwards: `git checkout ferrite-backup-3.2.1-draft` then `git merge --ff-only review-fixes`.
@@ -886,7 +890,7 @@ along afterwards: `git checkout ferrite-backup-3.2.1-draft` then `git merge --ff
 Without a clone, start with `git clone https://github.com/koh-gt/ferrite-core.git` and
 `cd ferrite-core`.
 
-### 12.4 Merging into `ferrite-main` (only after the §9 gates)
+### 12.4 Merging into `ferrite-main` and tagging v3.3.0 (only after the §9 gates)
 
 ```bat
 git fetch origin
@@ -894,7 +898,11 @@ git checkout ferrite-main
 git merge --ff-only origin/ferrite-main
 git merge --no-ff origin/ferrite-backup-3.2.1-draft -m "Merge branch 'ferrite-backup-3.2.1-draft' into ferrite-main"
 git push origin ferrite-main
+git tag -a v3.3.0 -m "Ferrite Core v3.3.0"
+git push origin v3.3.0
 ```
+
+Build the release binaries from the tag, then add their SHA-256 hashes to the release notes.
 
 ---
 
@@ -952,6 +960,10 @@ original author.
 | 44 | `37d3304` | contrib: add a read-only MWEB history checker | — (this review) |
 | 45 | `3873d59` | doc: update the v3.2.1 review for the v0.21.5.6-v0.21.5.8 port | — (this review) |
 | 46 | `d7809d1` | chainparams: add checkpoints up to 1,000,000 and refresh chain statistics | — (this review) |
+| 47 | `ea4ca4e` | doc: record the mainnet re-validation and checkpoint verification | — (this review) |
+| 48 | `f98423e` | build: bump version to 3.3.0 | — (this review) |
+| 49 | `8e4538f` | chainparams: activate the MWEB kernel-feature rules at height 1,150,000 | — (this review) |
+| 50 | `13a540d` | doc: add draft release notes for v3.3.0 | — (this review) |
 
 ---
 
