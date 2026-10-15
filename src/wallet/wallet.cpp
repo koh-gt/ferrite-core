@@ -1708,7 +1708,6 @@ CAmount CWallet::GetCredit(const CTransaction& tx, const boost::optional<MWEB::W
     }
 
     for (const PegOutCoin& pegout : tx.mweb_tx.GetPegOuts()) {
-
         LOCK(cs_wallet);
         if (IsMine(DestinationAddr(pegout.GetScriptPubKey())) & filter) {
             nCredit += pegout.GetAmount();
@@ -2400,10 +2399,10 @@ CAmount CWalletTx::GetAvailableCredit(bool fUseCache, const isminefilter& filter
     CAmount nCredit = 0;
     for (const CTxOutput& output : GetOutputs())
     {
-		if (output.IsMWEB() && IsFrozenMWEBOutput(*pwallet, output.ToMWEB())) {
+        if (output.IsMWEB() && IsFrozenMWEBOutput(*pwallet, output.ToMWEB())) {
             continue;
         }
-		
+
         if (!pwallet->IsSpent(output.GetIndex()) && (allow_used_addresses || !pwallet->IsSpentKey(output))) {
             nCredit += pwallet->GetCredit(output, filter);
             if (!MoneyRange(nCredit))
@@ -2701,7 +2700,7 @@ void CWallet::AvailableCoins(std::vector<COutputCoin>& vCoins, bool fOnlySafe, c
             if (coinControl && ((output.IsMWEB() && coinControl->fPegIn) || (!output.IsMWEB() && coinControl->fPegOut)))
                 continue;
 
-			if (output.IsMWEB() && IsFrozenMWEBOutput(*this, output.ToMWEB())) {
+            if (output.IsMWEB() && IsFrozenMWEBOutput(*this, output.ToMWEB())) {
                 continue;
             }
 
