@@ -132,7 +132,7 @@ Example usage:
 mweb\_history\_check.py
 =======================
 
-Read-only scan of a synced node's MWEB history against the MWEB rules added in Ferrite Core v3.2.1:
+Read-only scan of a synced node's MWEB history against the MWEB rules added in Ferrite Core v3.3.0:
 every MWEB input must match the output it spends, and kernel lock heights above 903,321 must not
 exceed the block height. Kernels that would break the two MWEB rules that start at a future
 activation height are reported for information. The script only calls `getblockchaininfo`,

@@ -2,7 +2,7 @@
 # Copyright (c) 2026 The Ferrite Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
-"""Read-only scan of Ferrite's MWEB history against the MWEB rules added in v3.2.1.
+"""Read-only scan of Ferrite's MWEB history against the MWEB rules added in v3.3.0.
 
 For every block from MWEB activation to the tip it checks:
   M1  each MWEB input's commitment and output pubkey match the output it spends
@@ -10,12 +10,12 @@ For every block from MWEB activation to the tip it checks:
   M2  kernel lock_height <= block height, for blocks above 903,321
       (Litecoin a54900438; Ferrite KERNEL_LOCK_HEIGHT_GRANDFATHER_HEIGHT)
   X1  kernels that set the extra-data feature carry non-empty extra data
-      (Litecoin a399fc4ca; only enforced from mweb_extradata_feature_activation_height)
-  P1  kernels that set the pegout feature carry a pegout (Litecoin b250b016a; only enforced
-      from mweb_pegout_feature_activation_height). RPC does not show a kernel's pegouts, so
-      this is a lower bound: a block is reported when it has more pegout-feature kernels than
-      HogEx pegout outputs.
-M1 and M2 apply to past blocks: a violation means v3.2.1 would reject that block.
+      (Litecoin a399fc4ca; enforced from mweb_extradata_feature_activation_height, 1,150,000 on mainnet)
+  P1  kernels that set the pegout feature carry a pegout (Litecoin b250b016a; enforced from
+      mweb_pegout_feature_activation_height, 1,150,000 on mainnet). RPC does not show a kernel's
+      pegouts, so this is a lower bound: a block is reported when it has more pegout-feature
+      kernels than HogEx pegout outputs.
+M1 and M2 apply to past blocks: a violation means v3.3.0 would reject that block.
 X1 and P1 only start at a future height; past violations are reported for information.
 
 The script only calls getblockchaininfo, getblockhash and getblock. It changes nothing.
