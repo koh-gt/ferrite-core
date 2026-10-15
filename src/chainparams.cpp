@@ -119,9 +119,9 @@ public:
 
         // The best chain should have at least this much work.
 
-        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000064294d02b1db55a8"); 
-        // A total of 7 217 384 551 807 145 384 hashes (7.217 EH) of work as of block 292 000.
-            
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000006aefe2248ff21e3f");
+        // A total of 7 705 626 134 115 917 375 hashes (7.706 EH) of work as of block 1 046 922.
+
         // consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000064294d02b1db55a8"); 
         // A total of 7 217 384 551 807 145 384 hashes (7.217 EH) of work as of block 292 000.    
         // consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000023343814f3f8d19a"); 
@@ -142,9 +142,10 @@ public:
         // A total of       187 976 044 125 601 hashes (188.0 TH) of work as of block  10 000.
         
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0xb42d405513ca11a37bda4420f99577861258a593627401c6143026799e63d1e3");  
-        // Block 292000
+        consensus.defaultAssumeValid = uint256S("0x189f2e593168534ec9fe3b393d2543ff7804ce74a6fe5018f9267fa89f9e652d");
+        // Block 1046922
         
+        // consensus.defaultAssumeValid = uint256S("0x189f2e593168534ec9fe3b393d2543ff7804ce74a6fe5018f9267fa89f9e652d");  // Block 1046922
         // consensus.defaultAssumeValid = uint256S("0xb42d405513ca11a37bda4420f99577861258a593627401c6143026799e63d1e3");  // Block 292000
         // consensus.defaultAssumeValid = uint256S("0xf2ac05fbd6974e9292ca462368a15bbb1818a442c2f5e72a4035165f3ae9ea01");  // Block 200000
         // consensus.defaultAssumeValid = uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb");  // Block 178000    
@@ -226,14 +227,20 @@ public:
                 {   178000, uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb")},
                 {   200000, uint256S("0xf2ac05fbd6974e9292ca462368a15bbb1818a442c2f5e72a4035165f3ae9ea01")},  // added 20240922
                 {   292000, uint256S("0xb42d405513ca11a37bda4420f99577861258a593627401c6143026799e63d1e3")},  // added 20250216
+                {   450000, uint256S("0x3fed4270c7fdae13403707a82c4e7ad0bc9d5dec1e4d277ed2e2bf3dc14002b9")},  // added 20261015, Taproot signalling start (active from 450080)
+                {   602214, uint256S("0x2399672fc2e4303198f56734ccfe43202e0657de61a92141343f4c16e05e05f1")},  // added 20261015, 2nd halving (25 FEC)
+                {   750000, uint256S("0x5b6bc3044a65a0a6625275b0bf0eaa4f080de0dc1b9431cc82ca1f434a0905f5")},  // added 20261015
+                {   903321, uint256S("0xb0ef59c7fc0e42672d2b660cee3f00dbb84ca90e80a4ddf0aaad3f4f2ddd6115")},  // added 20261015, 3rd halving (12.5 FEC)
+                {  1000000, uint256S("0xc75f4a8694eb7ef8b398bef7510feb37495e9c6994ae3be0594190295b3cc247")},  // added 20261015
             }
         };
 
         chainTxData = ChainTxData{
-            /* nTime    */ 1739659360,
-            /* nTxCount */ 470349,
-            /* dTxRate  */ 0.02641943
-        };  // height 292107
+            // Data from RPC: getchaintxstats 4096 189f2e593168534ec9fe3b393d2543ff7804ce74a6fe5018f9267fa89f9e652d
+            /* nTime    */ 1791451691,
+            /* nTxCount */ 2023430,
+            /* dTxRate  */ 0.0297290455060091
+        };  // height 1046922
     }
 };
 
