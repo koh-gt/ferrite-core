@@ -208,7 +208,8 @@ Environment: Ubuntu 24.04, GCC 13.3, Boost 1.83, system BerkeleyDB 5.3 (`--with-
 
 **Build:** `make` exits 0. `ferrited`, `ferrite-cli`, `ferrite-tx`, `ferrite-wallet`, `test_ferrite`
 link. The only warnings are GCC 13 `-Wdangling-reference` false positives in `rpc/mining.cpp` and Boost
-filesystem deprecations, both in unchanged upstream code.
+filesystem deprecations, both in unchanged upstream code. A second build with `--with-gui=qt5` (Qt 5.15,
+QR codes on) also links `ferrite-qt`, with only Qt deprecation warnings in unchanged GUI code.
 
 ### 6.1 Unit tests (`make check`)
 
