@@ -2719,7 +2719,6 @@ bool CChainState::ConnectTip(BlockValidationState& state, const CChainParams& ch
                     EraseBlockData(pindexNew);
                 }
             }
-                InvalidBlockFound(pindexNew, state);
             return error("%s: ConnectBlock %s failed, %s", __func__, pindexNew->GetBlockHash().ToString(), state.ToString());
         }
         nTime3 = GetTimeMicros(); nTimeConnectTotal += nTime3 - nTime2;
