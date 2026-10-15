@@ -1,9 +1,10 @@
 // Copyright(C) 2011 - 2020 The Litecoin Core developers
+// Copyright (c) 2023 The Ferrite Core Developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef LITECOIN_MWEB_MODELS_H
-#define LITECOIN_MWEB_MODELS_H
+#ifndef FERRITE_MWEB_MODELS_H
+#define FERRITE_MWEB_MODELS_H
 
 #include <amount.h>
 #include <mw/models/block/Block.h>
@@ -232,4 +233,4 @@ struct Tx {
 
 } // namespace MWEB
 
-#endif // LITECOIN_MWEB_MODELS_H
+#endif // FERRITE_MWEB_MODELS_H

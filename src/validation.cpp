@@ -4561,7 +4561,7 @@ bool CChainState::RollforwardBlock(const CBlockIndex* pindex, CCoinsViewCache& i
         AddCoins(inputs, *tx, pindex->nHeight, true);
     }
 
-	    if (!block.mweb_block.IsNull()) {
+    if (!block.mweb_block.IsNull()) {
         // ReplayBlocks recovers after undo data was already written, so the
         // MWEB undo produced here is only needed transiently while applying state.
         CBlockUndo blockundo;
@@ -4605,7 +4605,7 @@ bool CChainState::ReplayBlocks(const CChainParams& params)
         assert(pindexFork != nullptr);
     }
 
-	// DB_BEST_BLOCK is erased while DB_HEAD_BLOCKS marks an interrupted flush, so
+    // DB_BEST_BLOCK is erased while DB_HEAD_BLOCKS marks an interrupted flush, so
     // initialize the MWEB replay cache from the old head tracked in DB_HEAD_BLOCKS.
     cache.GetMWEBCacheView()->SetBestHeader(pindexOld ? pindexOld->mweb_header : nullptr);
 
