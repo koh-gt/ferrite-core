@@ -259,6 +259,21 @@ The remaining failures are all test vectors that were never adapted from Litecoi
 | `rpc_blockchain.py` | ❌ | `gettxoutsetinfo` expects Litecoin's 8,725 coins; Ferrite regtest has exactly twice that (100 vs 50 subsidy). Test data, pre-existing. |
 | `mweb_node_compatibility.py`, `mweb_wallet_address.py`, `mweb_wallet_upgrade.py` | skipped | need previous-release binaries |
 
+**Baseline comparison.** On `ferrite-main` (with the same test-enabling fixes), `test_runner.py` aborts
+before running any test: the framework's cache clean-up calls `os.remove()` on the `indexes`
+directory. The draft fixes that through its port of upstream `0c59e996e`. Run directly, the MWEB tests
+compare as follows:
+
+| Test | `ferrite-main` | Draft |
+|---|---|---|
+| `mweb_pegout_all.py`, `mweb_reorg.py`, `mweb_wallet_basic.py` | ✅ pass | ✅ pass |
+| `mweb_p2p.py` | ❌ does not parse (`IndentationError`, line 45) | ✅ pass |
+| `mweb_basic.py` | ❌ Litecoin amounts | ✅ pass (after `06cb170`) |
+| `mweb_weight.py` | ❌ same `bad-txns-vin-empty` (identical tx hash) | ❌ same |
+| `mweb_mining.py` | ✅ pass (older test without the GBT-rule assertion) | ❌ first assertion only (M4) |
+
+No test passes on `ferrite-main` and fails on the draft because of a code change.
+
 ### 6.3 Test debt worth a dedicated clean-up
 
 The Ferrite test suites still carry Litecoin vectors: base58 prefixes (WIF/addresses), the 50-coin
