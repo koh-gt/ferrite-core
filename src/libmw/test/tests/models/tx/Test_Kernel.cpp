@@ -19,9 +19,11 @@ BOOST_FIXTURE_TEST_SUITE(TestKernel, MWEBTestingSetup)
 
 BOOST_AUTO_TEST_CASE(FeatureActivationHeights_Test)
 {
+    // Ferrite mainnet: provisional heights until the activation height is chosen (see chainparams.cpp).
+    // Litecoin uses 3'154'440 and 3'172'640.
     const auto main_params = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
-    BOOST_REQUIRE_EQUAL(main_params->GetConsensus().mweb_pegout_feature_activation_height, 3'154'440);
-    BOOST_REQUIRE_EQUAL(main_params->GetConsensus().mweb_extradata_feature_activation_height, 3'172'640);
+    BOOST_REQUIRE_EQUAL(main_params->GetConsensus().mweb_pegout_feature_activation_height, 99'999'999);
+    BOOST_REQUIRE_EQUAL(main_params->GetConsensus().mweb_extradata_feature_activation_height, 99'999'999);
 
     const auto testnet_params = CreateChainParams(*m_node.args, CBaseChainParams::TESTNET);
     BOOST_REQUIRE_EQUAL(testnet_params->GetConsensus().mweb_pegout_feature_activation_height, 0);
