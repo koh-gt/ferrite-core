@@ -51,7 +51,7 @@ class MWEBBasicTest(BitcoinTestFramework):
             utxo1 = utxos[0]
           
         assert utxo0['amount'] == 10 and utxo0['address'] == addr0
-        assert 2 < utxo1['amount'] < 2.5 # change from single 12.5 FEC coinbase being spent
+        assert 14.5 < utxo1['amount'] < 15 # change from single 25 FEC coinbase (Ferrite regtest) being spent
 
         self.log.info("Send MWEB coins to node 1")
         addr1 = self.nodes[1].getnewaddress(address_type='mweb')
