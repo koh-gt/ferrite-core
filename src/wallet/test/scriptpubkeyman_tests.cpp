@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(MalformedMWEBOutputKeys)
     wallet.SetMinVersion(WalletFeature::FEATURE_HD_SPLIT);
     LegacyScriptPubKeyMan& keyman = *wallet.GetOrCreateLegacyScriptPubKeyMan();
 
-    CKey seed_key = DecodeSecret("6usgJoGKXW12i7Ruxy8Z1C5hrRMVGfLmi9NU9uDQJMPXDJ6tQAH");
+    CKey seed_key = DecodeSecret("6Uc11nRuSyD5xSskBS4Zc2HdwwM9pWPPUqT4yxGkNqJUoDkqbzZ"); // Ferrite encoding (prefix 163) of upstream's 6usgJo... key
     keyman.SetHDSeed(keyman.DeriveNewSeed(seed_key));
     keyman.TopUp();
 
