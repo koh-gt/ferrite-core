@@ -30,11 +30,11 @@ The commands the maintainer needs (mainnet node queries, pushing the branch) are
    that machinery with placeholder values (`0x…0fec`). Placeholders cannot match a real output or
    block, so nothing was frozen in practice, but the intent is now explicit: the frozen list is empty
    and the grandfather hash is null on mainnet and testnet (§2, P1).
-4. **Two retroactive consensus rules need a mainnet re-validation before release (MANUAL REVIEW, §4).**
-   Upstream's new MWEB input-metadata check and the kernel lock-height check apply to historical
-   blocks. If any past Ferrite block violates them, v3.2.1 nodes would stop at that block.
-   `contrib/devtools/mweb_history_check.py` checks both over RPC on a synced node (read-only), and
-   a `-reindex-chainstate` with this build is the definitive test (§4, §12).
+4. **Mainnet history passes the two retroactive MWEB rules (§4).** Upstream's MWEB input-metadata
+   check and the kernel lock-height check apply to historical blocks. The maintainer ran
+   `contrib/devtools/mweb_history_check.py` on a synced v3.2.0 node: the whole MWEB history
+   (heights 150,120 to 1,057,006) has no violation, so Ferrite needs no grandfathered block. A
+   `-reindex-chainstate` with the release build remains the final check before tagging (§4, §12).
 5. **Upstream v0.21.5.6 – v0.21.5.8 is now ported (§5).** The range has 26 upstream commits (an
    earlier draft of this review said 32): 22 code commits were cherry-picked with `-x`, and the 4
    Litecoin-only ones (three version bumps and a DNS seed) were skipped. Two of the ported rules are
@@ -44,10 +44,10 @@ The commands the maintainer needs (mainnet node queries, pushing the branch) are
    every command is identical to `ferrite-main`. Five behaviour differences (one new error, one
    nullable field, one bug fix and two test-chain/wallet-file details) are listed for
    **MANUAL REVIEW**. None affects a default mainnet configuration's request or response shape.
-7. **Checkpoints (requested: 450,000 / 602,214 / 750,000 / 903,321 / 1,000,000) are not added yet.**
-   The block hashes could not be obtained from inside the review environment, and a wrong checkpoint
-   hash forks a node off the network, so no placeholder was written. §8 and §12 have the node queries;
-   the pasted output is checked (hash and scrypt proof of work) before anything is written.
+7. **Checkpoints 450,000 / 602,214 / 750,000 / 903,321 / 1,000,000 are added (§8, `d7809d1`).**
+   The values come from the maintainer's synced node, and each header was verified independently
+   (hash and scrypt proof of work) before it was written. `nMinimumChainWork`, `defaultAssumeValid`
+   and `chainTxData` moved from block 292,000 to block 1,046,922.
 8. **Long-standing test breakage on `ferrite-main`** was found while running the tests. Since
    2023-02-06 the regtest genesis block has failed its own proof of work, so no regtest node could
    start. Regtest difficulty also exploded after height 26 under DGW. The unit-test binary has not
@@ -144,7 +144,7 @@ Ferrite-specific commits in the range, all reviewed:
 
 ---
 
-## 4. Consensus rules in this release that need a mainnet re-validation (MANUAL REVIEW)
+## 4. Mainnet re-validation of the rules that apply to past blocks
 
 The MWEB incident fixes add rules that are checked for **every block** during IBD, including
 historical ones. Checkpoints and `assumevalid` do **not** skip them (`assumevalid` only skips script
@@ -167,6 +167,25 @@ and output pubkey against the output it spends, in consensus order) and M2 (kern
 above 903,321). It also reports, for information, kernels that would break the two future rules of
 §5.2. It changes nothing on the node. It was tested on a regtest chain with MWEB peg-ins, transfers
 and peg-outs, and against a mock node with injected violations of each rule. Commands: §12.2.
+
+**Result (2026-10-15, maintainer's synced v3.2.0 node):**
+
+```
+Scanned heights 150120 to 1057006 (complete MWEB history)
+  blocks 906,887   mweb_blocks_with_data 61   inputs 92   outputs 150   kernels 94
+  pegout_kernels 33   hogex_pegouts 33   extradata_kernels 0   max_lock_height 0
+  unspent_mweb_outputs 58
+RESULT: no M1/M2 violations (heights 150120-1057006).
+```
+
+- **M1 holds for every MWEB input ever spent on Ferrite (92).** The scan saw all 150 MWEB outputs:
+  the `num_txos` count in the MWEB headers at heights 903,321 and later is also 150.
+- **M2 cannot fail:** no Ferrite kernel has ever used a lock height (`max_lock_height` 0). The MWEB
+  headers at 903,321, 1,000,000 and 1,046,922 also carry the same output count and kernel offset,
+  so no MWEB transaction was mined between those heights.
+- **X1/P1 (the future rules of §5.2):** no kernel in history would break them.
+- The empty grandfather hash and the empty frozen-output list (P1) are therefore correct for
+  Ferrite's chain. No consensus parameter change is needed.
 
 **Step 2: definitive re-validation with the release build (before tagging).** Only a full
 re-validation exercises M3 and every other consensus rule:
@@ -280,9 +299,20 @@ Choosing the height:
   run v3.2.1 by then. Otherwise a v3.2.0 pool can mine such a kernel and split from upgraded nodes.
 - Ferrite ships both rules in one release, so one height for both is simpler than Litecoin's two.
 - Suggested: the next multiple of 10,000 at least **six weeks** of blocks after the planned release
-  (pools upgrade slowly), computed from the node data in §12.1. If pools cannot commit to that,
-  keep 99,999,999 and activate in a later release. Before activation, the mutated-block handling
-  in this port already protects nodes.
+  (pools upgrade slowly). If pools cannot commit to that, keep 99,999,999 and activate in a later
+  release. Before activation, the mutated-block handling in this port already protects nodes.
+- Block rate from the maintainer's node: 64.3 s per block over the last 10,080 blocks (about 1,340
+  blocks a day, 9,400 a week); 69.4 s over the 4,096 blocks before that. Tip on 2026-10-15
+  21:32 UTC: 1,057,002. Candidate heights:
+
+  | Height | Blocks after 1,057,002 | Expected date (64.3 s .. 69.4 s per block) |
+  |---:|---:|---|
+  | 1,120,000 | 62,998 (~6.7 weeks) | 2026-12-01 .. 2026-12-05 |
+  | 1,130,000 | 72,998 (~7.8 weeks) | 2026-12-09 .. 2026-12-13 |
+  | 1,140,000 | 82,998 (~8.8 weeks) | 2026-12-16 .. 2026-12-21 |
+  | 1,150,000 | 92,998 (~9.9 weeks) | 2026-12-24 .. 2026-12-29 |
+
+  With a release by early November, 1,140,000 leaves about six weeks for pools.
 - When the height is chosen, change both lines in `CMainParams` and the pinned values in
   `src/libmw/test/tests/models/tx/Test_Kernel.cpp` in the same commit.
 - `mweb_history_check.py` reports past kernels that would break either rule (X1/P1). They are
@@ -454,36 +484,51 @@ Requested heights:
 (`GetBlockSubsidy` uses `nHeight / nSubsidyHalvingInterval`, so the "halving block" is the first block
 with the reduced subsidy: 602,214 and 903,321.)
 
-**Status: not added yet.** The review environment could not reach any Ferrite data source:
-`explorer.ferritecoin.org` is denied by the environment's network policy, and the `ferritecoin.org`
-domains did not resolve from the web tools. A placeholder hash would make every node reject the real
-block at that height, so none was written.
+**Status: added (`d7809d1`).** The review environment could not reach any Ferrite data source, so the
+values come from the maintainer's synced v3.2.0 node (2026-10-15, tip 1,057,002). Each header was
+rebuilt from the fields `getblockheader` prints (version, previous hash, merkle root, time, bits,
+nonce) and checked independently:
 
-**Procedure.** The maintainer runs the queries in §12.1 on a synced node and pastes the output. For
-every height the output contains the block hash and the raw 80-byte header. Before anything is
-written, each header is checked independently: its double-SHA-256 must equal the reported hash, and
-its scrypt(1024, 1, 1) hash must meet the target encoded in its own `nBits`. That catches copy/paste
-errors and a node on a wrong chain. Ideally the hashes are also compared with a second, independent
-node or explorer.
+| Height | Block hash | Time (UTC) | Difficulty | Hash | scrypt PoW |
+|---:|---|---|---:|---|---|
+| 450,000 | `3fed4270…c14002b9` | 2025-06-25 14:38 | 5.99 | ✓ | ✓ |
+| 602,214 | `2399672f…e05e05f1` | 2025-10-24 14:16 | 3.92 | ✓ | ✓ |
+| 750,000 | `5b6bc304…4a0905f5` | 2026-02-14 08:18 | 74.52 | ✓ | ✓ |
+| 903,321 | `b0ef59c7…2ddd6115` | 2026-06-11 13:32 | 19.16 | ✓ | ✓ |
+| 1,000,000 | `c75f4a86…5b3cc247` | 2026-08-30 23:49 | 12.68 | ✓ | ✓ |
+| 1,046,922 (assumevalid, not a checkpoint) | `189f2e59…9f9e652d` | 2026-10-08 09:28 | 165.57 | ✓ | ✓ |
 
-Then in `CMainParams` (`src/chainparams.cpp`):
+- "Hash ✓": the double-SHA256 of the rebuilt 80-byte header equals the hash the node reported.
+  "scrypt PoW ✓": its scrypt(1024, 1, 1) hash meets the target in its own `nBits`, and the
+  reported difficulty matches `nBits`.
+- The `confirmations` values of the five checkpoint blocks all imply the same tip (1,056,996), so
+  every one is on the node's active chain.
+- Chainwork rises between the points at a plausible rate (average difficulty 31–92, average
+  spacing 66–72 s per segment).
+- A script compared every value written to `chainparams.cpp` with the verified data.
+- **Taproot** is active since height **450,080** (`getblockchaininfo`: `bip8`, `since` 450080),
+  not 750,000, so the 750,000 checkpoint is labelled as a plain height. MWEB is active since 150,120.
+- Ideally a second, independent node or explorer confirms the five hashes before release.
+
+The checkpoint list in `CMainParams` (`src/chainparams.cpp`) now ends:
 
 ```cpp
                 {   292000, uint256S("0xb42d405513ca11a37bda4420f99577861258a593627401c6143026799e63d1e3")},  // added 20250216
-                {   450000, uint256S("0x<hash>")},  // Taproot signalling start
-                {   602214, uint256S("0x<hash>")},  // 2nd halving (25 FEC)
-                {   750000, uint256S("0x<hash>")},  // Taproot
-                {   903321, uint256S("0x<hash>")},  // 3rd halving (12.5 FEC)
-                {  1000000, uint256S("0x<hash>")},  // height 1,000,000
+                {   450000, uint256S("0x3fed4270c7fdae13403707a82c4e7ad0bc9d5dec1e4d277ed2e2bf3dc14002b9")},  // added 20261015, Taproot signalling start (active from 450080)
+                {   602214, uint256S("0x2399672fc2e4303198f56734ccfe43202e0657de61a92141343f4c16e05e05f1")},  // added 20261015, 2nd halving (25 FEC)
+                {   750000, uint256S("0x5b6bc3044a65a0a6625275b0bf0eaa4f080de0dc1b9431cc82ca1f434a0905f5")},  // added 20261015
+                {   903321, uint256S("0xb0ef59c7fc0e42672d2b660cee3f00dbb84ca90e80a4ddf0aaad3f4f2ddd6115")},  // added 20261015, 3rd halving (12.5 FEC)
+                {  1000000, uint256S("0xc75f4a8694eb7ef8b398bef7510feb37495e9c6994ae3be0594190295b3cc247")},  // added 20261015
 ```
 
-At the same time, refresh the values that are still at height 292,000 (Feb 2025), taken from a
-block `H` about one week of blocks below the tip (§12.1 picks `H = tip − 10,080`):
-`nMinimumChainWork` (`chainwork` of `H`), `defaultAssumeValid` (hash of `H`) and `chainTxData`
-(`time`, `txcount`, `txrate` from `getchaintxstats 4096 <hash of H>`). `nMinimumChainWork` must come
-from a real block of the best chain: a value above the real chain's work keeps every node in initial
-block download, and mainnet `getblocktemplate` refuses to work then. Sync a fresh node from genesis
-with the new binary before release.
+The values that were still at height 292,000 (Feb 2025) now come from block `H` = 1,046,922
+(tip − 10,080): `nMinimumChainWork` = chainwork of `H` (`…6aefe2248ff21e3f`, 7.706 EH, below the
+tip's `…6af9b4da644182b8`), `defaultAssumeValid` = hash of `H`, and `chainTxData` = `getchaintxstats
+4096 <hash of H>` (time 1791451691, 2,023,430 transactions, 0.0297 tx/s). `nMinimumChainWork` must
+come from a real block of the best chain: a value above the real chain's work keeps every node in
+initial block download, and mainnet `getblocktemplate` refuses to work then. A fresh mainnet node
+built from this branch starts with these values (checked offline). Sync a fresh node from genesis
+with the release binary before release.
 
 If Taproot is active, consider *burying* the deployment (a fixed activation height, as Bitcoin did
 for older soft forks) in a later release. That simplifies code and removes signalling edge cases.
@@ -499,10 +544,11 @@ for older soft forks) in a later release. That simplifies code and removes signa
   to the draft's `7b0ec43`.
 - Suggested gates before merging:
   1. CI green: build, MWEB functional tests (a starter workflow is below).
-  2. §4 mainnet re-validation: the RPC scan (step 1) now, the `-reindex-chainstate` with the release
-     build (step 2) before tagging.
+  2. §4 mainnet re-validation: the RPC scan (step 1) passed on 2026-10-15; the
+     `-reindex-chainstate` with the release build (step 2) remains before tagging.
   3. Activation height for the two new MWEB rules decided (§5.2), pools informed.
-  4. Checkpoints and chain statistics refreshed (§8).
+  4. Checkpoints and chain statistics refreshed (§8): done; confirm the five hashes on a second,
+     independent node or explorer.
   5. A depends build verified for each release platform (B2/B3).
   6. Release notes: MWEB fixes, the undo-format note (§5.3), "no frozen outputs" (P1), the
      `getblocktemplate` policy (M4), the activation height, and that miners and pools should
@@ -685,6 +731,13 @@ Options:
   invalidated coinbase spends can cascade. Raising it is a soft fork (it only tightens a rule).
   If it changes, `TestChain100Setup` and other tests that assume 100 need updating; with 10 they
   currently crash (`interfaces_tests` dereferences block 20 of a 10-block chain).
+- **A `/FerriteCore:4.0.0/` node is on mainnet.** One peer of the maintainer's node (2026-10-15)
+  advertised that user agent with protocol 70016, which matches the 2024 `v4.0.0-a` branch (built
+  on v3.1.5), i.e. older code than v3.2.0. Before a real v4.0.0 hard fork ships, retire those nodes
+  or rename that build, so that the user agent unambiguously means fork-ready code. The same sample
+  had one `/FerriteCore:3.1.4/` and two `/FerriteCore:3.2.0/` peers, but four peers (two on the
+  maintainer's own network) say little about how far v3.2.0 has spread. The pools' own nodes are a
+  better gauge before fixing the §5.2 activation height.
 
 ### 11.5 Changing the proof of work (CPU-oriented, "post-quantum")
 
@@ -755,7 +808,13 @@ becomes `/FerriteCore:3.3.0/`.
 Read-only. Run them on the synced node and paste the whole output back. `ferrite-cli` talks to a
 running `ferrited`, or to `ferrite-qt` started with `server=1` in `ferrite.conf`. In `ferrite-qt`
 the same commands also work one at a time in Window → Console, for example
-`getblockheader(getblockhash(450000), false)`.
+`getblockheader(getblockhash(450000), false)`; the verbose form (without `false`) works as well,
+since the header can be rebuilt from its fields. On Windows, `ferrited` has no daemon mode: the
+message "-daemon is not supported on this operating system" comes from `ferrited` started with
+`-daemon` or with `daemon=1` in `ferrite.conf`. Start it without that option (it then runs in its
+own window), or use `ferrite-qt`.
+
+These queries were run on 2026-10-15; the results are in §4, §5.2 and §8.
 
 Windows (Command Prompt, in the folder that contains `ferrite-cli.exe`). The `%h`/`%b` forms are for
 typing at the prompt; in a `.bat` file they must be doubled (`%%h`):
@@ -806,7 +865,7 @@ summary ending in `RESULT: no M1/M2 violations` or a list of problems; paste the
 
 ### 12.3 Pushing this branch (Windows Command Prompt)
 
-The branch is delivered as a git bundle, `ferrite-3.2.1-review.bundle`: 45 commits on top of
+The branch is delivered as a git bundle, `ferrite-3.2.1-review.bundle`: 47 commits on top of
 `origin/ferrite-backup-3.2.1-draft` at `9406190`, ending with this document's update. Save it to
 your Downloads folder, then in your clone:
 
@@ -819,7 +878,7 @@ git log --oneline origin/ferrite-backup-3.2.1-draft..review-fixes
 git push origin review-fixes:ferrite-backup-3.2.1-draft
 ```
 
-`git log` should list 45 commits, the newest being the update of this document. The push
+`git log` should list 47 commits, the newest being the update of this document. The push
 only succeeds as a fast-forward; if it is rejected, someone pushed to the branch after `9406190`.
 Stop there, because the bundle then has to be rebased on the new commits. To bring your local branch
 along afterwards: `git checkout ferrite-backup-3.2.1-draft` then `git merge --ff-only review-fixes`.
@@ -891,6 +950,8 @@ original author.
 | 42 | `34b7953` | build: fix the bug-report URL in AC_INIT | — (this review) |
 | 43 | `60ba533` | test: use a Ferrite-encoded key in MalformedMWEBOutputKeys | — (this review) |
 | 44 | `37d3304` | contrib: add a read-only MWEB history checker | — (this review) |
+| 45 | `3873d59` | doc: update the v3.2.1 review for the v0.21.5.6-v0.21.5.8 port | — (this review) |
+| 46 | `d7809d1` | chainparams: add checkpoints up to 1,000,000 and refresh chain statistics | — (this review) |
 
 ---
 
