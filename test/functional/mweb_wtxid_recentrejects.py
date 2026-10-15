@@ -16,7 +16,7 @@ from test_framework.messages import (
 )
 from test_framework.p2p import P2PInterface
 from test_framework.test_framework import BitcoinTestFramework
-from test_framework.ltc_util import setup_mweb_chain
+from test_framework.fec_util import setup_mweb_chain
 
 
 class TxPeer(P2PInterface):
