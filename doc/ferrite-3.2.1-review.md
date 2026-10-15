@@ -3,12 +3,14 @@
 | | |
 |---|---|
 | Branch reviewed | `ferrite-backup-3.2.1-draft` at `9406190` (160 commits ahead of `ferrite-main`, 17 behind) |
+| Added by this review | fixes (§2), the Litecoin v0.21.5.6–v0.21.5.8 port (§5), clean-ups; listed in Appendix B |
 | Merge base with `ferrite-main` | `fa52e12` (2024-12-20, "add h250000 graphic") |
 | Upstream reference | Litecoin Core `v0.21.3`, `v0.21.4`, `v0.21.5.4` … `v0.21.5.8` (github.com/litecoin-project/litecoin) |
 | Review date | 2026-10-15 |
 
 Items marked **MANUAL REVIEW** need a decision or data that this review could not produce on its own.
 Nothing in this document changes consensus on mainnet except where it says so explicitly.
+The commands the maintainer needs (mainnet node queries, pushing the branch) are collected in §12.
 
 ---
 
@@ -31,23 +33,32 @@ Nothing in this document changes consensus on mainnet except where it says so ex
 4. **Two retroactive consensus rules need a mainnet re-validation before release (MANUAL REVIEW, §4).**
    Upstream's new MWEB input-metadata check and the kernel lock-height check apply to historical
    blocks. If any past Ferrite block violates them, v3.2.1 nodes would stop at that block.
-   A `-reindex-chainstate` of a mainnet node with this build settles it.
-5. **Upstream has moved on.** Litecoin v0.21.5.6, v0.21.5.7 and v0.21.5.8 (Jul–Sep 2026, 32 commits)
-   are not ported yet. Several are security fixes for the same MWEB incident (§5).
-6. **Checkpoints (requested: 450,000 / 602,214 / 750,000 / 903,321 / 1,000,000) are not added yet.**
+   `contrib/devtools/mweb_history_check.py` checks both over RPC on a synced node (read-only), and
+   a `-reindex-chainstate` with this build is the definitive test (§4, §12).
+5. **Upstream v0.21.5.6 – v0.21.5.8 is now ported (§5).** The range has 26 upstream commits (an
+   earlier draft of this review said 32): 22 code commits were cherry-picked with `-x`, and the 4
+   Litecoin-only ones (three version bumps and a DNS seed) were skipped. Two of the ported rules are
+   new soft forks. They are switched off on mainnet (height 99,999,999) until Ferrite picks an
+   activation height (**MANUAL REVIEW**, §5.2).
+6. **RPC contract (§6).** No RPC was added or removed, no argument changed, and the `help` output of
+   every command is identical to `ferrite-main`. Five behaviour differences (one new error, one
+   nullable field, one bug fix and two test-chain/wallet-file details) are listed for
+   **MANUAL REVIEW**. None affects a default mainnet configuration's request or response shape.
+7. **Checkpoints (requested: 450,000 / 602,214 / 750,000 / 903,321 / 1,000,000) are not added yet.**
    The block hashes could not be obtained from inside the review environment, and a wrong checkpoint
-   hash forks a node off the network, so no placeholder was written. §7 has the exact procedure and
-   code template; it is a five-minute job on a synced node.
-7. **Long-standing test breakage on `ferrite-main`** was found while running the tests. Since
+   hash forks a node off the network, so no placeholder was written. §8 and §12 have the node queries;
+   the pasted output is checked (hash and scrypt proof of work) before anything is written.
+8. **Long-standing test breakage on `ferrite-main`** was found while running the tests. Since
    2023-02-06 the regtest genesis block has failed its own proof of work, so no regtest node could
    start. Regtest difficulty also exploded after height 26 under DGW. The unit-test binary has not
    linked since 2023-07-30, and the functional-test framework has not imported since 2024-03. All four
-   are fixed (test infrastructure and regtest only). §6 has what the test suites now report.
-8. **Merging into `ferrite-main`:** `git merge-tree` shows no conflicts. Recommended gates are in §8.
-9. **Build tooling** that is still broken but out of scope here (missing executable bits, depends
-   Boost recipe, BDB instructions) is listed in §9.
-10. **Roadmap** analysis for a 1 FEC tail emission, difficulty-algorithm changes and post-quantum
-    options is in §10.
+   are fixed (test infrastructure and regtest only). §7 has what the test suites now report.
+9. **Merging into `ferrite-main`:** `git merge-tree` shows no conflicts. Recommended gates are in §9.
+10. **Build tooling** that is still broken but out of scope here (missing executable bits, depends
+    Boost recipe, BDB instructions) is listed in §10.
+11. **Roadmap** analysis for a 1 FEC tail emission, difficulty-algorithm changes, post-quantum
+    options and a CPU-oriented proof of work is in §11, together with a version-number suggestion
+    for this release (v3.3.0 rather than v3.2.1, §11.7).
 
 ---
 
@@ -71,16 +82,27 @@ Nothing in this document changes consensus on mainnet except where it says so ex
 | P1 | Policy (no behaviour change) | `src/chainparams.cpp` | `f6e10cf`, `e1ff9d9`, `190b983` | Placeholder frozen output `0x…0fec` and placeholder grandfather hash. | Frozen list empty; `mweb_input_metadata_grandfather_blockhash = uint256()` (null = no exemption). Plumbing kept so future upstream merges stay easy. |
 | P2 | Low (packaging) | `contrib/debian/litecoin-qt.desktop` | `7c91577` | Launched `litecoin-qt`, registered the `litecoin:` URI scheme. | Renamed to `ferrite-qt.desktop`, `Exec=ferrite-qt`, `x-scheme-handler/ferrite`, Ferrite icon. |
 
-### Cosmetic regressions left as-is (optional clean-up)
+### Cosmetic regressions (approved clean-up, done)
 
 - Upstream pastes removed Ferrite copyright lines (`Copyright (c) 2023 The Ferrite Core Developers`)
   from `Test_Kernel.cpp`, `Test_Output.cpp`, `Test_Keychain.cpp`, `mweb_models.h` and
   `mweb_wallet_basic.py`, and renamed the include guard in `mweb_models.h` back to `LITECOIN_…`.
-- `TxBuilder.cpp` (libmw test framework) went back to `ltc_address` naming.
-- Stray tab indentation from web-editor pastes in `wallet.cpp`, `validation.cpp`, `chainparams.cpp`.
-- Redundant `-peerblockfilters=0 -blockfilterindex=0` in four functional tests: the draft ported
-  upstream `7d9fea0cc` but not its revert `beae01d62`. Harmless.
+  Restored (`ff9095c`).
+- `TxBuilder.cpp` (libmw test framework) went back to `ltc_address` naming. Restored (`ff9095c`).
+- Stray tab indentation and trailing whitespace from web-editor pastes in `wallet.cpp`,
+  `validation.cpp`, `chainparams.cpp` (`ff9095c`), and in `net_processing.cpp`, `txmempool.cpp`,
+  `blockencodings.cpp`, `rpcdump.cpp`, `Kernel.h` and three functional-test files (`95695b3`).
+  These files now match upstream apart from Ferrite's real changes; `git diff -w` of both commits
+  shows nothing else.
+- Redundant `-peerblockfilters=0 -blockfilterindex=0` in three functional tests: the draft ported
+  upstream `7d9fea0cc` but not its revert `beae01d62`. The revert is now ported (`04ed12e`); the
+  remaining uses in `p2p_blockfilters.py` and `rpc_misc.py` are upstream's too.
 - `depends/patches/miniupnpc/dont_use_wingen.patch` is no longer referenced (upstream deleted it).
+  Deleted (`ff9095c`).
+- The bug-report URL in `configure.ac` read `https://github.comkoh-gt/ferrite/issues` (it appears in
+  internal-error messages). Now `https://github.com/koh-gt/ferrite-core/issues` (`34b7953`).
+  `init.cpp` still names `https://github.com/ferritecoin/ferrite-core` as the source repository;
+  **check** that this is the canonical public repository.
 
 ---
 
@@ -98,15 +120,20 @@ Nothing in this document changes consensus on mainnet except where it says so ex
   items were found.
 - **Upstream completeness.** Each upstream commit's patch was reverse-applied to the draft tree.
   Everything from v0.21.3 → v0.21.5.5 is present (CVE-2024-35202 `PartiallyDownloadedBlock`,
-  download-state fix, MWEB incident fixes, …). The only "missing" items are by design:
-  `litecoin_scrypt.py` (Ferrite uses `ferrite_scrypt.py`) and upstream's revert `beae01d62`.
-- **Build and tests**, see §6.
+  download-state fix, MWEB incident fixes, …). The only "missing" items were by design:
+  `litecoin_scrypt.py` (Ferrite uses `ferrite_scrypt.py`) and upstream's revert `beae01d62`
+  (now ported).
+- **After the v0.21.5.6 – v0.21.5.8 port** (§5) the ideal-port comparison was repeated against
+  upstream v0.21.5.8: every file the port touched equals upstream apart from Ferrite's own
+  customisations (names, chain parameters, the relaxed `getblocktemplate` rule check, and the
+  Ferrite values in tests).
+- **Build and tests**, see §7.
 
 Ferrite-specific commits in the range, all reviewed:
 
 | Commit | Change | Assessment |
 |---|---|---|
-| `4887eb6` | Checkpoint 292,000; chain stats; min-chain-work / assumevalid at 292,000 | OK (now ~20 months old; refresh in §7) |
+| `4887eb6` | Checkpoint 292,000; chain stats; min-chain-work / assumevalid at 292,000 | OK (now ~20 months old; refresh in §8) |
 | `03bccc7`, `5030ce1` | Version 3.2.1, copyright 2026 | OK |
 | `e23911c` | Re-applies Ferrite names in `test_framework.py` after the upstream paste | OK |
 | `c260888` | `KERNEL_LOCK_HEIGHT_GRANDFATHER_HEIGHT = 903'321` (3rd halving) | **MANUAL REVIEW M2** |
@@ -130,7 +157,19 @@ Ferrite exempts no block, which is correct only if Ferrite's own history contain
 | M2 | Kernel lock height ≤ block height | `a54900438`, Ferrite height `c260888` | Heights > 903,321 (already in the past) | Same |
 | M3 | No HogEx marker before MWEB activation; HogEx fee/amount mismatch = consensus error; duplicate peg-in guards; kernel fee overflow | `b9bd99a4e`, `7564f05e6`, `8f8ad64d0`, `42e7071a4` | All blocks | Same, though honest history should never trip these |
 
-**Procedure (on a machine with a synced mainnet node; use a copy of the datadir):**
+The v0.21.5.6 – v0.21.5.8 port adds no further retroactive rule: its two new block rules start at an
+activation height that is still to be chosen (§5.2), and `b4313c34d` only re-runs existing checks.
+
+**Step 1: read-only scan over RPC (any synced v3.2.0 node, minutes to hours).**
+`contrib/devtools/mweb_history_check.py` (Python 3.8+, standard library only) walks every block from
+MWEB activation to the tip with `getblockhash`/`getblock` and checks M1 (each MWEB input's commitment
+and output pubkey against the output it spends, in consensus order) and M2 (kernel lock heights
+above 903,321). It also reports, for information, kernels that would break the two future rules of
+§5.2. It changes nothing on the node. It was tested on a regtest chain with MWEB peg-ins, transfers
+and peg-outs, and against a mock node with injected violations of each rule. Commands: §12.2.
+
+**Step 2: definitive re-validation with the release build (before tagging).** Only a full
+re-validation exercises M3 and every other consensus rule:
 
 ```bash
 cp -a ~/.ferrite /data/ferrite-reval          # never experiment on the live datadir
@@ -141,7 +180,9 @@ ferrite-cli -datadir=/data/ferrite-reval getblockchaininfo   # blocks == headers
 ferrite-cli -datadir=/data/ferrite-reval gettxoutsetinfo     # compare with a v3.2.0 node at the same height
 ```
 
-(`-reindex` instead of `-reindex-chainstate` additionally re-reads every block file and is slower.)
+(Windows: copy `%APPDATA%\Ferrite` to e.g. `D:\ferrite-reval` and start
+`ferrited -datadir=D:\ferrite-reval -reindex-chainstate`. `-reindex` instead of `-reindex-chainstate`
+additionally re-reads every block file and is slower.)
 
 **If a block fails:**
 
@@ -156,106 +197,214 @@ ferrite-cli -datadir=/data/ferrite-reval gettxoutsetinfo     # compare with a v3
 ### M4. `getblocktemplate` without the `mweb` rule (pre-existing Ferrite policy, `332e23b`, 2023-02)
 
 Upstream requires GBT callers to declare both `segwit` and `mweb`. Ferrite commented that out and only
-requires `segwit`. Its error text says blocks mined "without MWEB support will neither confirm any MWEB
-transactions nor receive any MWEB transaction fees". That is not what consensus does: once MWEB is
-active, `MWEB::Node::ContextualCheckBlock` rejects any block without the extension block
-(`mweb-missing`). Pool software that ignores the template's `mweb` field therefore produces
-**invalid blocks**, not merely fee-less ones. Options:
+requires `segwit`.
 
-- Restore the upstream check. Non-MWEB-aware pool software then fails loudly at `getblocktemplate`
-  instead of submitting invalid blocks. Confirm first that every Ferrite pool sends `"mweb"` in
-  `rules`.
-- Or keep the relaxed check but correct the message.
+**Decision (maintainer, 2026-10-15): keep the relaxed check.** Several Ferrite pools are not fully
+MWEB-aware yet, so v3.2.1 keeps accepting segwit-only callers. `mweb_mining.py` now asserts this
+policy (a segwit-only request succeeds and the template still carries the MWEB block) instead of
+upstream's strict check (`4dbcc3a`).
 
-Either way, `mweb_mining.py` (upstream test) asserts the strict behaviour and fails on Ferrite until
-this is decided.
+Remaining note for pool operators: since MWEB activated, consensus rejects any block without the
+extension block (`mweb-missing`). The template always contains it (the `mweb` field plus the HogEx
+transaction as the last entry of `transactions`), and pool software must serialise both into the
+block. The relaxed rule only stops `getblocktemplate` from refusing the request; it does not make
+blocks without MWEB data valid. The error text for callers without `segwit` still says such blocks
+"will neither confirm any MWEB transactions nor receive any MWEB transaction fees". Rewording it is a
+possible clean-up, but it is an RPC error string, so it was left unchanged here (§6).
 
 ---
 
-## 5. Upstream changes not yet ported: Litecoin v0.21.5.6 – v0.21.5.8
+## 5. Upstream Litecoin v0.21.5.6 – v0.21.5.8: ported
 
-63 files, +3,036 / −243. Recommendation: port these **before** tagging v3.2.1 final. Many harden
-exactly the code this release introduces. Priorities are this review's assessment.
+The range `v0.21.5.5..v0.21.5.8` has 26 commits. The 22 code commits were cherry-picked with
+`git cherry-pick -x`, so every Ferrite commit keeps the upstream author and names its upstream hash.
+The 4 Litecoin-only commits were skipped: the version bumps `992c5272e` (v0.21.5.6), `b1150f513`
+(v0.21.5.7), `ec1b6489a` (v0.21.5.8) and `63ba41f50` (ltcpool DNS seed). Commit hashes in the table are
+Ferrite's.
 
-| Priority | Upstream | Summary | Ferrite decision needed |
+| Ferrite | Upstream | Change | Kind |
 |---|---|---|---|
-| P0 | `b4313c34d` mweb: prevent disk-reparse validation bypass | Re-runs `ContextualCheckBlock` on the MWEB body actually being applied (e.g. after reload from disk). | — |
-| P0 | `70ea696f3`, `4dd6aeeb9` same-hash mutation handling, preserve descendants of mutated blocks | Completes the mutated-block work started in v0.21.5.4/.5 (D3 area). | — |
-| P0 | `32413709d` validation: fix script check data lifetime | Use-after-scope race between `txsdata` and the script-check queue on early return. | — |
-| P1 | `136695e05` discourage mutated MWEB compact blocks | DoS: repeated expensive verification via compact blocks. | — |
-| P1 | `cb65fc5b6`, `f24dec1c8` rate-limit MWEB leafset requests (node-wide) | DoS. | — |
-| P1 | `c07d6228c` avoid MWEB `recentRejects` censorship; `0cb141964` defer MWEB fast relay until after connect | Relay correctness/censorship resistance. | — |
-| P1 | `36f06455f` evict MWEB conflicts when blocks connect | Mempool consistency. | — |
-| P1 | `dc7233420` mining: enforce MWEB input limit | Prevents invalid templates (pairs with D4). | — |
-| P1 | `b250b016a` reject empty MWEB pegout features; `a399fc4ca` reject empty kernel extradata | **Soft-fork rules gated by activation height.** | Ferrite must choose `mweb_pegout_feature_activation_height` and `mweb_extradata_feature_activation_height` (future heights, ~1–2 weeks of blocks after release). Litecoin used 3,154,440 / 3,172,640. |
-| P2 | `cfdfcf57a` policy: enforce Ke/Ko pubkey validity; `109ed13b7` limit MWEB weight for mempool txs; `67580d6e3` reject empty pegout kernels | Standardness policy. | — |
-| P2 | `22a916236` serialize `fPegout` in txundo | **Changes the undo-data encoding**: spent peg-out coins get the high bit set. Once ported, an older binary reading that undo data after a downgrade decodes a wrong height for those coins; mention in release notes. | — |
-| P2 | `d3b9ac396` don't return MWEB-only txs when `rpcserialversion<=1`; `b8ccaf355` close POSIX copy fds | RPC correctness; fd leak. | — |
-| P2 | `d7ab03d31` secp256k1-zkp: release scratch frames on invalid proofs | Error paths left scratch frames allocated. libmw creates and destroys a scratch space per verification call, so release builds just free it; mainly hygiene (and `VERIFY` builds). | — |
-| — | `63ba41f50` ltcpool DNS seed | Litecoin-only. | Skip. |
+| `f1ae30b` | `cfdfcf57a` | Enforce Ke and Ko pubkey validity | mempool policy |
+| `2ea7743` | `109ed13b7` | Limit MWEB weight for mempool transactions | mempool policy |
+| `a1c6a9d` | `cb65fc5b6` | Rate-limit MWEB leafset requests | P2P DoS |
+| `2c33d56` | `9b5bb289b` | Fix stale values in `mweb_weight.py` | test |
+| `74a2aa0` | `f24dec1c8` | Make the leafset rate limits node-wide | P2P DoS |
+| `93b625c` | `4dd6aeeb9` | Preserve descendants of mutated MWEB blocks | validation (no new rule) |
+| `1620df3` | `136695e05` | Discourage peers that send mutated MWEB compact blocks | P2P DoS |
+| `b2bc813` | `67580d6e3` | Reject empty MWEB pegout kernels from standard policy | mempool policy |
+| `5d8d39a` | `dc7233420` | Enforce the MWEB input limit when building templates | mining |
+| `5eb1ae7` | `b250b016a` | Kernels with the pegout feature must carry a pegout | **consensus, from an activation height (§5.2)** |
+| `2b14ad3` | `a399fc4ca` | Kernels with the extra-data feature must carry extra data | **consensus, from an activation height (§5.2)** |
+| `6bb028c` | `22a916236` | Keep the peg-out flag of spent coins in undo data | **undo-data format (§5.3)** |
+| `a4b1077` | `32413709d` | Fix script-check data lifetime on early return | validation (memory safety) |
+| `ef6a413` | `d3b9ac396` | `getmempoolentry`: no MWEB-only transactions when `-rpcserialversion` < 2 | **RPC (§6, R2)** |
+| `6219625` | `b4313c34d` | Re-run the MWEB contextual checks on the body actually connected | validation (no new rule) |
+| `c7f30ae` | `d7ab03d31` | secp256k1-zkp: release scratch frames on invalid proofs | hygiene |
+| `08b136a` | `70ea696f3` | Harden same-hash MWEB block mutation handling | validation (no new rule) |
+| `2e3e18e` | `f6afd2682` | Validate staged block aggregates incrementally | mining |
+| `d771213` | `36f06455f` | Evict conflicting MWEB transactions when blocks connect | mempool |
+| `ce84ced` | `c07d6228c` | Stop MWEB `recentRejects` entries from censoring valid transactions | P2P |
+| `7b9b2b9` | `0cb141964` | Defer MWEB fast relay until after the block connects | P2P |
+| `5fe2ea9` | `b8ccaf355` | libmw: close POSIX copy file descriptors | hygiene (fd leak) |
 
-When porting, please use `git cherry-pick -x <upstream-commit>` from a local clone rather than
-pasting files in the GitHub web editor. Nearly every defect in §2 came from pasting whole files or
-partial functions.
+Ferrite follow-ups in the same series: `5a70be2` (the new MWEB tests import `fec_util`, not
+`ltc_util`), `04ed12e` (upstream's earlier test revert `beae01d62`, see §2), `4dbcc3a` (M4 policy in
+`mweb_mining.py`), `2b7f0b6` (`Test_Kernel` pins Ferrite's activation heights instead of
+Litecoin's), `60ba533` (`MalformedMWEBOutputKeys` uses a Ferrite-encoded key), `37d3304`
+(`contrib/devtools/mweb_history_check.py`, §4), and the cosmetic commits `ff9095c`, `95695b3` and
+`34b7953`.
+
+### 5.1 Conflicts and how they were resolved
+
+| Upstream | Conflict | Resolution |
+|---|---|---|
+| `4dd6aeeb9` | `mweb_p2p_mutated_block_submitblock.py` imports | Ferrite's `fec_util` names kept |
+| `b250b016a`, `a399fc4ca`, `b4313c34d` | `chainparams.cpp`: Litecoin's activation heights, grandfather hash and frozen-output list | New parameters added with Ferrite values (§5.2); P1 (no frozen outputs, no grandfathered block) unchanged |
+| `f6afd2682` | `BlockBuilder.cpp` whitespace around D4's restored guard | Upstream text taken; the file is now identical to upstream v0.21.5.8 |
+
+### 5.2 Two new soft-fork rules need an activation height (MANUAL REVIEW)
+
+`b250b016a` and `a399fc4ca` make two kernel encodings invalid: the pegout feature bit with an empty
+pegout list, and the extra-data feature bit with empty extra data. Both encodings are malleable
+variants of a kernel, which is what the mutated-block fixes above are about. Upstream gates them by
+height (Litecoin mainnet: 3,154,440, "one expected week after height 3,150,408" per upstream's comment,
+and 3,172,640, which `b4313c34d` moved forward from 3,200,000).
+
+In this branch, Ferrite mainnet uses **99,999,999 for both, so neither rule is active**. Testnet and
+regtest use 0, as upstream does. Standardness policy keeps both encodings out of v3.2.1 mempools and
+templates (empty pegout kernels since `67580d6e3`; any kernel with the extra-data bit was already
+non-standard on v3.2.0), so the rules only matter against a miner who includes them on purpose.
+
+Choosing the height:
+- It must be in the future when v3.2.1 is released, and miners holding most of the hash rate must
+  run v3.2.1 by then. Otherwise a v3.2.0 pool can mine such a kernel and split from upgraded nodes.
+- Ferrite ships both rules in one release, so one height for both is simpler than Litecoin's two.
+- Suggested: the next multiple of 10,000 at least **six weeks** of blocks after the planned release
+  (pools upgrade slowly), computed from the node data in §12.1. If pools cannot commit to that,
+  keep 99,999,999 and activate in a later release. Before activation, the mutated-block handling
+  in this port already protects nodes.
+- When the height is chosen, change both lines in `CMainParams` and the pinned values in
+  `src/libmw/test/tests/models/tx/Test_Kernel.cpp` in the same commit.
+- `mweb_history_check.py` reports past kernels that would break either rule (X1/P1). They are
+  harmless for the history, since the rules only start at the activation height, but any recent
+  hits mean someone is producing such kernels on Ferrite.
+
+### 5.3 Undo-data format change (release-notes item)
+
+`22a916236` stores the peg-out flag of spent coins in the block undo files (`rev*.dat`, bit 31 of
+the height code). A v3.2.0 binary reading undo data written by v3.2.1 decodes a wrong height for spent
+peg-out coins if it disconnects such a block in a reorg. Release notes should say: after running
+v3.2.1, a downgrade needs `-reindex-chainstate` to be safe.
 
 ---
 
-## 6. Test results
+## 6. RPC contract (requested: input and output shapes unchanged)
+
+**Method.**
+1. Source: every RPC-facing file (`src/rpc/*`, `src/wallet/rpc*.cpp`, `src/core_write.cpp`,
+   `src/rest.cpp`, `src/zmq/*`, `src/httprpc.cpp`) was diffed between `ferrite-main` and this branch.
+   Five files differ.
+2. Runtime: `ferrited` from `ferrite-main` (`6b1c373`) and from this branch were started, and
+   `help <command>` was captured for every command. That covers arguments, argument types and
+   defaults, documented result fields, and examples. The two dumps were compared.
+
+**Result: same 139 commands on both builds, and the `help` output of every command is byte-identical**
+(both dumps have MD5 `2a66b2212bc5fb8bcf7cba450b656d13`). No argument, type, default or documented
+result field changed.
+
+The source differences, all marked **MANUAL REVIEW** because they change behaviour, not shape:
+
+| ID | RPC | Difference | Who can notice | Origin |
+|---|---|---|---|---|
+| R1 | `getrawmempool` (verbose), `getmempoolentry`, `getmempoolancestors`/`descendants` (verbose) | `mweb.fee` becomes `null` if the MWEB fee overflows. That cannot happen for a transaction that passed mempool acceptance, so in practice the field is always a number. | nobody in practice | upstream `42e7071a4` (kernel fee overflow, draft) |
+| R2 | `getmempoolentry` | For an MWEB-only transaction it now returns error −22 "MWEB-only transaction not serializable for rpcserialversion<2" **if** the node runs with `-rpcserialversion=0` or `1`. Default is 2, so default nodes are unaffected. | nodes configured with `rpcserialversion<2` | `d3b9ac396` (§5); drop `ef6a413` to keep the old behaviour |
+| R3 | `getblocktemplate` | On testnet and regtest only, no longer refuses with "not connected" / "in initial sync". Mainnet unchanged. | test networks | upstream `455aff8c1` (draft) |
+| R4 | `sendrawtransaction`, `testmempoolaccept` | `maxfeerate=0` now really means "no limit" for transactions with MWEB data, as the help text already says. Before, the MWEB part of the fee could still trip the limit. | callers passing 0 | upstream `8782ab961` (draft); bug fix |
+| R5 | `dumpwallet` | The dump file gains one comment line, `# mweb view keys: <scan secret> <spend pubkey>`. `importwallet` skips comment lines, so old and new files import the same way. The file was already full of private keys; treat it as before. | anyone parsing dump files | upstream `eae9e47f9` (draft) |
+
+Other observable differences, not part of the request/response shape:
+- Mempool policy from §5 rejects more MWEB transactions, which `sendrawtransaction` /
+  `testmempoolaccept` report with two new reasons, `mweb-txn-too-many-inputs` and
+  `mweb-txn-oversize`, and with the existing `non-standard-mweb-tx` (now also for invalid Ke/Ko
+  pubkeys and empty pegout kernels). The new block-rule reasons (`bad-mweb-empty-pegout`,
+  `bad-mweb-empty-extradata`, `bad-mweb-amount`) only appear in logs and `submitblock` /
+  `getblocktemplate` proposal results.
+- The bug-report URL in internal-error messages changed (§2).
+- `getblocktemplate` still accepts segwit-only callers (M4); its error text is unchanged.
+
+---
+
+## 7. Test results
 
 Environment: Ubuntu 24.04, GCC 13.3, Boost 1.83, system BerkeleyDB 5.3 (`--with-incompatible-bdb`),
-`./configure --without-gui --enable-tests --disable-bench`, Python 3.12 with `blake3` installed
-(needed by the MWEB functional tests).
+`./configure --enable-tests --disable-bench`, with and without `--with-gui=qt5`, Python 3.12 with
+`blake3` installed (needed by the MWEB functional tests).
 
-**Build:** `make` exits 0. `ferrited`, `ferrite-cli`, `ferrite-tx`, `ferrite-wallet`, `test_ferrite`
-link. The only warnings are GCC 13 `-Wdangling-reference` false positives in `rpc/mining.cpp` and Boost
-filesystem deprecations, both in unchanged upstream code. A second build with `--with-gui=qt5` (Qt 5.15,
-QR codes on) also links `ferrite-qt`, with only Qt deprecation warnings in unchanged GUI code.
+**Build:** `make` exits 0 on the final tree (all commits in Appendix B). `ferrited`, `ferrite-cli`,
+`ferrite-tx`, `ferrite-wallet`, `test_ferrite` and, with `--with-gui=qt5` (Qt 5.15, QR codes on),
+`ferrite-qt` link. The only warnings are GCC 13 `-Wdangling-reference` false positives in
+`rpc/mining.cpp`, Boost filesystem deprecations and Qt deprecations, all in unchanged upstream code.
 
-### 6.1 Unit tests (`make check`)
+### 7.1 Unit tests (`make check`)
 
 To separate regressions from old problems, `ferrite-main` was built the same way with only the
 test-enabling fixes applied (D9, D10, D13, plus the functional-framework repairs) and run through the
-same suites.
+same suites. The last column is the final tree, after the v0.21.5.6 – v0.21.5.8 port.
 
-| | Draft (this branch) | `ferrite-main` baseline |
-|---|---|---|
-| Suites run | 122 (one more: `Test_CoinsView`) | 121 |
-| Suites failing | 14 | 15 |
-| libmw (MWEB) suites | 34 / 34 pass | 33 / 33 pass (no `Test_CoinsView`) |
+| | `ferrite-main` baseline | Draft + review fixes | Final tree (with the §5 port) |
+|---|---|---|---|
+| Suites run | 121 | 122 (one more: `Test_CoinsView`) | 122 |
+| Suites failing | 15 | 14 | 14 (the same 14) |
+| libmw (MWEB) suites | 33 / 33 pass | 34 / 34 pass | 34 / 34 pass |
 
-- **No new failures.** Every suite that fails on the draft fails the same way on `ferrite-main`.
+- **No new failures.** Every suite that fails on this branch fails the same way on `ferrite-main`.
 - **One suite fixed by the draft:** `wallet/test/init_tests` fails on `ferrite-main` (wallet directory
-  with a trailing separator on Boost ≥ 1.78) and passes on the draft, which ported upstream
+  with a trailing separator on Boost ≥ 1.78) and passes here, through the port of upstream
   `3c3aedb97`.
 - All MWEB suites pass, including the newly wired `Test_CoinsView` (D5), `Test_Block` (kernel lock
-  height), `Test_Kernel` (fee overflow), `Test_BlockValidator` (duplicate peg-ins) and
-  `Test_BlockBuilder`. `validation_block_tests`, which covers `ConnectTip` and the D3 code path,
-  passes after D13.
+  height), `Test_Kernel` (fee overflow, feature activation heights), `Test_BlockValidator` (duplicate
+  peg-ins, disk-reparse bypass, kernel serialisation collisions), `Test_BlockBuilder` (staged
+  aggregates, input limit) and `Test_Output`/`Test_Keys` (Ke/Ko validity). `validation_block_tests`,
+  which covers `ConnectTip` and the D3 code path, passes after D13; `mempool_tests` (about 400 lines
+  of new upstream tests) and `coins_tests` (peg-out flag in undo data) pass.
+- Two upstream tests needed Ferrite values to run at all: `FeatureActivationHeights_Test` pinned
+  Litecoin's activation heights (`2b7f0b6`), and `MalformedMWEBOutputKeys` decoded a Litecoin WIF key,
+  so it aborted before checking anything (`60ba533`, same secret with Ferrite's prefix; 23/23 checks
+  pass). That case sits in `scriptpubkeyman_tests`, which still fails as a suite because its older
+  `StealthAddresses` case uses Litecoin vectors (see below).
+- The final run skipped `versionbits_tests` because of its memory use (§7.3); it fails the same way
+  as before.
 
 The remaining failures are all test vectors that were never adapted from Litecoin:
 
 | Suite(s) | Cause |
 |---|---|
-| `bloom_tests`, `key_tests`, `key_io_tests`, `descriptor_tests`, `rpc_tests`, `util_tests`, `psbt_wallet_tests`, `scriptpubkeyman_tests` | Hard-coded Bitcoin/Litecoin WIF keys and addresses; Ferrite uses different base58 prefixes (pubkey 36, secret 163). |
+| `bloom_tests`, `key_tests`, `key_io_tests`, `descriptor_tests`, `rpc_tests`, `util_tests`, `psbt_wallet_tests`, `scriptpubkeyman_tests` | Hard-coded Bitcoin/Litecoin WIF keys and addresses; Ferrite uses different base58 prefixes (pubkey 36, secret 163). In `scriptpubkeyman_tests` the expected `fecmweb1…` addresses were made by replacing the prefix text, so their bech32 checksums are Litecoin's. |
 | `validation_tests`, `wallet_tests` | Assume the 50-coin subsidy and 84M supply (Ferrite: 100 FEC, 60.2M). |
 | `miner_tests` | Hard-coded `blockinfo[]` nonces mined for Litecoin's parameters (`high-hash`). |
 | `pow_tests` | Litecoin retarget vectors; Ferrite uses DGW from 250,000. |
 | `versionbits_tests` | Asserts `nTimeoutHeight % nMinerConfirmationWindow == 0`; Ferrite mainnet uses 99,999,999 with a 40-block window. |
 | `interfaces_tests` | `TestChain100Setup` assumes `COINBASE_MATURITY = 100`; Ferrite's is 10, so the test reads block 20 of a 10-block chain and crashes (test code, not node code). |
 
-### 6.2 Functional tests (MWEB and every test the draft touched)
+### 7.2 Functional tests (MWEB and every test the draft or the port touched)
+
+Final tree, `test_runner.py -j3`:
 
 | Test | Result | Notes |
 |---|---|---|
+| `mweb_basic.py` | ✅ pass | after replacing Litecoin's 12.5-coin coinbase expectation with Ferrite's 25 FEC (`06cb170`) |
 | `mweb_dbcrash.py` | ✅ pass | upstream `bbd3b7841` (RollforwardBlock MWEB state) |
 | `mweb_duplicate_pegin.py` | ✅ pass | upstream `8f8ad64d0` (was misnamed, D7) |
+| `mweb_mempool.py` | ✅ pass | new in v0.21.5.7 (`d3b9ac396`, R2) |
+| `mweb_mining.py` | ✅ pass | asserts Ferrite's segwit-only `getblocktemplate` policy (M4, `4dbcc3a`) |
+| `mweb_newpowvalidblock.py` | ✅ pass | new in v0.21.5.8 (`0cb141964`) |
 | `mweb_p2p.py` | ✅ pass | upstream `2ba586ff1` |
 | `mweb_p2p_mutated_block_submitblock.py` | ✅ pass | upstream `7eb181bb6`/`17f16cef4`; exercises the D3 code path |
+| `mweb_p2p_mutated_compactblock.py` | ✅ pass | new in v0.21.5.6 (`136695e05`) |
 | `mweb_pre_activation_hogex_marker.py` | ✅ pass | upstream `b9bd99a4e` |
 | `mweb_pegout_all.py`, `mweb_reorg.py`, `mweb_wallet_basic.py` | ✅ pass | |
-| `mweb_basic.py` | ✅ pass | after replacing Litecoin's 12.5-coin coinbase expectation with Ferrite's 25 FEC (`06cb170`) |
-| `mweb_mining.py` | ❌ first assertion | Expects GBT to require the `mweb` rule; Ferrite relaxed that on purpose (M4). With only that assertion removed, the rest passes: valid GBT block, many peg-ins, many peg-outs, stale MWEB spend across a reorg. |
-| `mweb_weight.py` | ❌ | Stale upstream test: pegs in before block ~102, so the first MWEB block (432) has no peg-in. Upstream fixed the **test** in v0.21.5.6 (`9b5bb289b`); the second half also needs v0.21.5.6's mempool weight limit (`109ed13b7`). |
+| `mweb_weight.py` | ✅ pass | fixed by the port (`9b5bb289b` test values, `109ed13b7` mempool weight limit) |
+| `mweb_wtxid_recentrejects.py` | ✅ pass | new in v0.21.5.8 (`c07d6228c`) |
 | `p2p_invalid_messages.py`, `p2p_blockfilters.py`, `p2p_node_network_limited.py`, `rpc_misc.py`, `wallet_import_rescan.py --legacy-wallet` | ✅ pass | |
 | `rpc_blockchain.py` | ❌ | `gettxoutsetinfo` expects Litecoin's 8,725 coins; Ferrite regtest has exactly twice that (100 vs 50 subsidy). Test data, pre-existing. |
 | `mweb_node_compatibility.py`, `mweb_wallet_address.py`, `mweb_wallet_upgrade.py` | skipped | need previous-release binaries |
@@ -265,27 +414,32 @@ before running any test: the framework's cache clean-up calls `os.remove()` on t
 directory. The draft fixes that through its port of upstream `0c59e996e`. Run directly, the MWEB tests
 compare as follows:
 
-| Test | `ferrite-main` | Draft |
+| Test | `ferrite-main` | This branch |
 |---|---|---|
 | `mweb_pegout_all.py`, `mweb_reorg.py`, `mweb_wallet_basic.py` | ✅ pass | ✅ pass |
 | `mweb_p2p.py` | ❌ does not parse (`IndentationError`, line 45) | ✅ pass |
 | `mweb_basic.py` | ❌ Litecoin amounts | ✅ pass (after `06cb170`) |
-| `mweb_weight.py` | ❌ same `bad-txns-vin-empty` (identical tx hash) | ❌ same |
-| `mweb_mining.py` | ✅ pass (older test without the GBT-rule assertion) | ❌ first assertion only (M4) |
+| `mweb_weight.py` | ❌ `bad-txns-vin-empty` (stale test) | ✅ pass (after the §5 port) |
+| `mweb_mining.py` | ✅ pass (older test without the GBT-rule assertion) | ✅ pass (Ferrite policy asserted) |
 
-No test passes on `ferrite-main` and fails on the draft because of a code change.
+No test passes on `ferrite-main` and fails on this branch.
 
-### 6.3 Test debt worth a dedicated clean-up
+### 7.3 Test debt worth a dedicated clean-up
 
 The Ferrite test suites still carry Litecoin vectors: base58 prefixes (WIF/addresses), the 50-coin
 subsidy and 84M supply, Litecoin regtest nonces in `miner_tests`, Litecoin retarget numbers in
 `pow_tests`, and BIP9 timeout assumptions in `versionbits_tests`. This has gone unnoticed because
 the unit-test binary did not link and the functional framework did not import. Now that both run,
-a Ferrite pass over the vectors would let CI gate every merge (§8).
+a Ferrite pass over the vectors would let CI gate every merge (§9).
+
+`versionbits_tests` needs attention first: with Ferrite's mainnet `nTimeoutHeight` of 99,999,999 its
+`versionbits_computeblockversion` case builds block indexes towards that height and used more than
+11 GB of memory here before it was stopped. On a CI runner or a small machine that ends in an
+out-of-memory kill, not a test failure. Run `make check` with that suite excluded until it is fixed.
 
 ---
 
-## 7. Checkpoints (requested): status and procedure
+## 8. Checkpoints (requested): status and procedure
 
 Requested heights:
 
@@ -300,22 +454,17 @@ Requested heights:
 (`GetBlockSubsidy` uses `nHeight / nSubsidyHalvingInterval`, so the "halving block" is the first block
 with the reduced subsidy: 602,214 and 903,321.)
 
-**Status: not added.** The review environment could not reach any Ferrite data source:
+**Status: not added yet.** The review environment could not reach any Ferrite data source:
 `explorer.ferritecoin.org` is denied by the environment's network policy, and the `ferritecoin.org`
 domains did not resolve from the web tools. A placeholder hash would make every node reject the real
 block at that height, so none was written.
 
-**On any synced, trusted node (ideally two independent ones):**
-
-```bash
-for h in 450000 602214 750000 903321 1000000; do
-  printf '                {%9s, uint256S("0x%s")},\n' "$h" "$(ferrite-cli getblockhash $h)"
-done
-ferrite-cli getblockchaininfo | grep -A6 '"taproot"'           # confirms Taproot status/activation height
-TIP=$(ferrite-cli getblockcount); H=$((TIP - 1000))             # a block safely buried
-ferrite-cli getblockheader "$(ferrite-cli getblockhash $H)" | grep -E '"(hash|height|chainwork)"'
-ferrite-cli getchaintxstats 4096 "$(ferrite-cli getblockhash $H)"
-```
+**Procedure.** The maintainer runs the queries in §12.1 on a synced node and pastes the output. For
+every height the output contains the block hash and the raw 80-byte header. Before anything is
+written, each header is checked independently: its double-SHA-256 must equal the reported hash, and
+its scrypt(1024, 1, 1) hash must meet the target encoded in its own `nBits`. That catches copy/paste
+errors and a node on a wrong chain. Ideally the hashes are also compared with a second, independent
+node or explorer.
 
 Then in `CMainParams` (`src/chainparams.cpp`):
 
@@ -328,10 +477,13 @@ Then in `CMainParams` (`src/chainparams.cpp`):
                 {  1000000, uint256S("0x<hash>")},  // height 1,000,000
 ```
 
-At the same time, refresh the values that are still at height 292,000 (Feb 2025):
-`nMinimumChainWork` (use `chainwork` of block `H`), `defaultAssumeValid` (hash of `H`) and `chainTxData`
-(`time`, `txcount`, `txrate` from `getchaintxstats`). Cross-check every hash on a second node or
-explorer, then sync a fresh node from genesis with the new binary before release.
+At the same time, refresh the values that are still at height 292,000 (Feb 2025), taken from a
+block `H` about one week of blocks below the tip (§12.1 picks `H = tip − 10,080`):
+`nMinimumChainWork` (`chainwork` of `H`), `defaultAssumeValid` (hash of `H`) and `chainTxData`
+(`time`, `txcount`, `txrate` from `getchaintxstats 4096 <hash of H>`). `nMinimumChainWork` must come
+from a real block of the best chain: a value above the real chain's work keeps every node in initial
+block download, and mainnet `getblocktemplate` refuses to work then. Sync a fresh node from genesis
+with the new binary before release.
 
 If Taproot is active, consider *burying* the deployment (a fixed activation height, as Bitcoin did
 for older soft forks) in a later release. That simplifies code and removes signalling edge cases.
@@ -339,25 +491,29 @@ for older soft forks) in a later release. That simplifies code and removes signa
 
 ---
 
-## 8. Merging into `ferrite-main`
+## 9. Merging into `ferrite-main`
 
-- `git merge-tree --write-tree origin/ferrite-main ferrite-backup-3.2.1-draft` reports **no conflicts**.
-  The 17 commits only on `ferrite-main` are README/translation updates plus "Safer MWEB logger
-  initialization" (`6b1c373`), which is identical to the draft's `7b0ec43`.
+- `git merge-tree --write-tree origin/ferrite-main ferrite-backup-3.2.1-draft` reports **no conflicts**,
+  re-checked with every commit in Appendix B. The 17 commits only on `ferrite-main` are
+  README/translation updates plus "Safer MWEB logger initialization" (`6b1c373`), which is identical
+  to the draft's `7b0ec43`.
 - Suggested gates before merging:
-  1. CI green: build, `make check`, MWEB functional tests (a starter workflow is below).
-  2. §4 mainnet re-validation passes.
-  3. Decision on §5 (port v0.21.5.6–.8 now, or ship 3.2.1 and follow with 3.2.2 quickly).
-  4. Checkpoints and chain statistics refreshed (§7).
+  1. CI green: build, MWEB functional tests (a starter workflow is below).
+  2. §4 mainnet re-validation: the RPC scan (step 1) now, the `-reindex-chainstate` with the release
+     build (step 2) before tagging.
+  3. Activation height for the two new MWEB rules decided (§5.2), pools informed.
+  4. Checkpoints and chain statistics refreshed (§8).
   5. A depends build verified for each release platform (B2/B3).
-  6. Release notes: MWEB fixes, the undo-format note (§5), "no frozen outputs" (P1), and the fact that
-     v3.2.1 enforces new MWEB rules (miners and pools should upgrade together).
+  6. Release notes: MWEB fixes, the undo-format note (§5.3), "no frozen outputs" (P1), the
+     `getblocktemplate` policy (M4), the activation height, and that miners and pools should
+     upgrade before it.
 - Use a merge commit (`--no-ff`) rather than a squash. The 160-commit history is already public on the
-  backup branch, and Appendix A refers to those hashes.
+  backup branch, and Appendices A and B refer to those hashes.
 
 Starter CI workflow (`.github/workflows/ci.yml`). The build step alone would have caught D1/D2 on the
 first push. It only gates on what passes today; add `make check` and the remaining functional tests
-once the legacy Litecoin test vectors are fixed (§6.3) and M4 is decided.
+once the legacy Litecoin test vectors are fixed (§7.3). Do not add `make check` before
+`versionbits_tests` is fixed: with Ferrite's parameters it allocates more than 11 GB of memory.
 
 ```yaml
 name: ci
@@ -371,17 +527,22 @@ jobs:
       - run: chmod +x autogen.sh share/genbuild.sh  # see B1
       - run: ./autogen.sh && ./configure --with-incompatible-bdb --without-gui --enable-tests --disable-bench
       - run: make -j"$(nproc)"
+      - uses: actions/setup-python@v5   # a pip that may install packages (PEP 668)
+        with:
+          python-version: '3.12'
       - run: pip install blake3
       - run: >
           python3 test/functional/test_runner.py -j"$(nproc)"
-          mweb_basic.py mweb_dbcrash.py mweb_duplicate_pegin.py mweb_p2p.py mweb_p2p_mutated_block_submitblock.py
-          mweb_pegout_all.py mweb_pre_activation_hogex_marker.py mweb_reorg.py mweb_wallet_basic.py
+          mweb_basic.py mweb_dbcrash.py mweb_duplicate_pegin.py mweb_mempool.py mweb_mining.py
+          mweb_newpowvalidblock.py mweb_p2p.py mweb_p2p_mutated_block_submitblock.py
+          mweb_p2p_mutated_compactblock.py mweb_pegout_all.py mweb_pre_activation_hogex_marker.py
+          mweb_reorg.py mweb_wallet_basic.py mweb_weight.py mweb_wtxid_recentrejects.py
           p2p_invalid_messages.py p2p_blockfilters.py p2p_node_network_limited.py rpc_misc.py
 ```
 
 ---
 
-## 9. Build and tooling issues (not fixed here)
+## 10. Build and tooling issues (not fixed here)
 
 - **B1. Executable bits are missing repo-wide.** `ferrite-main` and the draft have 0 files with mode
   `100755` (upstream has 274), apparently because files went through GitHub's "upload files"
@@ -428,9 +589,9 @@ jobs:
 
 ---
 
-## 10. Roadmap analysis
+## 11. Roadmap analysis
 
-### 10.1 Tail emission (1 FEC per block)
+### 11.1 Tail emission (1 FEC per block)
 
 Current schedule (`GetBlockSubsidy`: 100 FEC, halving every 301,107 blocks):
 
@@ -463,7 +624,7 @@ falling over time).
 - Tests: subsidy unit tests around the activation height and epoch 7, a regtest functional test
   mining across the boundary, and a supply-accounting check (`gettxoutsetinfo`).
 
-### 10.2 Difficulty adjustment
+### 11.2 Difficulty adjustment
 
 Current state (`src/pow.cpp`): Litecoin-style retargeting every 10 blocks (4× clamp) before 250,000,
 then Dark Gravity Wave v3 (24-block window, ×3 clamp). `KimotoGravityWell()` is dead code on mainnet
@@ -489,7 +650,7 @@ in a loop), plot solve-time distribution and difficulty response, and replay can
 against that history. A DAA change is a hard fork. Combining it with the tail-emission fork means
 one coordinated upgrade instead of two.
 
-### 10.3 Post-quantum
+### 11.3 Post-quantum
 
 Threat model (a cryptographically relevant quantum computer, CRQC):
 - **ECDSA/Schnorr keys** (secp256k1) become forgeable once the public key is known: P2PK outputs,
@@ -517,7 +678,7 @@ Options:
 4. **Governance note:** migration plans elsewhere sometimes end in freezing unmigrated ECDSA coins.
    That would contradict Ferrite's no-blacklist position, so decide the policy early and publish it.
 
-### 10.4 Other observations
+### 11.4 Other observations
 
 - `COINBASE_MATURITY` is 10 blocks (Litecoin/Bitcoin: 100), i.e. coinbase can be spent after about
   10 minutes. On a chain that rented hash rate can reorganise, a deeper maturity limits how far
@@ -525,12 +686,211 @@ Options:
   If it changes, `TestChain100Setup` and other tests that assume 100 need updating; with 10 they
   currently crash (`interfaces_tests` dereferences block 20 of a 10-block chain).
 
-### 10.5 Ordering
+### 11.5 Changing the proof of work (CPU-oriented, "post-quantum")
 
-1. v3.2.1: fixes in this branch, §4 re-validation, §5 port, checkpoints (§7). No hard fork.
-2. A data-driven DAA proposal (§10.2) and a tail-emission spec (§10.1) with a single activation height,
-   announced well in advance, on testnet first.
-3. Post-quantum output type as a soft fork once the scheme choice is settled (§10.3).
+**Quantum computers do not threaten proof of work in practice.** Grover's algorithm gives at most a
+square-root speed-up for hash search. It also parallelises badly: k quantum machines are only √k
+times faster than one, while k ASICs are k times faster. The function would have to run as a
+reversible quantum circuit, at gate speeds many orders of magnitude below ASICs. Memory-hard functions
+such as scrypt are harder still to run that way. scrypt, SHA-256d, RandomX and yespower are all
+"post-quantum" for mining purposes. Ferrite's real quantum exposure is signatures and MWEB's
+commitments (§11.3), and a new PoW does not change either. Treat "post-quantum" as a property of the
+signature and MWEB plan, not of the mining algorithm.
+
+**CPU-oriented candidates:**
+
+| Algorithm | Used by | Verification cost | Notes |
+|---|---|---|---|
+| RandomX | Monero (since 2019) and several RandomX variants | several milliseconds per hash in light mode (256 MiB cache), around 1 ms in fast mode (2 GiB dataset) | The most battle-tested CPU-oriented PoW. Verification is heavy for header sync, SPV/Electrum servers and pool share checks. XMRig mines most variants after a small patch, so Monero-scale hash power can be pointed at a Ferrite variant. Attractive to botnets. |
+| yespower (Openwall, scrypt's successor) | several small coins, each with its own personalisation string | on the order of a millisecond per hash, depending on the chosen N and r (e.g. N = 2048, r = 32 uses 8 MiB) | Closest to the current code: one function behind `GetPoWHash()`. Tunable memory cost. Smaller ecosystem; GPU implementations exist but CPUs stay competitive. |
+| Argon2d / VerusHash 2.x | a few coins | low to moderate | Less scrutiny as PoW; VerusHash also runs well on GPUs/FPGAs. |
+
+**The security trade-off for a small chain.** Today Ferrite shares scrypt with Litecoin and
+Dogecoin, whose ASIC hash power is many orders of magnitude larger and partly rentable. That is
+Ferrite's main 51 % risk. A CPU algorithm removes that particular pool of hash power but exposes
+Ferrite to cloud CPUs, botnets and, for RandomX, Monero's miners. A Ferrite-specific parameter set
+helps only until mining software adapts. The opposite approach deserves a comparison:
+**merged mining (AuxPoW) with Litecoin/Dogecoin**, as Dogecoin did in 2014, which borrows the large
+scrypt networks' security instead of avoiding it. Most scrypt pools already merge-mine. Decide by
+estimated attack cost (rentable hash rate × price × hours needed) for each option, not by the label.
+
+**What a PoW change involves (hard fork, v4.0.0):**
+- Bitcoin-derived code checks PoW in `CheckBlockHeader()`, where the height is unknown. A switch by
+  height needs the check moved where the height is known (or a version bit tied to height by a
+  contextual check). It touches `CBlockHeader::GetPoWHash()`, header sync (`AcceptBlockHeader`),
+  the miner, `getblocktemplate` users, and the test framework (`ferrite_scrypt.py`).
+- Reset the difficulty at the fork height. The new algorithm's hash rate has no relation to
+  scrypt's. With DGW or ASERT (§11.2), start from `powLimit` or a calibrated target.
+- Every pool must deploy the new hash function. Given that some pools are not MWEB-ready yet, this is
+  the costliest item on the roadmap for the ecosystem. Survey the pools before committing.
+- Keep historical blocks on scrypt; checkpoints and `assumevalid` do not skip header PoW checks, so
+  IBD cost is the sum of both algorithms' verification.
+
+### 11.6 Ordering
+
+1. This release (v3.3.0 or v3.2.1, §11.7): fixes in this branch, the §5 port, §4 re-validation,
+   checkpoints (§8), the §5.2 activation height. No hard fork.
+2. Soft forks that need no pool changes, in a later minor release: bury Taproot if active (§8),
+   `COINBASE_MATURITY` (§11.4), the post-quantum output type once the scheme is chosen (§11.3).
+3. v4.0.0 hard fork with one activation height, announced months ahead and run on testnet first:
+   tail emission (§11.1), the DAA (§11.2) and, only if the attack-cost comparison in §11.5 favours
+   it, the PoW change.
+
+### 11.7 Version number for this release
+
+v3.3.0 describes this release better than v3.2.1. It brings new consensus checks that apply to all
+blocks (§4), two soft-fork rules waiting for an activation height (§5.2), a change to the undo-data
+format that makes downgrades need a reindex (§5.3), new peer-discouragement rules, and new mempool
+policy. A patch-level number suggests a drop-in bug fix, while pools and exchanges need to plan for
+this upgrade. The P2P protocol version (70017) is unchanged either way. To switch, set
+`_CLIENT_VERSION_MINOR` to 3 and `_CLIENT_VERSION_REVISION` to 0 in `configure.ac`; the user agent
+becomes `/FerriteCore:3.3.0/`.
+
+---
+
+## 12. Maintainer runbook
+
+### 12.1 Mainnet node queries (checkpoints, chain statistics, activation height)
+
+Read-only. Run them on the synced node and paste the whole output back. `ferrite-cli` talks to a
+running `ferrited`, or to `ferrite-qt` started with `server=1` in `ferrite.conf`. In `ferrite-qt`
+the same commands also work one at a time in Window → Console, for example
+`getblockheader(getblockhash(450000), false)`.
+
+Windows (Command Prompt, in the folder that contains `ferrite-cli.exe`). The `%h`/`%b` forms are for
+typing at the prompt; in a `.bat` file they must be doubled (`%%h`):
+
+```bat
+ferrite-cli getblockchaininfo
+for %h in (450000 602214 750000 903321 1000000) do @for /f %b in ('ferrite-cli getblockhash %h') do @echo %h %b & @ferrite-cli getblockheader %b false
+for /f %t in ('ferrite-cli getblockcount') do @set /a H=%t-10080 >nul
+for /f %b in ('ferrite-cli getblockhash %H%') do @echo %H% %b & @ferrite-cli getblockheader %b & @ferrite-cli getchaintxstats 4096 %b
+ferrite-cli getchaintxstats 10080
+ferrite-cli getnetworkinfo
+ferrite-cli getpeerinfo | findstr /c:"subver"
+```
+
+Linux/macOS:
+
+```bash
+ferrite-cli getblockchaininfo
+for h in 450000 602214 750000 903321 1000000; do b=$(ferrite-cli getblockhash $h); echo "$h $b"; ferrite-cli getblockheader $b false; done
+H=$(( $(ferrite-cli getblockcount) - 10080 )); b=$(ferrite-cli getblockhash $H); echo "$H $b"; ferrite-cli getblockheader $b; ferrite-cli getchaintxstats 4096 $b
+ferrite-cli getchaintxstats 10080
+ferrite-cli getnetworkinfo
+ferrite-cli getpeerinfo | grep subver | sort | uniq -c
+```
+
+What each line is for: Taproot/MWEB status and the tip; hash and raw header of every checkpoint
+height (checked as in §8); `nMinimumChainWork`/`defaultAssumeValid`/`chainTxData` from a block one
+week of blocks below the tip; the recent block rate, used to turn "six weeks" into an activation
+height (§5.2); and the client versions of connected peers, a rough view of how far v3.2.0 has spread.
+
+### 12.2 MWEB history check (read-only, §4 step 1)
+
+Python 3.8 or newer, no extra packages, on the machine that runs the node. From a checkout of this
+branch:
+
+```bat
+python contrib\devtools\mweb_history_check.py
+```
+
+```bash
+python3 contrib/devtools/mweb_history_check.py
+```
+
+It reads the RPC cookie from the default data directory (`%APPDATA%\Ferrite`, `~/.ferrite`). Use
+`--datadir <dir>` for another data directory, `--rpcuser`/`--rpcpassword` if `ferrite.conf` sets
+them, and `--rpcurl http://127.0.0.1:<port>/` if `rpcport` is not 9573. It prints progress, then a
+summary ending in `RESULT: no M1/M2 violations` or a list of problems; paste the summary.
+
+### 12.3 Pushing this branch (Windows Command Prompt)
+
+The branch is delivered as a git bundle, `ferrite-3.2.1-review.bundle`: 45 commits on top of
+`origin/ferrite-backup-3.2.1-draft` at `9406190`, ending with this document's update. Save it to
+your Downloads folder, then in your clone:
+
+```bat
+cd /d C:\path\to\ferrite-core
+git fetch origin
+git bundle verify "%USERPROFILE%\Downloads\ferrite-3.2.1-review.bundle"
+git fetch "%USERPROFILE%\Downloads\ferrite-3.2.1-review.bundle" ferrite-backup-3.2.1-draft:review-fixes
+git log --oneline origin/ferrite-backup-3.2.1-draft..review-fixes
+git push origin review-fixes:ferrite-backup-3.2.1-draft
+```
+
+`git log` should list 45 commits, the newest being the update of this document. The push
+only succeeds as a fast-forward; if it is rejected, someone pushed to the branch after `9406190`.
+Stop there, because the bundle then has to be rebased on the new commits. To bring your local branch
+along afterwards: `git checkout ferrite-backup-3.2.1-draft` then `git merge --ff-only review-fixes`.
+
+Without a clone, start with `git clone https://github.com/koh-gt/ferrite-core.git` and
+`cd ferrite-core`.
+
+### 12.4 Merging into `ferrite-main` (only after the §9 gates)
+
+```bat
+git fetch origin
+git checkout ferrite-main
+git merge --ff-only origin/ferrite-main
+git merge --no-ff origin/ferrite-backup-3.2.1-draft -m "Merge branch 'ferrite-backup-3.2.1-draft' into ferrite-main"
+git push origin ferrite-main
+```
+
+---
+
+## Appendix B: commits added by this review
+
+On top of `origin/ferrite-backup-3.2.1-draft` (`9406190`), oldest first, not counting the
+commit that adds this appendix. Upstream commits were cherry-picked with `-x` and keep their
+original author.
+
+| # | Ferrite commit | Subject | Upstream Litecoin source |
+|---|---|---|---|
+| 1 | `39ee1bc` | Fix build: restore Block.h brace, drop duplicated MWEB ConnectBlock block | — (this review) |
+| 2 | `1aa9925` | validation: remove stray InvalidBlockFound() in ConnectTip | — (this review) |
+| 3 | `52bbd12` | libmw: restore BlockBuilder guards reverted by dd6b27e | — (this review) |
+| 4 | `e767ecd` | chainparams: freeze no MWEB outputs and grandfather no block | — (this review) |
+| 5 | `1b07762` | chainparams: fix regtest genesis proof of work | — (this review) |
+| 6 | `48a23dd` | test: build Test_CoinsView and fix test_ferrite link error | — (this review) |
+| 7 | `a8f775a` | test: repair the functional test framework | — (this review) |
+| 8 | `570ac22` | contrib: rebrand the Linux desktop entry for Ferrite | — (this review) |
+| 9 | `13ed5ea` | pow: keep regtest difficulty constant under KGW/DGW | — (this review) |
+| 10 | `06cb170` | test: use Ferrite regtest amounts in mweb_basic.py | — (this review) |
+| 11 | `bf60591` | doc: add review of the v3.2.1 draft branch | — (this review) |
+| 12 | `e0bbe23` | doc: add ferrite-main functional baseline to the review | — (this review) |
+| 13 | `4fc9cad` | doc: note that the Qt GUI builds | — (this review) |
+| 14 | `f1ae30b` | policy: Enforce Ke and Ko pubkey validity | `cfdfcf57a` |
+| 15 | `2ea7743` | policy: Limit MWEB weight for mempool txs | `109ed13b7` |
+| 16 | `a1c6a9d` | net: Rate-limit MWEB leafset requests | `cb65fc5b6` |
+| 17 | `2c33d56` | test: Fixing stale test values in mweb_weight.py | `9b5bb289b` |
+| 18 | `74a2aa0` | net: Update MWEB leafset rate limits to be node-wide | `f24dec1c8` |
+| 19 | `93b625c` | validation: preserve descendants of mutated MWEB blocks | `4dd6aeeb9` |
+| 20 | `1620df3` | net: discourage mutated MWEB compact blocks | `136695e05` |
+| 21 | `b2bc813` | policy: Reject empty MWEB pegout kernels from standard policy | `67580d6e3` |
+| 22 | `5d8d39a` | mining: enforce MWEB input limit | `dc7233420` |
+| 23 | `5eb1ae7` | validation: reject empty MWEB pegout features | `b250b016a` |
+| 24 | `2b14ad3` | validate: reject empty MWEB kernel extradata | `a399fc4ca` |
+| 25 | `6bb028c` | mempool: serialize fPegout in txundo | `22a916236` |
+| 26 | `a4b1077` | validation: Fix script check data lifetime | `32413709d` |
+| 27 | `ef6a413` | Don't return MWEB-only transactions when rpcserialversion <= 1 | `d3b9ac396` |
+| 28 | `6219625` | mweb: prevent disk-reparse validation bypass | `b4313c34d` |
+| 29 | `c7f30ae` | secp256k1-zkp: release scratch frames on invalid proofs | `d7ab03d31` |
+| 30 | `08b136a` | mweb: harden same-hash block mutation handling | `70ea696f3` |
+| 31 | `2e3e18e` | mweb: validate staged block aggregates incrementally | `f6afd2682` |
+| 32 | `d771213` | mempool: evict MWEB conflicts when blocks connect | `36f06455f` |
+| 33 | `ce84ced` | net: avoid MWEB recentRejects censorship | `c07d6228c` |
+| 34 | `7b9b2b9` | validation: defer MWEB fast relay until after connect | `0cb141964` |
+| 35 | `5fe2ea9` | libmw: close POSIX copy file descriptors | `b8ccaf355` |
+| 36 | `5a70be2` | test: use fec_util in the MWEB tests ported from v0.21.5.6-v0.21.5.8 | — (this review) |
+| 37 | `ff9095c` | Cosmetic clean-up after the v0.21.5.x ports | — (this review) |
+| 38 | `04ed12e` | Reverting unnecessary functional test changes | `beae01d62` |
+| 39 | `4dbcc3a` | test: check Ferrite's getblocktemplate rule policy in mweb_mining.py | — (this review) |
+| 40 | `95695b3` | Cosmetic: restore upstream whitespace in files touched by the ports | — (this review) |
+| 41 | `2b7f0b6` | test: pin Ferrite's MWEB feature activation heights in Test_Kernel | — (this review) |
+| 42 | `34b7953` | build: fix the bug-report URL in AC_INIT | — (this review) |
+| 43 | `60ba533` | test: use a Ferrite-encoded key in MalformedMWEBOutputKeys | — (this review) |
+| 44 | `37d3304` | contrib: add a read-only MWEB history checker | — (this review) |
 
 ---
 
