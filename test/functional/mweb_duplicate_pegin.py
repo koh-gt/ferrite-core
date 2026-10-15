@@ -9,7 +9,7 @@ from test_framework.blocktools import (
     add_witness_commitment,
     create_coinbase,
 )
-from test_framework.ltc_util import create_hogex, setup_mweb_chain
+from test_framework.fec_util import create_hogex, setup_mweb_chain
 from test_framework.messages import (
     COIN,
     CBlock,

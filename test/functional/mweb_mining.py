@@ -10,7 +10,7 @@ from test_framework.blocktools import (create_coinbase, NORMAL_GBT_REQUEST_PARAM
 from test_framework.messages import (CBlock, MWEBBlock)
 from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal, assert_raises_rpc_error
-from test_framework.ltc_util import (
+from test_framework.fec_util import (
     FIRST_MWEB_HEIGHT,
     create_hogex,
     get_hogex_tx,

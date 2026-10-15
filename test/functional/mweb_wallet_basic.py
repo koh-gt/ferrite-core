@@ -5,7 +5,7 @@
 """Basic MWEB Wallet test"""
 
 from test_framework.test_framework import BitcoinTestFramework
-from test_framework.ltc_util import setup_mweb_chain
+from test_framework.fec_util import setup_mweb_chain
 from test_framework.util import assert_equal
 
 class MWEBWalletBasicTest(BitcoinTestFramework):

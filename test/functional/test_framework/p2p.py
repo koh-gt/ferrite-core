@@ -163,7 +163,7 @@ class P2PConnection(asyncio.Protocol):
         self.recvbuf = b""
         self.magic_bytes = MAGIC_BYTES[net]
 
-        def peer_connect(self, dstaddr, dstport, *, net, timeout_factor):
+    def peer_connect(self, dstaddr, dstport, *, net, timeout_factor):
         self.peer_connect_helper(dstaddr, dstport, net, timeout_factor)
 
         loop = NetworkThread.network_event_loop
@@ -345,7 +345,7 @@ class P2PInterface(P2PConnection):
         create_conn = super().peer_connect(*args, **kwargs)
 
         if send_version:
-           self.peer_connect_send_version(services)
+            self.peer_connect_send_version(services)
 
         return create_conn
 
