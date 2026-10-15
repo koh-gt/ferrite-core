@@ -6,12 +6,13 @@
 
 import copy
 
-from test_framework.ltc_util import setup_mweb_chain
+from test_framework.fec_util import setup_mweb_chain
 from test_framework.messages import CBlock, FromHex, Hash, msg_block
 from test_framework.p2p import P2PDataStore
 from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal
 
+# Ferrite freezes no MWEB outputs; any output ID that is not in the block works for this mutation case.
 FROZEN_MWEB_OUTPUT_ID = "0000000000000000000000000000000000000000000000000000000000000fec"
 
 
