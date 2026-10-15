@@ -9,7 +9,7 @@ from decimal import Decimal
 from test_framework.blocktools import (create_coinbase, NORMAL_GBT_REQUEST_PARAMS)
 from test_framework.messages import (CBlock, CTransaction, FromHex, MWEBBlock)
 from test_framework.test_framework import BitcoinTestFramework
-from test_framework.util import assert_equal, assert_raises_rpc_error
+from test_framework.util import assert_equal
 from test_framework.fec_util import (
     FIRST_MWEB_HEIGHT,
     create_hogex,
@@ -33,13 +33,9 @@ class MWEBMiningTest(BitcoinTestFramework):
         node.generate(FIRST_MWEB_HEIGHT - 1)
         first_pegin_txid = node.sendtoaddress(node.getnewaddress(address_type='mweb'), 1)
 
-        self.log.info("getblocktemplate: mweb rule is required for MWEB templates")
-        assert_raises_rpc_error(
-            -8,
-            "getblocktemplate must be called with the segwit & mweb rule sets",
-            node.getblocktemplate,
-            {'rules': ['segwit']},
-        )
+        self.log.info("getblocktemplate: Ferrite does not require the mweb rule (pool compatibility)")
+        segwit_only_template = node.getblocktemplate({'rules': ['segwit']})
+        assert "mweb" in segwit_only_template
 
         first_template = node.getblocktemplate(NORMAL_GBT_REQUEST_PARAMS)
         assert "mweb" in first_template
