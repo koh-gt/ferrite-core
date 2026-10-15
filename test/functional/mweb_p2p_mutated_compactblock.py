@@ -6,7 +6,7 @@
 
 import copy
 
-from test_framework.ltc_util import setup_mweb_chain
+from test_framework.fec_util import setup_mweb_chain
 from test_framework.messages import (
     BlockTransactions,
     CBlock,
