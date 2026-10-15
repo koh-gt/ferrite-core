@@ -54,7 +54,7 @@ public:
     std::vector<PegInCoin> GetPegIns() const noexcept { return m_body.GetPegIns(); }
     boost::optional<CAmount> GetPegInAmount() const noexcept { return m_body.GetPegInAmount(); }
     std::vector<PegOutCoin> GetPegOuts() const noexcept { return m_body.GetPegOuts(); }
-    boost::optional<CAmount> GetSupplyChange() const noexcept { return m_body.GetSupplyChange();
+    boost::optional<CAmount> GetSupplyChange() const noexcept { return m_body.GetSupplyChange(); }
 
     //
     // Serialization/Deserialization
