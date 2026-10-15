@@ -398,8 +398,11 @@ public:
 
         UpdateActivationParametersFromArgs(args);
 
-        genesis = CreateGenesisBlock(1296688602, 0, 0x207fffff, 1, 100 * COIN);
+        // Nonce 1: with Ferrite's genesis coinbase, nonce 0 does not satisfy the scrypt proof of work,
+        // which made regtest nodes abort when reading the genesis block back from disk.
+        genesis = CreateGenesisBlock(1296688602, 1, 0x207fffff, 1, 100 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
+        assert(consensus.hashGenesisBlock == uint256S("0x66a1fad2536f94a2bc200b133bd65713fe8e4ec3a7cc7c50c2390e7e2d153930"));
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
         vSeeds.clear();      //!< Regtest mode doesn't have any DNS seeds.
@@ -411,7 +414,7 @@ public:
 
         checkpointData = {
             {
-                {0, uint256S("492258df125bae6c6f95eed66a5d6d8be785bcb7d10da025226b57a5c0e42837")},
+                {0, uint256S("66a1fad2536f94a2bc200b133bd65713fe8e4ec3a7cc7c50c2390e7e2d153930")},
             }
         };
 
