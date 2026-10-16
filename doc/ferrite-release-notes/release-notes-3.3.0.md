@@ -1,68 +1,92 @@
-# Ferrite Core v3.3.0
+## v3.3.0 wallets
+| <img alt=download-logo-1 src=https://github.com/koh-gt/ferrite-core/assets/101822992/ce12f90e-286d-4229-b5db-db4c462e6256 height=32> <br> `-        Windows        -` | SHA256 Hash |
+|-|-|
+| [<img alt=download-1 src=https://github.com/koh-gt/ferrite-core/assets/101822992/70ae208a-caaa-40ff-856c-42e87745e8c3 height=32>](https://github.com/koh-gt/ferrite-core/releases/download/v3.3.0/ferrite-3.3.0-win64-setup.exe) | `<SHA256>` <br> **New install** _ferrite-3.3.0-win64-setup.exe_ |
+| [<img alt=download-2 src=https://github.com/koh-gt/ferrite-core/assets/101822992/70ae208a-caaa-40ff-856c-42e87745e8c3 height=32>](https://github.com/koh-gt/ferrite-core/releases/download/v3.3.0/ferrite-qt.exe) |  `<SHA256>` <br> **Wallet Update** _ferrite-qt.exe_ |
+| [<img alt=download-3 src=https://github.com/koh-gt/ferrite-core/assets/101822992/70ae208a-caaa-40ff-856c-42e87745e8c3 height=32>](https://github.com/koh-gt/ferrite-core/releases/download/v3.3.0/ferrite-win-3.3.0.zip) | `<SHA256>` <br> **Server** |
 
-Security and maintenance release: Litecoin Core's MWEB incident fixes (up to v0.21.5.8), a scheduled
-MWEB soft fork, new checkpoints and build fixes. **Miners and pools must upgrade before block
-1,150,000.**
+| <img alt=download-logo-1 src=https://github.com/koh-gt/ferrite-core/assets/101822992/1c13b30a-95de-43bc-82c7-864a86e4658c height=32> <br> `-         Linux         -` | SHA256 Hash |
+|-|-|
+|  [<img alt=download-1 src=https://github.com/koh-gt/ferrite-core/assets/101822992/70ae208a-caaa-40ff-856c-42e87745e8c3 height=32>](https://github.com/koh-gt/ferrite-core/releases/download/v3.3.0/ferrite-qt)           | `<SHA256>` <br> **Wallet** _ferrite-qt_   |
+|  [<img alt=download-1 src=https://github.com/koh-gt/ferrite-core/assets/101822992/70ae208a-caaa-40ff-856c-42e87745e8c3 height=32>](https://github.com/koh-gt/ferrite-core/releases/download/v3.3.0/ferrite-unix-3.3.0.zip)               | `<SHA256>` <br> **Server**  |
 
-<!-- Downloads: add the Windows / macOS / Linux table with SHA256 hashes when the binaries are built. -->
+## v3.1.3 wallets
+| <img alt=download-logo-1 src=https://github.com/koh-gt/ferrite-core/assets/101822992/c07963c6-718e-4ee3-a9d5-a9a96010f99a height=32> <br> `-         MacOS         -` | SHA256 Hash |
+|-|-|
+|  [<img alt=download-1 src=https://github.com/koh-gt/ferrite-core/assets/101822992/70ae208a-caaa-40ff-856c-42e87745e8c3 height=32>](https://github.com/koh-gt/ferrite-core/releases/download/v3.1.3/Ferrite-Qt.dmg)               | `e076cfd1515066708fc2b9417d13311ea1cbcf16102962b6b8bf9dfadcda6003` <br> **Wallet (v3.1.3)** _Ferrite-Qt.dmg_      | 
+|  [<img alt=download-1 src=https://github.com/koh-gt/ferrite-core/assets/101822992/70ae208a-caaa-40ff-856c-42e87745e8c3 height=32>](https://github.com/koh-gt/ferrite-core/releases/download/v3.1.3/Ferrite-Mac.7z)               | `335a9d3f41682f67ac2ac82f5832b4ea26ad0e8c215eb10db3b9f1f66cb918d6` <br> **Server (v3.1.3)**  |
 
-## Upgrade notice: MWEB soft fork at block 1,150,000
+## Changes in v3.3.0
 
-From block **1,150,000** (expected between 24 and 29 December 2026 at current block times), two MWEB
-kernel encodings become invalid:
-* a kernel that sets the peg-out feature but carries no peg-out;
-* a kernel that sets the extra-data feature but carries no extra data.
+### Miners and pools: upgrade before block 1,150,000
+v3.3.0 schedules an MWEB soft fork at block **1,150,000** (expected 24–29 December 2026). From that block, two
+malformed MWEB kernel encodings are invalid: a kernel that sets the peg-out feature without a peg-out, and a kernel
+that sets the extra-data feature without extra data. Normal wallets never create them, and v3.3.0 already refuses
+to relay or mine them.
+> A pool still running v3.2.x after block 1,150,000 could mine a block that v3.3.0 nodes reject, losing that block
+or splitting the chain. All miners and pools should run v3.3.0 well before the activation height.
 
-v3.3.0 already refuses to relay or mine such kernels. A pool still running v3.2.x after block
-1,150,000 could mine a block that v3.3.0 nodes reject, so **all miners and pools must run v3.3.0
-before that height**. No block in Ferrite's history uses either encoding.
+Wallets and other nodes keep working on v3.2.x, but without the security updates below.
 
-Other nodes and wallets should upgrade too; they keep working on v3.2.x, but without the security
-fixes below.
+### Security Updates
+MWEB security fixes from Litecoin Core v0.21.5.4 – v0.21.5.8, released after the Litecoin MWEB incident:
+* MWEB inputs must match the outputs they spend, and kernel lock heights cannot exceed the block height (from block 903,321)
+* Stricter HogEx, peg-in and fee-overflow checks
+* Better handling of mutated MWEB blocks and compact blocks; peers that send them are discouraged
+* Rate limits for MWEB leafset requests, protection against MWEB relay censorship, safer fast relay of new blocks
+* Conflicting MWEB transactions are evicted from the mempool when a block connects
 
-## Security fixes (from Litecoin Core v0.21.5.4 – v0.21.5.8)
-* MWEB inputs must match the outputs they spend, kernel lock heights cannot exceed the block height
-  (from block 903,321), and HogEx / peg-in / fee-overflow checks are stricter.
-* Better handling of mutated MWEB blocks and compact blocks; peers that send them are discouraged.
-* Rate limits for MWEB leafset requests, fixes for relay censorship through `recentRejects` and for
-  fast relay before a block is connected, eviction of conflicting MWEB transactions, and a memory
-  safety fix in script checking.
-* CVE-2024-35202 (compact block reconstruction assertion).
+Bitcoin Core v25.0 fix [Vulnerability CVE-2024-35202](https://www.cvedetails.com/cve/CVE-2024-35202/): a peer
+could crash a node with a crafted compact-block message.
 
-**No blacklist.** Unlike Litecoin, Ferrite freezes no outputs and grandfathers no block. A scan of
-Ferrite's complete MWEB history (blocks 150,120 to 1,057,006) found no block that breaks the new
-rules.
+**No blacklist.** Unlike Litecoin, Ferrite freezes no coins and grandfathers no block. A scan of Ferrite's complete
+MWEB history (blocks 150,120 to 1,057,006) found no block that breaks the new rules.
 
-## Other changes
-* Checkpoints at 450,000, 602,214 (2nd halving), 750,000, 903,321 (3rd halving) and 1,000,000;
-  assumed-valid block and minimum chain work updated to block 1,046,922.
-* Mempool policy: MWEB transactions with too many inputs (`mweb-txn-too-many-inputs`), too much
-  weight (`mweb-txn-oversize`), invalid output keys or empty peg-out kernels (`non-standard-mweb-tx`)
-  are no longer accepted or relayed.
-* RPC: no command or argument changed. `getmempoolentry` returns an error for MWEB-only
-  transactions on nodes started with `-rpcserialversion=0` or `1`. `maxfeerate=0` in
-  `sendrawtransaction` / `testmempoolaccept` now means "no limit" for MWEB transactions too.
-  `dumpwallet` files gain a `# mweb view keys:` comment line.
-* `getblocktemplate` still accepts `{"rules": ["segwit"]}`. As before, the template always carries
-  the MWEB block, and pools must include it in the blocks they mine.
-* New tool: `contrib/devtools/mweb_history_check.py`, a read-only scan of a node's MWEB history.
-* Build and test fixes: the source builds again, and the unit and functional test suites run.
+### Checkpoints
+Added checkpoints at heights 450,000, 602,214 (2nd halving), 750,000, 903,321 (3rd halving) and 1,000,000.
+Assumed-valid block and minimum chain work updated to block 1,046,922.
 
-## Downgrading
-v3.3.0 records an extra flag in the block undo files (`rev*.dat`). If you go back to an older
-version after running v3.3.0, start it once with `-reindex-chainstate`.
+### Miscellaneous
+Version and copyright year increment
+The source tree builds again, with the unit and functional test suites working, and every change is now checked by
+GitHub Actions CI
+New tool `contrib/devtools/mweb_history_check.py`: read-only scan of a node's MWEB history
+RPC: no command or argument changed. `getmempoolentry` returns an error for MWEB-only transactions on nodes started
+with `-rpcserialversion=0` or `1`; `maxfeerate=0` in `sendrawtransaction` / `testmempoolaccept` now means "no limit"
+for MWEB transactions too; `dumpwallet` files gain a `# mweb view keys:` comment line
+Mempool: MWEB transactions with too many inputs, too much weight, invalid output keys or empty peg-out kernels are no
+longer accepted or relayed
+Windows: `ferrited` has no daemon mode. Remove `daemon=1` from `ferrite.conf` (or `-daemon` from the command line)
+> Downgrading: v3.3.0 records an extra flag in the block undo files (`rev*.dat`). If you go back to an older version
+after running v3.3.0, start it once with `-reindex-chainstate`.
 
-## Notes
-* Windows: `ferrited` has no daemon mode. Remove `daemon=1` from `ferrite.conf` (or `-daemon` from
-  the command line); otherwise it stops with "-daemon is not supported on this operating system".
-* Details of every change: `doc/ferrite-3.3.0-review.md`.
+For more details see https://github.com/koh-gt/ferrite-core/pull/65 and `doc/ferrite-3.3.0-review.md`
+
+## Future changes
+v4.0.0 soft fork: post-quantum (P2QRH) outputs, under evaluation
+v5.0.0 hard fork: CPU proof of work and tail emission, under evaluation
+Litecoin Core updates
 
 ## Mining
 [**List of pools and settings**](https://github.com/koh-gt/ferrite-core/wiki/Mining-Pools-List)
-Ferrite runs on the Scrypt algorithm, compatible with Litecoin/Dogecoin miners.
+Ferrite runs on Scrypt algorithm -compatible with Litecoin/Dogecoin miners
+**Scrypt is not an ASIC-resistant algorithm.**
+Scrypt ASIC mining is recommended. You can opt to [rent an Scrypt ASIC](https://github.com/koh-gt/ferrite-core/wiki/Rent-an-ASIC-miner).
+**Pools must run v3.3.0 before block 1,150,000.** `getblocktemplate` still accepts `{"rules": ["segwit"]}`; as before,
+the template always carries the MWEB block, and pools must include it in the blocks they mine.
 
-## Future changes
-v4.0.0 (planned hard fork, under discussion): tail emission, difficulty adjustment, post-quantum
-outputs.
+## Other notes (on v1, v2 wallets before _13 Apr 2022_).
+### All versions of Ferrite Core **wallets** will maintain backwards compatibility
+> At height 250,000 all Ferrite will be split into 1 Ferrite (FEC) and 1 Ferrite Classic (FECC). v1.x.x and v2.x.x will only be able to spend the FECC portion, while v3+ will only be able to spend the FEC portion. 
+Do not be alarmed if coins sent through v1.x.x and v2.x.x (Ferrite Classic) do not appear in your v3+ (Ferrite) balance - your Ferrite balance is unchanged.
+Coins sent to Ferrite Classic through Ferrite will not show up, but are not lost. Ferrite Classic users need to copy their wallet to a v3+ Ferrite Core client to be able to access the coins. 
+One can attempt to run both Ferrite Classic and Ferrite after Ferrite Classic is launched. Ferrite Classic may encounter hashrate instability.
+
+
+* Windows and Linux builds compiled on Ubuntu Linux by kohgt
+Uploaded on <date>.
+
+## What's Changed
+* v3.3.0 by @koh-gt in https://github.com/koh-gt/ferrite-core/pull/65
 
 **Full Changelog**: https://github.com/koh-gt/ferrite-core/compare/v3.2.0...v3.3.0
