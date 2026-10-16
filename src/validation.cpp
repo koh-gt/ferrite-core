@@ -3593,6 +3593,12 @@ bool IsMWEBEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& param
     return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_MWEB, versionbitscache) == ThresholdState::ACTIVE);
 }
 
+bool IsMWEBKernelRuleEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params)
+{
+    LOCK(cs_main);
+    return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_MWEB_KERNEL, versionbitscache) == ThresholdState::ACTIVE);
+}
+
 void UpdateUncommittedBlockStructures(CBlock& block, const CBlockIndex* pindexPrev, const Consensus::Params& consensusParams)
 {
     int commitpos = GetWitnessCommitmentIndex(block);

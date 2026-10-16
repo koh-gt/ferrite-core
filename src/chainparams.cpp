@@ -117,6 +117,15 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 99999999; // never*
         // MWEB will be automatically activated after block 99999999 for now.
 
+        // Deployment of the MWEB kernel rules (v3.3.0): kernels that set the pegout feature must carry a pegout
+        // (Litecoin b250b016a), and kernels that set the extra-data feature must carry extra data (Litecoin a399fc4ca).
+        // Bit 5 is unused (Taproot 2, MWEB 4) and outside the BIP320 version-rolling bits 13-28.
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].bit = 5;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nStartHeight = 1250000;
+        // When 39 of the 40 blocks in a window signal bit 5, the next window is locked in and the rules apply from the
+        // window after it (block 1250080 at the earliest).
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nTimeoutHeight = 99999999; // never*
+
         // The best chain should have at least this much work.
 
         consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000006aefe2248ff21e3f");
@@ -165,11 +174,6 @@ public:
         // No block is exempt from the MWEB input-metadata check (null = disabled), and no MWEB outputs are frozen.
         consensus.mweb_input_metadata_grandfather_blockhash = uint256();
         consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
-        // MWEB soft fork in v3.3.0, from height 1,150,000 (expected late December 2026): kernels that set the
-        // pegout feature must carry a pegout (upstream b250b016a), and kernels that set the extra-data feature
-        // must carry non-empty extra data (upstream a399fc4ca).
-        consensus.mweb_pegout_feature_activation_height = 1'150'000;
-        consensus.mweb_extradata_feature_activation_height = 1'150'000;
 
         pchMessageStart[0] = 0x4a;
         pchMessageStart[1] = 0x82;
@@ -283,6 +287,11 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].bit = 4;
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 160; 
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 99999999;
+
+        // Deployment of the MWEB kernel rules, always enforced on testnet
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].bit = 5;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
             
         
         consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000000000019a894b");
@@ -290,8 +299,6 @@ public:
         consensus.defaultAssumeValid = uint256S("0xd710251db07b4b5ad58ff59edcda83642af83e757fdf791424cf9d85e977bd65");
         consensus.mweb_input_metadata_grandfather_blockhash = uint256();
         consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
-        consensus.mweb_pegout_feature_activation_height = 0;
-        consensus.mweb_extradata_feature_activation_height = 0;
 
         pchMessageStart[0] = 0xba;
         pchMessageStart[1] = 0x76;
@@ -398,10 +405,14 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartTime = 1601450001; // September 30, 2020
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
 
+        // Deployment of the MWEB kernel rules, always enforced on regtest
+        // (-vbparams=mwebkernel:0:0:<start height>:<timeout height> tests the signalling)
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].bit = 5;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+
         consensus.nMinimumChainWork = uint256{};
         consensus.defaultAssumeValid = uint256{};
-        consensus.mweb_pegout_feature_activation_height = 0;
-        consensus.mweb_extradata_feature_activation_height = 0;
         consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
         pchMessageStart[0] = 0xfa;
         pchMessageStart[1] = 0xbf;

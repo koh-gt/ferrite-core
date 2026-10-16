@@ -102,8 +102,11 @@ bool Node::ContextualCheckBlock(const CBlock& block, const Consensus::Params& co
         return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "bad-blk-mweb", "MWEB kernel root doesn't match body");
     }
 
+    // Both rules below are enforced once the mwebkernel deployment is active (signalled from block 1,250,000 on mainnet).
+    const bool kernel_rule_enabled = IsMWEBKernelRuleEnabled(pindexPrev, consensus_params);
+
     // Verify that pegout features are canonical once the pegout rule is active.
-    if (pindexPrev->nHeight + 1 >= consensus_params.mweb_pegout_feature_activation_height) {
+    if (kernel_rule_enabled) {
         for (const Kernel& kernel : block.mweb_block.m_block->GetKernels()) {
             if (!kernel.HasCanonicalPegOutFeature()) {
                 // Empty feature fields can have alternate wire encodings that
@@ -115,7 +118,7 @@ bool Node::ContextualCheckBlock(const CBlock& block, const Consensus::Params& co
     }
 
     // Verify that extra data features are canonical once the extra data rule is active.
-    if (pindexPrev->nHeight + 1 >= consensus_params.mweb_extradata_feature_activation_height) {
+    if (kernel_rule_enabled) {
         for (const Kernel& kernel : block.mweb_block.m_block->GetKernels()) {
             if (!kernel.HasCanonicalExtraDataFeature()) {
                 // See the empty pegout case above. The block remains invalid,

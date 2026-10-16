@@ -17,20 +17,26 @@
 
 BOOST_FIXTURE_TEST_SUITE(TestKernel, MWEBTestingSetup)
 
-BOOST_AUTO_TEST_CASE(FeatureActivationHeights_Test)
+BOOST_AUTO_TEST_CASE(FeatureActivationDeployment_Test)
 {
-    // Ferrite mainnet activates both rules at 1,150,000 (v3.3.0); Litecoin uses 3'154'440 and 3'172'640.
+    // Ferrite mainnet signals both rules on bit 5 from block 1,250,000 (v3.3.0, the mwebkernel deployment);
+    // Litecoin activates them at heights 3'154'440 and 3'172'640.
     const auto main_params = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
-    BOOST_REQUIRE_EQUAL(main_params->GetConsensus().mweb_pegout_feature_activation_height, 1'150'000);
-    BOOST_REQUIRE_EQUAL(main_params->GetConsensus().mweb_extradata_feature_activation_height, 1'150'000);
+    const Consensus::Params& main_consensus = main_params->GetConsensus();
+    const Consensus::BIP9Deployment& main_deployment = main_consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL];
+    BOOST_REQUIRE_EQUAL(main_deployment.bit, 5);
+    BOOST_REQUIRE_EQUAL(main_deployment.nStartTime, 0);
+    BOOST_REQUIRE_EQUAL(main_deployment.nTimeout, 0);
+    BOOST_REQUIRE_EQUAL(main_deployment.nStartHeight, 1'250'000);
+    BOOST_REQUIRE_EQUAL(main_deployment.nTimeoutHeight, 99'999'999);
+    BOOST_REQUIRE_EQUAL(main_deployment.nStartHeight % main_consensus.nMinerConfirmationWindow, 0);
 
-    const auto testnet_params = CreateChainParams(*m_node.args, CBaseChainParams::TESTNET);
-    BOOST_REQUIRE_EQUAL(testnet_params->GetConsensus().mweb_pegout_feature_activation_height, 0);
-    BOOST_REQUIRE_EQUAL(testnet_params->GetConsensus().mweb_extradata_feature_activation_height, 0);
-
-    const auto regtest_params = CreateChainParams(*m_node.args, CBaseChainParams::REGTEST);
-    BOOST_REQUIRE_EQUAL(regtest_params->GetConsensus().mweb_pegout_feature_activation_height, 0);
-    BOOST_REQUIRE_EQUAL(regtest_params->GetConsensus().mweb_extradata_feature_activation_height, 0);
+    for (const std::string& chain : {CBaseChainParams::TESTNET, CBaseChainParams::REGTEST}) {
+        const auto params = CreateChainParams(*m_node.args, chain);
+        const Consensus::BIP9Deployment& deployment = params->GetConsensus().vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL];
+        BOOST_REQUIRE_EQUAL(deployment.bit, 5);
+        BOOST_REQUIRE(deployment.nStartTime == Consensus::BIP9Deployment::ALWAYS_ACTIVE);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(PlainKernel_Test)

@@ -9,14 +9,13 @@ For every block from MWEB activation to the tip it checks:
       (Litecoin e7cbf1d56; Ferrite grandfathers no block, so this must hold everywhere)
   M2  kernel lock_height <= block height, for blocks above 903,321
       (Litecoin a54900438; Ferrite KERNEL_LOCK_HEIGHT_GRANDFATHER_HEIGHT)
-  X1  kernels that set the extra-data feature carry non-empty extra data
-      (Litecoin a399fc4ca; enforced from mweb_extradata_feature_activation_height, 1,150,000 on mainnet)
-  P1  kernels that set the pegout feature carry a pegout (Litecoin b250b016a; enforced from
-      mweb_pegout_feature_activation_height, 1,150,000 on mainnet). RPC does not show a kernel's
-      pegouts, so this is a lower bound: a block is reported when it has more pegout-feature
-      kernels than HogEx pegout outputs.
+  X1  kernels that set the extra-data feature carry non-empty extra data (Litecoin a399fc4ca)
+  P1  kernels that set the pegout feature carry a pegout (Litecoin b250b016a). RPC does not show
+      a kernel's pegouts, so this is a lower bound: a block is reported when it has more
+      pegout-feature kernels than HogEx pegout outputs.
 M1 and M2 apply to past blocks: a violation means v3.3.0 would reject that block.
-X1 and P1 only start at a future height; past violations are reported for information.
+X1 and P1 are enforced only once the mwebkernel deployment activates (miners signal on bit 5
+from block 1,250,000 on mainnet); past violations are reported for information.
 
 The script only calls getblockchaininfo, getblockhash and getblock. It changes nothing.
 
@@ -173,7 +172,7 @@ def main():
         print(f"  {key:22} {value:,}")
     print(f"  {'unspent_mweb_outputs':22} {len(outputs):,}" + ("" if complete_history else " (in range)"))
     if notes:
-        print(f"\n{len(notes)} note(s) on rules that only start at a future height (X1/P1):")
+        print(f"\n{len(notes)} note(s) on rules that apply only after the mwebkernel activation (X1/P1):")
         for line in notes[:50]:
             print("  " + line)
         if len(notes) > 50:
