@@ -54,7 +54,8 @@ The commands the maintainer needs (mainnet node queries, pushing the branch) are
    start. Regtest difficulty also exploded after height 26 under DGW. The unit-test binary has not
    linked since 2023-07-30, and the functional-test framework has not imported since 2024-03. All four
    are fixed (test infrastructure and regtest only). §7 has what the test suites now report.
-9. **Merging into `ferrite-main`:** `git merge-tree` shows no conflicts. Recommended gates are in §9.
+9. **Merging into `ferrite-main`:** pull request #65 is open, with GitHub Actions CI (§9). `git merge-tree`
+   shows no conflicts. Recommended gates are in §9.
 10. **Build tooling** that is still broken but out of scope here (missing executable bits, depends
     Boost recipe, BDB instructions) is listed in §10.
 11. **Roadmap** analysis for a 1 FEC tail emission, difficulty-algorithm changes, post-quantum
@@ -470,6 +471,12 @@ a Ferrite pass over the vectors would let CI gate every merge (§9).
 11 GB of memory here before it was stopped. On a CI runner or a small machine that ends in an
 out-of-memory kill, not a test failure. Run `make check` with that suite excluded until it is fixed.
 
+The cases that still fail are listed one per line in `test/ferrite_unit_test_exclusions.txt` (29
+cases in 13 suites), grouped by cause; CI skips exactly those. Some suites abort on their first bad
+key, so the list was built by re-running each failing suite until the rest passed: it contains more
+cases than the per-suite failures in §7.1 show. With the list applied, one `test_ferrite` process
+runs the other 498 cases (about 7 million assertions) in about 40 seconds.
+
 ---
 
 ## 8. Checkpoints (requested): status and procedure
@@ -546,7 +553,7 @@ for older soft forks) in a later release. That simplifies code and removes signa
   README/translation updates plus "Safer MWEB logger initialization" (`6b1c373`), which is identical
   to the draft's `7b0ec43`.
 - Suggested gates before merging:
-  1. CI green: build, MWEB functional tests (a starter workflow is below).
+  1. CI green on pull request #65 (the workflow is described below).
   2. §4 mainnet re-validation: the RPC scan (step 1) passed on 2026-10-15; the
      `-reindex-chainstate` with the release build (step 2) remains before tagging.
   3. Activation height for the two new MWEB rules: decided, 1,150,000 (§5.2). Inform the pools.
@@ -560,41 +567,27 @@ for older soft forks) in a later release. That simplifies code and removes signa
 - Use a merge commit (`--no-ff`) rather than a squash. The 160-commit history is already public on the
   backup branch, and Appendices A and B refer to those hashes.
 
-Starter CI workflow (`.github/workflows/ci.yml`). The build step alone would have caught D1/D2 on the
-first push. It only gates on what passes today; add `make check` and the remaining functional tests
-once the legacy Litecoin test vectors are fixed (§7.3). Do not add `make check` before
-`versionbits_tests` is fixed: with Ferrite's parameters it allocates more than 11 GB of memory.
+**CI (`.github/workflows/ci.yml`, added in `7503212`).** GitHub Actions on `ubuntu-24.04`, for pushes
+to `ferrite-main`, `ferrite-backup-*`, `fec-v*` and tags, and for every pull request:
 
-```yaml
-name: ci
-on: [push, pull_request]
-jobs:
-  linux:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config bsdmainutils python3 libevent-dev libboost-dev libboost-system-dev libboost-filesystem-dev libboost-test-dev libboost-thread-dev libsqlite3-dev libdb-dev libdb++-dev libminiupnpc-dev libnatpmp-dev libzmq3-dev libfmt-dev
-      - run: chmod +x autogen.sh share/genbuild.sh  # see B1
-      - run: ./autogen.sh && ./configure --with-incompatible-bdb --without-gui --enable-tests --disable-bench
-      - run: make -j"$(nproc)"
-      - uses: actions/setup-python@v5   # a pip that may install packages (PEP 668)
-        with:
-          python-version: '3.12'
-      - run: pip install blake3
-      - run: >
-          python3 test/functional/test_runner.py -j"$(nproc)"
-          mweb_basic.py mweb_dbcrash.py mweb_duplicate_pegin.py mweb_mempool.py mweb_mining.py
-          mweb_newpowvalidblock.py mweb_p2p.py mweb_p2p_mutated_block_submitblock.py
-          mweb_p2p_mutated_compactblock.py mweb_pegout_all.py mweb_pre_activation_hogex_marker.py
-          mweb_reorg.py mweb_wallet_basic.py mweb_weight.py mweb_wtxid_recentrejects.py
-          p2p_invalid_messages.py p2p_blockfilters.py p2p_node_network_limited.py rpc_misc.py
-```
+- **build-and-test:** build without the GUI, then run every unit test case except the 29 that still
+  carry Litecoin test vectors (listed in `test/ferrite_unit_test_exclusions.txt`, §7.3), then run 20
+  functional tests: all MWEB tests plus `p2p_invalid_messages`, `p2p_blockfilters`,
+  `p2p_node_network_limited`, `rpc_misc` and `wallet_import_rescan --legacy-wallet`.
+- **gui:** build `ferrite-qt` with Qt 5.
+- Both jobs cache ccache output. The steps were run on a fresh clone in an Ubuntu 24.04 container
+  before the workflow was pushed.
+
+As the Litecoin vectors are adapted, delete their lines from the exclusion file; add the remaining
+functional tests (for example `rpc_blockchain.py`) once their data is fixed.
 
 ---
 
 ## 10. Build and tooling issues (not fixed here)
 
-- **B1. Executable bits are missing repo-wide.** `ferrite-main` and the draft have 0 files with mode
+- **B1. Executable bits are missing repo-wide.** *Fixed in `84881c6`: the 259 scripts upstream marks
+  executable, plus `mweb_history_check.py` and `fec_replacebyfee.py`, are executable again, and a
+  fresh checkout builds without `chmod`. The text below is kept for reference.* `ferrite-main` and the draft have 0 files with mode
   `100755` (upstream has 274), apparently because files went through GitHub's "upload files"
   feature. `autogen.sh`, `share/genbuild.sh`, `contrib/install_db4.sh`, depends scripts and every
   functional test are affected, hence the `chmod -R +x` step in `build-unix.md`.
@@ -867,28 +860,12 @@ It reads the RPC cookie from the default data directory (`%APPDATA%\Ferrite`, `~
 them, and `--rpcurl http://127.0.0.1:<port>/` if `rpcport` is not 9573. It prints progress, then a
 summary ending in `RESULT: no M1/M2 violations` or a list of problems; paste the summary.
 
-### 12.3 Pushing this branch (Windows Command Prompt)
+### 12.3 The branch on GitHub
 
-The branch is delivered as a git bundle, `ferrite-3.3.0.bundle`: 51 commits on top of
-`origin/ferrite-backup-3.2.1-draft` at `9406190`, ending with this document's update. Save it to
-your Downloads folder, then in your clone:
-
-```bat
-cd /d C:\path\to\ferrite-core
-git fetch origin
-git bundle verify "%USERPROFILE%\Downloads\ferrite-3.3.0.bundle"
-git fetch "%USERPROFILE%\Downloads\ferrite-3.3.0.bundle" ferrite-backup-3.2.1-draft:review-fixes
-git log --oneline origin/ferrite-backup-3.2.1-draft..review-fixes
-git push origin review-fixes:ferrite-backup-3.2.1-draft
-```
-
-`git log` should list 51 commits, the newest being the update of this document. The push
-only succeeds as a fast-forward; if it is rejected, someone pushed to the branch after `9406190`.
-Stop there, because the bundle then has to be rebased on the new commits. To bring your local branch
-along afterwards: `git checkout ferrite-backup-3.2.1-draft` then `git merge --ff-only review-fixes`.
-
-Without a clone, start with `git clone https://github.com/koh-gt/ferrite-core.git` and
-`cd ferrite-core`.
+The branch is pushed (`ferrite-backup-3.2.1-draft`) and open as
+[pull request #65](https://github.com/koh-gt/ferrite-core/pull/65) against `ferrite-main`, with CI
+running on it. It supersedes pull request #64 (`fec-v3.2.1`, the draft head `9406190`, which does
+not build). The bundle files used before the push are no longer needed.
 
 ### 12.4 Merging into `ferrite-main` and tagging v3.3.0 (only after the §9 gates)
 
@@ -908,7 +885,7 @@ Build the release binaries from the tag, then add their SHA-256 hashes to the re
 
 ## Appendix B: commits added by this review
 
-On top of `origin/ferrite-backup-3.2.1-draft` (`9406190`), oldest first, not counting the
+On top of the reviewed draft head `9406190`, oldest first, not counting the
 commit that adds this appendix. Upstream commits were cherry-picked with `-x` and keep their
 original author.
 
@@ -964,6 +941,10 @@ original author.
 | 48 | `f98423e` | build: bump version to 3.3.0 | — (this review) |
 | 49 | `8e4538f` | chainparams: activate the MWEB kernel-feature rules at height 1,150,000 | — (this review) |
 | 50 | `13a540d` | doc: add draft release notes for v3.3.0 | — (this review) |
+| 51 | `05253ea` | doc: rename the review for v3.3.0 and record the release decisions | — (this review) |
+| 52 | `84881c6` | build: restore executable bits on scripts | — (this review) |
+| 53 | `7503212` | ci: add a GitHub Actions workflow | — (this review) |
+| 54 | `f2a61ad` | doc: write the v3.3.0 release notes in the v3.2.0 release style | — (this review) |
 
 ---
 
