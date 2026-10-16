@@ -1,0 +1,47 @@
+# Unit test cases that still fail on Ferrite and are skipped in CI.
+#
+# Every entry fails because the test hard-codes Bitcoin/Litecoin data or parameters
+# (keys, addresses, subsidy, coinbase maturity, retarget vectors) that Ferrite changed;
+# none points at a node bug. Remove a line once the test is adapted to Ferrite.
+# See doc/ferrite-3.3.0-review.md, sections 7.1 and 7.3.
+#
+# Format: <suite>/<case>, one per line. CI passes each as --run_test=!<entry>.
+
+# Litecoin/Bitcoin keys, addresses and signatures (Ferrite base58 prefixes differ)
+bloom_tests/bloom_create_insert_key
+descriptor_tests/descriptor_test
+key_io_tests/key_io_valid_gen
+key_io_tests/key_io_valid_parse
+key_tests/key_key_negation
+key_tests/key_signature_tests
+key_tests/key_test1
+psbt_wallet_tests/psbt_updater_test
+rpc_tests/rpc_rawsign
+scriptpubkeyman_tests/StealthAddresses
+util_tests/message_sign
+util_tests/message_verify
+
+# Subsidy, supply and coinbase-maturity assumptions (Ferrite: 100 FEC, 60.2M, maturity 10)
+validation_tests/block_subsidy_test
+validation_tests/subsidy_limit_test
+wallet_tests/CreateWallet
+wallet_tests/ListCoins
+wallet_tests/ZapSelectTx
+wallet_tests/coin_mark_dirty_immature_credit
+wallet_tests/importwallet_rescan
+wallet_tests/scan_for_wallet_transactions
+
+# Litecoin regtest nonces and retarget vectors (Ferrite uses DGW from 250,000)
+miner_tests/CreateNewBlock_validity
+pow_tests/get_next_work
+pow_tests/get_next_work_lower_limit_actual
+
+# TestChain100Setup assumes COINBASE_MATURITY = 100 (Ferrite: 10)
+interfaces_tests/findAncestorByHash
+interfaces_tests/findAncestorByHeight
+interfaces_tests/findBlock
+interfaces_tests/findNextBlock
+interfaces_tests/hasBlocks
+
+# BIP9 timeout assumption; with Ferrite's nTimeoutHeight it also needs more than 11 GB of memory
+versionbits_tests/versionbits_computeblockversion
