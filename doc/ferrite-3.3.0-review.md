@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | Branch reviewed | `ferrite-backup-3.2.1-draft` at `9406190` (160 commits ahead of `ferrite-main`, 17 behind) |
-| Release | **v3.3.0** (maintainer's decision, 2026-10-15), MWEB soft fork at height **1,150,000** |
+| Release | **v3.3.0** (maintainer's decision, 2026-10-15); MWEB soft fork signalled from block **1,250,000** (decision 2026-10-16) |
 | Added by this review | fixes (§2), the Litecoin v0.21.5.6–v0.21.5.8 port (§5), clean-ups; listed in Appendix B |
 | Merge base with `ferrite-main` | `fa52e12` (2024-12-20, "add h250000 graphic") |
 | Upstream reference | Litecoin Core `v0.21.3`, `v0.21.4`, `v0.21.5.4` … `v0.21.5.8` (github.com/litecoin-project/litecoin) |
@@ -39,12 +39,15 @@ The commands the maintainer needs (mainnet node queries, pushing the branch) are
 5. **Upstream v0.21.5.6 – v0.21.5.8 is now ported (§5).** The range has 26 upstream commits (an
    earlier draft of this review said 32): 22 code commits were cherry-picked with `-x`, and the 4
    Litecoin-only ones (three version bumps and a DNS seed) were skipped. Two of the ported rules are
-   new soft forks. They activate on mainnet at height **1,150,000** (expected 24–29 December 2026);
-   miners and pools must run v3.3.0 before then (§5.2).
+   new soft forks. Miners activate them by signalling: on mainnet, v3.3.0 signals on version bit 5
+   from block **1,250,000** (expected 8–19 March 2027), and the rules apply once 39 of 40 blocks in a
+   window signal, from block 1,250,080 at the earliest. Nothing forces them (§5.2).
 6. **RPC contract (§6).** No RPC was added or removed, no argument changed, and the `help` output of
    every command is identical to `ferrite-main`. Five behaviour differences (one new error, one
-   nullable field, one bug fix and two test-chain/wallet-file details) are listed for
-   **MANUAL REVIEW**. None affects a default mainnet configuration's request or response shape.
+   nullable field, one bug fix and two test-chain/wallet-file details) and one output addition, the
+   new `mwebkernel` soft fork in `getblockchaininfo` and `getblocktemplate` (R6), are listed for
+   **MANUAL REVIEW**. R1–R5 do not change a default mainnet configuration's request or response
+   shape; R6 adds one key to `getblockchaininfo`'s `softforks`.
 7. **Checkpoints 450,000 / 602,214 / 750,000 / 903,321 / 1,000,000 are added (§8, `d7809d1`).**
    The values come from the maintainer's synced node, and each header was verified independently
    (hash and scrypt proof of work) before it was written. `nMinimumChainWork`, `defaultAssumeValid`
@@ -159,8 +162,8 @@ Ferrite exempts no block, which is correct only if Ferrite's own history contain
 | M2 | Kernel lock height ≤ block height | `a54900438`, Ferrite height `c260888` | Heights > 903,321 (already in the past) | Same |
 | M3 | No HogEx marker before MWEB activation; HogEx fee/amount mismatch = consensus error; duplicate peg-in guards; kernel fee overflow | `b9bd99a4e`, `7564f05e6`, `8f8ad64d0`, `42e7071a4` | All blocks | Same, though honest history should never trip these |
 
-The v0.21.5.6 – v0.21.5.8 port adds no further retroactive rule: its two new block rules start at an
-activation height that is still to be chosen (§5.2), and `b4313c34d` only re-runs existing checks.
+The v0.21.5.6 – v0.21.5.8 port adds no further retroactive rule: its two new block rules apply only
+after miners signal for them (§5.2), and `b4313c34d` only re-runs existing checks.
 
 **Step 1: read-only scan over RPC (any synced v3.2.0 node, minutes to hours).**
 `contrib/devtools/mweb_history_check.py` (Python 3.8+, standard library only) walks every block from
@@ -254,8 +257,8 @@ Ferrite's.
 | `1620df3` | `136695e05` | Discourage peers that send mutated MWEB compact blocks | P2P DoS |
 | `b2bc813` | `67580d6e3` | Reject empty MWEB pegout kernels from standard policy | mempool policy |
 | `5d8d39a` | `dc7233420` | Enforce the MWEB input limit when building templates | mining |
-| `5eb1ae7` | `b250b016a` | Kernels with the pegout feature must carry a pegout | **consensus, from an activation height (§5.2)** |
-| `2b14ad3` | `a399fc4ca` | Kernels with the extra-data feature must carry extra data | **consensus, from an activation height (§5.2)** |
+| `5eb1ae7` | `b250b016a` | Kernels with the pegout feature must carry a pegout | **consensus, signalled activation (§5.2)** |
+| `2b14ad3` | `a399fc4ca` | Kernels with the extra-data feature must carry extra data | **consensus, signalled activation (§5.2)** |
 | `6bb028c` | `22a916236` | Keep the peg-out flag of spent coins in undo data | **undo-data format (§5.3)** |
 | `a4b1077` | `32413709d` | Fix script-check data lifetime on early return | validation (memory safety) |
 | `ef6a413` | `d3b9ac396` | `getmempoolentry`: no MWEB-only transactions when `-rpcserialversion` < 2 | **RPC (§6, R2)** |
@@ -272,18 +275,18 @@ Ferrite follow-ups in the same series: `5a70be2` (the new MWEB tests import `fec
 `ltc_util`), `04ed12e` (upstream's earlier test revert `beae01d62`, see §2), `4dbcc3a` (M4 policy in
 `mweb_mining.py`), `2b7f0b6` (`Test_Kernel` pins Ferrite's activation heights instead of
 Litecoin's), `60ba533` (`MalformedMWEBOutputKeys` uses a Ferrite-encoded key), `37d3304`
-(`contrib/devtools/mweb_history_check.py`, §4), and the cosmetic commits `ff9095c`, `95695b3` and
-`34b7953`.
+(`contrib/devtools/mweb_history_check.py`, §4), `4f26eac` (the two new rules become the signalled
+`mwebkernel` deployment, §5.2), and the cosmetic commits `ff9095c`, `95695b3` and `34b7953`.
 
 ### 5.1 Conflicts and how they were resolved
 
 | Upstream | Conflict | Resolution |
 |---|---|---|
 | `4dd6aeeb9` | `mweb_p2p_mutated_block_submitblock.py` imports | Ferrite's `fec_util` names kept |
-| `b250b016a`, `a399fc4ca`, `b4313c34d` | `chainparams.cpp`: Litecoin's activation heights, grandfather hash and frozen-output list | New parameters added with Ferrite values (§5.2); P1 (no frozen outputs, no grandfathered block) unchanged |
+| `b250b016a`, `a399fc4ca`, `b4313c34d` | `chainparams.cpp`: Litecoin's activation heights, grandfather hash and frozen-output list | New parameters added with Ferrite values; the two activation heights were later replaced by the `mwebkernel` deployment (§5.2). P1 (no frozen outputs, no grandfathered block) unchanged |
 | `f6afd2682` | `BlockBuilder.cpp` whitespace around D4's restored guard | Upstream text taken; the file is now identical to upstream v0.21.5.8 |
 
-### 5.2 Two new soft-fork rules, active from height 1,150,000
+### 5.2 Two new soft-fork rules, signalled from block 1,250,000
 
 `b250b016a` and `a399fc4ca` make two kernel encodings invalid: the pegout feature bit with an empty
 pegout list, and the extra-data feature bit with empty extra data. Both encodings are malleable
@@ -291,36 +294,67 @@ variants of a kernel, which is what the mutated-block fixes above are about. Ups
 height (Litecoin mainnet: 3,154,440, "one expected week after height 3,150,408" per upstream's comment,
 and 3,172,640, which `b4313c34d` moved forward from 3,200,000).
 
-**Decision (maintainer, 2026-10-15): both rules activate on mainnet at height 1,150,000** (`8e4538f`;
-the rule applies to blocks at height ≥ 1,150,000). Testnet and regtest use 0, as upstream does.
-`Test_Kernel` pins the mainnet value. Standardness policy keeps both encodings out of v3.3.0 mempools and
+**Decision (maintainer, 2026-10-16): signalled activation, with signalling from block 1,250,000.**
+It replaces the fixed height 1,150,000 chosen on 2026-10-15 (`8e4538f`). `4f26eac` implements it:
+
+- Both rules form one version-bits deployment, `mwebkernel` (`Consensus::DEPLOYMENT_MWEB_KERNEL`),
+  in the same height-based scheme as Taproot (signalling from 450,000) and MWEB (from 150,000).
+  The two height parameters that upstream added are gone; `mweb_node.cpp` asks
+  `IsMWEBKernelRuleEnabled()`.
+- Mainnet: bit 5, `nStartHeight` 1,250,000, `nTimeoutHeight` 99,999,999. Windows are 40 blocks.
+  When 39 blocks of a window set bit 5, the next window is locked in, and the rules apply from the
+  window after it. Earliest schedule: signalling in 1,250,000–1,250,039, locked in for
+  1,250,040–1,250,079, rules enforced from block **1,250,080**.
+- Nothing forces activation. Ferrite's height-based deployments lock in at their timeout height, and
+  99,999,999 (the value Taproot and MWEB use) is far beyond any planning horizon. A window with two
+  or more blocks that do not signal does not lock in, so the rules wait until practically all hash
+  power runs v3.3.0. **MANUAL REVIEW:** a nearer timeout height would turn this into a deadline
+  (lock-in on timeout). None is set.
+- Testnet and regtest: always active, as with the fixed height 0 before.
+  `-vbparams=mwebkernel:0:0:<start>:<timeout>` switches regtest to signalling.
+- Bit 5 was never used on Ferrite (Taproot 2, MWEB 4, testdummy 28) and lies outside the BIP320
+  version-rolling bits 13–28 that some mining firmware changes. The checkpoint blocks (§8) all carry
+  version `0x20000000`, except block 450,000 (`0x20000004`, Taproot signalling).
+
+**Pools.** v3.3.0 signals without configuration. While the deployment is signalling or locked in,
+`getblocktemplate` sets bit 5 in `version` (`0x20000020`), for segwit-only callers too
+(`gbt_force`), and lists `"mwebkernel": 5` under `vbavailable`. Once it is active, `mwebkernel`
+appears under `rules` without the `!` prefix, so segwit-only callers keep working (M4). A pool
+signals only if its software submits the template's `version`. Pool software that hard-codes the
+block version (for example `0x20000000`) does not signal; two such blocks in a 40-block window stop
+that window from locking in. v3.2.x nodes log "Warning: unknown new rules activated (versionbit 5)" once a
+window locks in, and show it in the GUI and RPC `warnings` once the rules are active.
+
+**Why waiting is safe.** Standardness policy keeps both encodings out of v3.3.0 mempools and
 templates (empty pegout kernels since `67580d6e3`; any kernel with the extra-data bit was already
-non-standard on v3.2.0), so the rules only matter against a miner who includes them on purpose.
+non-standard on v3.2.0). Until activation, only a miner who includes such a kernel on purpose can put
+one in a block, and that block is valid. A peer cannot use the encodings to get an honest block
+marked invalid in the meantime: the colliding body from
+`ContextualCheckBlock_KernelSerializationCollisionIsMutated` fails the pegout match and is classified
+as mutated (`bad-blk-mweb`), so the block hash is not cached as invalid. `4f26eac` adds that
+pre-activation case to the test.
 
-How the height was chosen:
-- It must be in the future when v3.3.0 is released, and miners holding most of the hash rate must
-  run v3.3.0 by then. Otherwise a v3.2.0 pool can mine such a kernel and split from upgraded nodes.
-- Ferrite ships both rules in one release, so one height for both is simpler than Litecoin's two.
-- Rule of thumb: the next multiple of 10,000 at least **six weeks** of blocks after the release,
-  because pools upgrade slowly. Until activation, the mutated-block handling in this port already
-  protects nodes.
-- Block rate from the maintainer's node: 64.3 s per block over the last 10,080 blocks (about 1,340
-  blocks a day, 9,400 a week); 69.4 s over the 4,096 blocks before that. Tip on 2026-10-15
-  21:32 UTC: 1,057,002. Candidate heights:
+**Expected dates** (tip 1,057,002 on 2026-10-15 21:32 UTC; 64.3 s to 69.4 s per block, measured on the
+maintainer's node):
 
-  | Height | Blocks after 1,057,002 | Expected date (64.3 s .. 69.4 s per block) |
-  |---:|---:|---|
-  | 1,120,000 | 62,998 (~6.7 weeks) | 2026-12-01 .. 2026-12-05 |
-  | 1,130,000 | 72,998 (~7.8 weeks) | 2026-12-09 .. 2026-12-13 |
-  | 1,140,000 | 82,998 (~8.8 weeks) | 2026-12-16 .. 2026-12-21 |
-  | 1,150,000 | 92,998 (~9.9 weeks) | 2026-12-24 .. 2026-12-29 |
+| Height | Event | Blocks after 1,057,002 | Expected date |
+|---:|---|---:|---|
+| 1,204,428 | 4th halving (12.5 → 6.25 FEC) | 147,426 (~15.7 weeks) | 2027-02-02 .. 2027-02-11 |
+| 1,250,000 | signalling starts | 192,998 (~20.6 weeks) | 2027-03-08 .. 2027-03-19 |
+| 1,250,080 | rules enforced, at the earliest | 193,078 | about 1.5 hours after 1,250,000 |
 
-  The maintainer chose **1,150,000**, about ten weeks after the 2026-10-15 tip, which leaves pools
-  more than six weeks even if the release slips into November. Announce the height to pools with
-  the release.
-- `mweb_history_check.py` reports past kernels that would break either rule (X1/P1). They are
-  harmless for the history, since the rules only start at the activation height, but any recent
-  hits mean someone is producing such kernels on Ferrite.
+Tests: `Test_Kernel` (`FeatureActivationDeployment_Test`) pins the deployment parameters on all three
+networks. `Test_BlockValidator` runs both rules with the deployment always active and never active.
+`mweb_kernel_activation.py` walks a regtest chain through every state with two nodes, one of which
+does not signal. It checks that a window with 37 non-signalling blocks out of 144 does not lock in,
+and that `getblocktemplate` signals for segwit-only callers. It also checks that the rules start
+exactly at the activation block: a committed empty-feature kernel is refused at the signature check
+one block before and with `bad-mweb-empty-pegout` / `bad-mweb-empty-extradata` from that block on.
+Finally, the node that never signalled keeps mining valid blocks.
+
+`mweb_history_check.py` reports past kernels that would break either rule (X1/P1). They are harmless
+for the history, since the rules only start after activation, but any recent hits mean someone is
+producing such kernels on Ferrite.
 
 ### 5.3 Undo-data format change (release-notes item)
 
@@ -343,7 +377,8 @@ v3.3.0, a downgrade needs `-reindex-chainstate` to be safe.
 
 **Result: same 139 commands on both builds, and the `help` output of every command is byte-identical**
 (both dumps have MD5 `2a66b2212bc5fb8bcf7cba450b656d13`). No argument, type, default or documented
-result field changed. Re-checked on the final v3.3.0 build: still identical.
+result field changed. Re-checked on the final v3.3.0 build, including `4f26eac`: still identical (the
+`softforks` help is generic, so the new deployment does not change it).
 
 The source differences, all marked **MANUAL REVIEW** because they change behaviour, not shape:
 
@@ -354,6 +389,7 @@ The source differences, all marked **MANUAL REVIEW** because they change behavio
 | R3 | `getblocktemplate` | On testnet and regtest only, no longer refuses with "not connected" / "in initial sync". Mainnet unchanged. | test networks | upstream `455aff8c1` (draft) |
 | R4 | `sendrawtransaction`, `testmempoolaccept` | `maxfeerate=0` now really means "no limit" for transactions with MWEB data, as the help text already says. Before, the MWEB part of the fee could still trip the limit. | callers passing 0 | upstream `8782ab961` (draft); bug fix |
 | R5 | `dumpwallet` | The dump file gains one comment line, `# mweb view keys: <scan secret> <spend pubkey>`. `importwallet` skips comment lines, so old and new files import the same way. The file was already full of private keys; treat it as before. | anyone parsing dump files | upstream `eae9e47f9` (draft) |
+| R6 | `getblockchaininfo`, `getblocktemplate` | **Output shape:** new soft fork `mwebkernel` (§5.2). `getblockchaininfo` gains `softforks.mwebkernel` on every network; on mainnet it reads `{"type": "bip8", "bip8": {"status": "defined", "start_height": 1250000, "timeout_height": 99999999, "since": 0}, "active": false}` until block 1,250,000, the same shape as the `taproot` and `mweb` entries. Mainnet `getblocktemplate` is unchanged until block 1,250,000. While signalling it adds `"mwebkernel": 5` to `vbavailable` and bit 5 to `version`; once active it adds `"mwebkernel"` to `rules` (no `!` prefix, so segwit-only callers still work). On testnet and regtest the deployment is always active, so `rules` lists it from the start. | software that compares `softforks` or `rules` with a fixed list; pools that hard-code the block version (they do not signal) | this review (`4f26eac`) |
 
 Other observable differences, not part of the request/response shape:
 - Mempool policy from §5 rejects more MWEB transactions, which `sendrawtransaction` /
@@ -396,13 +432,15 @@ same suites. The last column is the final tree, after the v0.21.5.6 – v0.21.5.
   with a trailing separator on Boost ≥ 1.78) and passes here, through the port of upstream
   `3c3aedb97`.
 - All MWEB suites pass, including the newly wired `Test_CoinsView` (D5), `Test_Block` (kernel lock
-  height), `Test_Kernel` (fee overflow, feature activation heights), `Test_BlockValidator` (duplicate
-  peg-ins, disk-reparse bypass, kernel serialisation collisions), `Test_BlockBuilder` (staged
+  height), `Test_Kernel` (fee overflow, `mwebkernel` deployment parameters), `Test_BlockValidator`
+  (duplicate peg-ins, disk-reparse bypass, kernel serialisation collisions before and after the
+  `mwebkernel` activation), `Test_BlockBuilder` (staged
   aggregates, input limit) and `Test_Output`/`Test_Keys` (Ke/Ko validity). `validation_block_tests`,
   which covers `ConnectTip` and the D3 code path, passes after D13; `mempool_tests` (about 400 lines
   of new upstream tests) and `coins_tests` (peg-out flag in undo data) pass.
 - Two upstream tests needed Ferrite values to run at all: `FeatureActivationHeights_Test` pinned
-  Litecoin's activation heights (`2b7f0b6`), and `MalformedMWEBOutputKeys` decoded a Litecoin WIF key,
+  Litecoin's activation heights (`2b7f0b6`; since `4f26eac` it is `FeatureActivationDeployment_Test`
+  and checks the deployment), and `MalformedMWEBOutputKeys` decoded a Litecoin WIF key,
   so it aborted before checking anything (`60ba533`, same secret with Ferrite's prefix; 23/23 checks
   pass). That case sits in `scriptpubkeyman_tests`, which still fails as a suite because its older
   `StealthAddresses` case uses Litecoin vectors (see below).
@@ -429,6 +467,7 @@ Final tree, `test_runner.py -j3`:
 | `mweb_basic.py` | ✅ pass | after replacing Litecoin's 12.5-coin coinbase expectation with Ferrite's 25 FEC (`06cb170`) |
 | `mweb_dbcrash.py` | ✅ pass | upstream `bbd3b7841` (RollforwardBlock MWEB state) |
 | `mweb_duplicate_pegin.py` | ✅ pass | upstream `8f8ad64d0` (was misnamed, D7) |
+| `mweb_kernel_activation.py` | ✅ pass | new in this review (`4f26eac`): signalled activation of the §5.2 rules |
 | `mweb_mempool.py` | ✅ pass | new in v0.21.5.7 (`d3b9ac396`, R2) |
 | `mweb_mining.py` | ✅ pass | asserts Ferrite's segwit-only `getblocktemplate` policy (M4, `4dbcc3a`) |
 | `mweb_newpowvalidblock.py` | ✅ pass | new in v0.21.5.8 (`0cb141964`) |
@@ -440,7 +479,7 @@ Final tree, `test_runner.py -j3`:
 | `mweb_weight.py` | ✅ pass | fixed by the port (`9b5bb289b` test values, `109ed13b7` mempool weight limit) |
 | `mweb_wtxid_recentrejects.py` | ✅ pass | new in v0.21.5.8 (`c07d6228c`) |
 | `p2p_invalid_messages.py`, `p2p_blockfilters.py`, `p2p_node_network_limited.py`, `rpc_misc.py`, `wallet_import_rescan.py --legacy-wallet` | ✅ pass | |
-| `rpc_blockchain.py` | ❌ | `gettxoutsetinfo` expects Litecoin's 8,725 coins; Ferrite regtest has exactly twice that (100 vs 50 subsidy). Test data, pre-existing. |
+| `rpc_blockchain.py` | ❌ | `gettxoutsetinfo` expects Litecoin's 8,725 coins; Ferrite regtest has exactly twice that (100 vs 50 subsidy). Test data, pre-existing. The `softforks` check before it, which now includes `mwebkernel`, passes. |
 | `mweb_node_compatibility.py`, `mweb_wallet_address.py`, `mweb_wallet_upgrade.py` | skipped | need previous-release binaries |
 
 **Baseline comparison.** On `ferrite-main` (with the same test-enabling fixes), `test_runner.py` aborts
@@ -556,12 +595,13 @@ for older soft forks) in a later release. That simplifies code and removes signa
   1. CI green on pull request #65 (the workflow is described below).
   2. §4 mainnet re-validation: the RPC scan (step 1) passed on 2026-10-15; the
      `-reindex-chainstate` with the release build (step 2) remains before tagging.
-  3. Activation height for the two new MWEB rules: decided, 1,150,000 (§5.2). Inform the pools.
+  3. Activation of the two new MWEB rules: decided, signalled from block 1,250,000 (§5.2). Tell the
+     pools to run v3.3.0 and to mine with the block version from `getblocktemplate`.
   4. Checkpoints and chain statistics refreshed (§8): done; confirm the five hashes on a second,
      independent node or explorer.
   5. A depends build verified for each release platform (B2/B3).
   6. Release notes: drafted in `doc/ferrite-release-notes/release-notes-3.3.0.md` (MWEB fixes,
-     the activation height and upgrade notice, "no frozen outputs", the `getblocktemplate` policy,
+     the signalling schedule and upgrade notice, "no frozen outputs", the `getblocktemplate` policy,
      RPC differences, the undo-format note). Add the download table and SHA-256 hashes when the
      binaries are built, and check the "Full Changelog" link (it assumes a `v3.2.0` tag).
 - Use a merge commit (`--no-ff`) rather than a squash. The 160-commit history is already public on the
@@ -571,7 +611,7 @@ for older soft forks) in a later release. That simplifies code and removes signa
 to `ferrite-main`, `ferrite-backup-*`, `fec-v*` and tags, and for every pull request:
 
 - **build-and-test:** build without the GUI, then run every unit test case except the 29 that still
-  carry Litecoin test vectors (listed in `test/ferrite_unit_test_exclusions.txt`, §7.3), then run 20
+  carry Litecoin test vectors (listed in `test/ferrite_unit_test_exclusions.txt`, §7.3), then run 21
   functional tests: all MWEB tests plus `p2p_invalid_messages`, `p2p_blockfilters`,
   `p2p_node_network_limited`, `rpc_misc` and `wallet_import_rescan --legacy-wallet`.
 - **gui:** build `ferrite-qt` with Qt 5.
@@ -733,8 +773,8 @@ Options:
   on v3.1.5), i.e. older code than v3.2.0. Before a real v4.0.0 hard fork ships, retire those nodes
   or rename that build, so that the user agent unambiguously means fork-ready code. The same sample
   had one `/FerriteCore:3.1.4/` and two `/FerriteCore:3.2.0/` peers, but four peers (two on the
-  maintainer's own network) say little about how far v3.2.0 has spread. The pools' own nodes are a
-  better gauge before fixing the §5.2 activation height.
+  maintainer's own network) say little about how far v3.2.0 has spread. With signalled activation
+  (§5.2), the chain itself shows v3.3.0 adoption from block 1,250,000 on: count the blocks with bit 5.
 
 ### 11.5 Changing the proof of work (CPU-oriented, "post-quantum")
 
@@ -779,7 +819,7 @@ estimated attack cost (rentable hash rate × price × hours needed) for each opt
 ### 11.6 Ordering
 
 1. This release (v3.3.0, §11.7): fixes in this branch, the §5 port, §4 re-validation,
-   checkpoints (§8), the §5.2 soft fork at 1,150,000. No hard fork.
+   checkpoints (§8), the §5.2 soft fork, signalled from 1,250,000. No hard fork.
 2. Soft forks that need no pool changes, in a later minor release: bury Taproot if active (§8),
    `COINBASE_MATURITY` (§11.4), the post-quantum output type once the scheme is chosen (§11.3).
 3. v4.0.0 hard fork with one activation height, announced months ahead and run on testnet first:
@@ -789,8 +829,8 @@ estimated attack cost (rentable hash rate × price × hours needed) for each opt
 ### 11.7 Version number for this release
 
 **Decision (maintainer, 2026-10-15): v3.3.0** (`f98423e`). It describes this release better than
-v3.2.1. It brings new consensus checks that apply to all blocks (§4), a soft fork at 1,150,000
-(§5.2), a change to the undo-data format that makes downgrades need a reindex (§5.3), new
+v3.2.1. It brings new consensus checks that apply to all blocks (§4), a soft fork signalled from
+1,250,000 (§5.2), a change to the undo-data format that makes downgrades need a reindex (§5.3), new
 peer-discouragement rules, and new mempool policy. A patch-level number would suggest a drop-in bug
 fix, while pools and exchanges need to plan for this upgrade. The P2P protocol version (70017) is
 unchanged. The version is set in `configure.ac` and in `build_msvc/bitcoin_config.h` (which was
@@ -945,8 +985,8 @@ original author.
 | 52 | `84881c6` | build: restore executable bits on scripts | — (this review) |
 | 53 | `7503212` | ci: add a GitHub Actions workflow | — (this review) |
 | 54 | `f2a61ad` | doc: write the v3.3.0 release notes in the v3.2.0 release style | — (this review) |
-
----
+| 55 | `e2d1ae2` | doc: describe the CI workflow and pull request #65 in the review | — (this review) |
+| 56 | `4f26eac` | consensus: activate the MWEB kernel rules by signalling from block 1,250,000 | — (this review) |
 
 ## Appendix A: every draft commit and its upstream source
 
