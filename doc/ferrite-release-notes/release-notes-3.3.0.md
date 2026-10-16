@@ -18,15 +18,22 @@
 
 ## Changes in v3.3.0
 
-### Miners and pools: upgrade before block 1,150,000
-v3.3.0 schedules an MWEB soft fork at block **1,150,000** (expected 24–29 December 2026). From that block, two
-malformed MWEB kernel encodings are invalid: a kernel that sets the peg-out feature without a peg-out, and a kernel
-that sets the extra-data feature without extra data. Normal wallets never create them, and v3.3.0 already refuses
-to relay or mine them.
-> A pool still running v3.2.x after block 1,150,000 could mine a block that v3.3.0 nodes reject, losing that block
-or splitting the chain. All miners and pools should run v3.3.0 well before the activation height.
+### Miners and pools: signal for the MWEB soft fork from block 1,250,000
+v3.3.0 carries an MWEB soft fork that miners activate by signalling. It makes two malformed MWEB kernel encodings
+invalid: a kernel that sets the peg-out feature without a peg-out, and a kernel that sets the extra-data feature
+without extra data. Normal wallets never create them, and v3.3.0 already refuses to relay or mine them.
 
-Wallets and other nodes keep working on v3.2.x, but without the security updates below.
+From block **1,250,000** (expected 8–19 March 2027), blocks mined with v3.3.0 signal on version bit 5. When 39 of
+the 40 blocks in a window signal, the soft fork locks in for the next window and is enforced after it, from block
+1,250,080 at the earliest. Until enough blocks signal, nothing changes, and nothing activates it without
+signalling.
+> Run v3.3.0 before block 1,250,000 and build blocks with the `version` that `getblocktemplate` returns. Pool
+software that hard-codes the block version does not signal, and the soft fork waits until nearly every block
+signals.
+
+Wallets and other nodes keep working on v3.2.x, but without the security updates below. v3.2.x nodes log
+"Warning: unknown new rules activated (versionbit 5)" once the soft fork locks in, and show it in the wallet and in
+RPC `warnings` once it is active.
 
 ### Security Updates
 MWEB security fixes from Litecoin Core v0.21.5.4 – v0.21.5.8, released after the Litecoin MWEB incident:
@@ -51,9 +58,11 @@ Version and copyright year increment
 The source tree builds again, with the unit and functional test suites working, and every change is now checked by
 GitHub Actions CI
 New tool `contrib/devtools/mweb_history_check.py`: read-only scan of a node's MWEB history
-RPC: no command or argument changed. `getmempoolentry` returns an error for MWEB-only transactions on nodes started
-with `-rpcserialversion=0` or `1`; `maxfeerate=0` in `sendrawtransaction` / `testmempoolaccept` now means "no limit"
-for MWEB transactions too; `dumpwallet` files gain a `# mweb view keys:` comment line
+RPC: no command or argument changed. `getblockchaininfo` lists the new `mwebkernel` soft fork under `softforks`;
+`getblocktemplate` shows it under `vbavailable` while miners signal and under `rules` once active. `getmempoolentry`
+returns an error for MWEB-only transactions on nodes started with `-rpcserialversion=0` or `1`; `maxfeerate=0` in
+`sendrawtransaction` / `testmempoolaccept` now means "no limit" for MWEB transactions too; `dumpwallet` files gain a
+`# mweb view keys:` comment line
 Mempool: MWEB transactions with too many inputs, too much weight, invalid output keys or empty peg-out kernels are no
 longer accepted or relayed
 Windows: `ferrited` has no daemon mode. Remove `daemon=1` from `ferrite.conf` (or `-daemon` from the command line)
@@ -72,8 +81,9 @@ Litecoin Core updates
 Ferrite runs on Scrypt algorithm -compatible with Litecoin/Dogecoin miners
 **Scrypt is not an ASIC-resistant algorithm.**
 Scrypt ASIC mining is recommended. You can opt to [rent an Scrypt ASIC](https://github.com/koh-gt/ferrite-core/wiki/Rent-an-ASIC-miner).
-**Pools must run v3.3.0 before block 1,150,000.** `getblocktemplate` still accepts `{"rules": ["segwit"]}`; as before,
-the template always carries the MWEB block, and pools must include it in the blocks they mine.
+**Pools should run v3.3.0 before block 1,250,000** and mine with the block version from `getblocktemplate`, so that
+their blocks signal for the MWEB soft fork. `getblocktemplate` still accepts `{"rules": ["segwit"]}`; as before, the
+template always carries the MWEB block, and pools must include it in the blocks they mine.
 
 ## Other notes (on v1, v2 wallets before _13 Apr 2022_).
 ### All versions of Ferrite Core **wallets** will maintain backwards compatibility
