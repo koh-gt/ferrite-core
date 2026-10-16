@@ -72,7 +72,8 @@ BOOST_AUTO_TEST_CASE(ConnectBlock_RevalidatesDiskBody)
     auto consensus = Params().GetConsensus();
     consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
 
-    // Exercise revalidation before the new mainnet feature activation height.
+    // Exercise revalidation before the kernel feature rules (the mwebkernel deployment) activate.
+    consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
     const int height = 3'172'639;
     test::Miner miner(GetDataDir());
     const auto prior_tx = test::Tx::CreatePegIn(10'000);
@@ -129,8 +130,7 @@ BOOST_AUTO_TEST_CASE(ConnectBlock_RevalidatesDiskBody)
     BOOST_CHECK(marker_state.GetResult() == BlockValidationResult::BLOCK_MUTATED);
     BOOST_CHECK_EQUAL(marker_state.GetRejectReason(), "bad-hogex-position");
 
-    consensus.mweb_pegout_feature_activation_height = height;
-    consensus.mweb_extradata_feature_activation_height = height;
+    consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
     const Kernel& valid_kernel = valid_mweb->GetKernels().front();
     const auto make_noncanonical_kernel = [&](const uint8_t feature_bit) {
         const uint8_t features = valid_kernel.GetFeatures() | feature_bit;
@@ -237,8 +237,7 @@ BOOST_AUTO_TEST_CASE(ContextualCheckBlock_KernelSerializationCollisionIsMutated)
     consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
 
     const int height = 3'172'640;
-    consensus.mweb_pegout_feature_activation_height = height;
-    consensus.mweb_extradata_feature_activation_height = height;
+    consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
 
     constexpr CAmount pegin_amount = 6;
     constexpr CAmount output_amount = 1;
@@ -376,6 +375,17 @@ BOOST_AUTO_TEST_CASE(ContextualCheckBlock_KernelSerializationCollisionIsMutated)
     BOOST_CHECK(!MWEB::Node::ContextualCheckBlock(collision_block, consensus, &previous, collision_state));
     BOOST_CHECK(collision_state.GetResult() == BlockValidationResult::BLOCK_MUTATED);
     BOOST_CHECK_EQUAL(collision_state.GetRejectReason(), "bad-mweb-empty-pegout");
+
+    // Before the kernel feature rules activate, the collision fails the pegout match instead. That is
+    // still a mutation, so it cannot get the honest block hash marked invalid.
+    auto inactive_consensus = consensus;
+    inactive_consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+    BlockValidationState inactive_state;
+    BOOST_CHECK(!MWEB::Node::ContextualCheckBlock(collision_block, inactive_consensus, &previous, inactive_state));
+    BOOST_CHECK(inactive_state.GetResult() == BlockValidationResult::BLOCK_MUTATED);
+    BOOST_CHECK_EQUAL(inactive_state.GetRejectReason(), "bad-blk-mweb");
+    BlockValidationState inactive_valid_state;
+    BOOST_CHECK(MWEB::Node::ContextualCheckBlock(valid_block, inactive_consensus, &previous, inactive_valid_state));
 
     BlockValidationState replacement_state;
     BOOST_CHECK(MWEB::Node::ContextualCheckBlock(valid_block, consensus, &previous, replacement_state));

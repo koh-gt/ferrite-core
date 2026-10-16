@@ -1545,6 +1545,7 @@ RPCHelpMan getblockchaininfo()
     VBSoftForkDescPushBack(softforks, "testdummy", consensusParams, Consensus::DEPLOYMENT_TESTDUMMY);
     VBSoftForkDescPushBack(softforks, "taproot", consensusParams, Consensus::DEPLOYMENT_TAPROOT);
     VBSoftForkDescPushBack(softforks, "mweb", consensusParams, Consensus::DEPLOYMENT_MWEB);
+    VBSoftForkDescPushBack(softforks, "mwebkernel", consensusParams, Consensus::DEPLOYMENT_MWEB_KERNEL);
     obj.pushKV("softforks",             softforks);
 
     obj.pushKV("warnings", GetWarnings(false).original);

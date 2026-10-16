@@ -17,6 +17,7 @@ enum DeploymentPos
     DEPLOYMENT_TESTDUMMY,
     DEPLOYMENT_TAPROOT, // Deployment of Schnorr/Taproot (BIPs 340-342)
     DEPLOYMENT_MWEB, // Deployment of MWEB (LIPs 0002-0004)
+    DEPLOYMENT_MWEB_KERNEL, // Canonical MWEB kernel features (Litecoin b250b016a and a399fc4ca)
     // NOTE: Also add new deployments to VersionBitsDeploymentInfo in versionbits.cpp
     MAX_VERSION_BITS_DEPLOYMENTS
 };
@@ -99,12 +100,6 @@ struct Params {
 
     /** Optional one-block grandfather for the known MWEB input-metadata exploit. */
     uint256 mweb_input_metadata_grandfather_blockhash;
-
-    /** MWEB kernels signaling pegouts must contain at least one pegout at and after this height. */
-    int mweb_pegout_feature_activation_height;
-
-    /** MWEB kernels signaling extra data must contain non-empty extra data at and after this height. */
-    int mweb_extradata_feature_activation_height;
 
     /** Frozen MWEB output IDs that may not be spent. */
     /** such as 0x0000000000000000000000000000000000000000000000000000000000000fec */
