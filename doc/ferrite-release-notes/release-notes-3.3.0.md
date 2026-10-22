@@ -69,7 +69,7 @@ Windows: `ferrited` has no daemon mode. Remove `daemon=1` from `ferrite.conf` (o
 > Downgrading: v3.3.0 records an extra flag in the block undo files (`rev*.dat`). If you go back to an older version
 after running v3.3.0, start it once with `-reindex-chainstate`.
 
-For more details see https://github.com/koh-gt/ferrite-core/pull/65 and `doc/ferrite-3.3.0-review.md`
+For more details see https://github.com/koh-gt/ferrite-core/pull/66 and `doc/ferrite-3.3.0-review.md`
 
 ## Future changes
 v4.0.0 soft fork: post-quantum (P2QRH) outputs, under evaluation
@@ -97,6 +97,6 @@ One can attempt to run both Ferrite Classic and Ferrite after Ferrite Classic is
 Uploaded on <date>.
 
 ## What's Changed
-* v3.3.0 by @koh-gt in https://github.com/koh-gt/ferrite-core/pull/65
+* v3.3.0 by @koh-gt in https://github.com/koh-gt/ferrite-core/pull/66
 
 **Full Changelog**: https://github.com/koh-gt/ferrite-core/compare/v3.2.0...v3.3.0

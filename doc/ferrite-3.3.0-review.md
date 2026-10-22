@@ -57,7 +57,7 @@ The commands the maintainer needs (mainnet node queries, pushing the branch) are
    start. Regtest difficulty also exploded after height 26 under DGW. The unit-test binary has not
    linked since 2023-07-30, and the functional-test framework has not imported since 2024-03. All four
    are fixed (test infrastructure and regtest only). §7 has what the test suites now report.
-9. **Merging into `ferrite-main`:** pull request #65 is open, with GitHub Actions CI (§9). `git merge-tree`
+9. **Merging into `ferrite-main`:** pull request #66 (branch `fec-v3.3.0`, replacing #65) is open, with GitHub Actions CI (§9). `git merge-tree`
    shows no conflicts. Recommended gates are in §9.
 10. **Build tooling** that is still broken but out of scope here (missing executable bits, depends
     Boost recipe, BDB instructions) is listed in §10.
@@ -587,12 +587,12 @@ for older soft forks) in a later release. That simplifies code and removes signa
 
 ## 9. Merging into `ferrite-main`
 
-- `git merge-tree --write-tree origin/ferrite-main ferrite-backup-3.2.1-draft` reports **no conflicts**,
+- `git merge-tree --write-tree origin/ferrite-main origin/fec-v3.3.0` reports **no conflicts**,
   re-checked with every commit in Appendix B. The 17 commits only on `ferrite-main` are
   README/translation updates plus "Safer MWEB logger initialization" (`6b1c373`), which is identical
   to the draft's `7b0ec43`.
 - Suggested gates before merging:
-  1. CI green on pull request #65 (the workflow is described below).
+  1. CI green on pull request #66 (the workflow is described below).
   2. §4 mainnet re-validation: the RPC scan (step 1) passed on 2026-10-15; the
      `-reindex-chainstate` with the release build (step 2) remains before tagging.
   3. Activation of the two new MWEB rules: decided, signalled from block 1,250,000 (§5.2). Tell the
@@ -902,15 +902,17 @@ summary ending in `RESULT: no M1/M2 violations` or a list of problems; paste the
 
 ### 12.3 The branch on GitHub
 
-The branch is pushed (`ferrite-backup-3.2.1-draft`) and open as
-[pull request #65](https://github.com/koh-gt/ferrite-core/pull/65) against `ferrite-main`, with CI
+The branch is pushed (`fec-v3.3.0`) and open as
+[pull request #66](https://github.com/koh-gt/ferrite-core/pull/66) against `ferrite-main`, with CI
 running on it. It supersedes pull request #64 (`fec-v3.2.1`, the draft head `9406190`, which does
-not build). The bundle files used before the push are no longer needed.
+not build) and pull request #65 (`ferrite-backup-3.2.1-draft`). The bundle files used before the
+push are no longer needed.
 
-On 2026-10-22 the branch was force-pushed with edited commit messages. The file trees, authors and
-dates are unchanged, but every commit after `9406190` has a new hash. This document and Appendix B
-use the new hashes. Refresh an existing clone with
-`git fetch origin && git reset --hard origin/ferrite-backup-3.2.1-draft`.
+On 2026-10-22 the commit messages after `9406190` were edited. `ferrite-backup-3.2.1-draft` does not
+accept force-pushes, so the edited history went to the new branch `fec-v3.3.0`. The file trees,
+authors and dates are unchanged, but every commit after `9406190` has a new hash. This document and
+Appendix B use the new hashes; `ferrite-backup-3.2.1-draft` and #65 keep the old ones. Check out
+the new branch with `git fetch origin && git checkout fec-v3.3.0`.
 
 ### 12.4 Merging into `ferrite-main` and tagging v3.3.0 (only after the §9 gates)
 
@@ -918,7 +920,7 @@ use the new hashes. Refresh an existing clone with
 git fetch origin
 git checkout ferrite-main
 git merge --ff-only origin/ferrite-main
-git merge --no-ff origin/ferrite-backup-3.2.1-draft -m "Merge branch 'ferrite-backup-3.2.1-draft' into ferrite-main"
+git merge --no-ff origin/fec-v3.3.0 -m "Merge branch 'fec-v3.3.0' into ferrite-main"
 git push origin ferrite-main
 git tag -a v3.3.0 -m "Ferrite Core v3.3.0"
 git push origin v3.3.0
@@ -993,6 +995,7 @@ original author.
 | 55 | `2c3db24` | doc: describe the CI workflow and pull request #65 in the review | — (this review) |
 | 56 | `cba001a` | consensus: activate the MWEB kernel rules by signalling from block 1,250,000 | — (this review) |
 | 57 | `5693211` | doc: describe the signalled MWEB kernel soft fork in the review and release notes | — (this review) |
+| 58 | `ee3dc20` | doc: use the rewritten commit hashes in the v3.3.0 review | — (this review) |
 
 ## Appendix A: every draft commit and its upstream source
 
