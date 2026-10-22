@@ -318,6 +318,9 @@ bool IsWitnessEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& pa
 /** Check whether MWEB (LIPs 002-004) has activated. */
 bool IsMWEBEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params);
 
+/** Check whether the canonical MWEB kernel feature rules (the mwebkernel deployment) have activated. */
+bool IsMWEBKernelRuleEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params);
+
 /** Update uncommitted block structures (currently: only the witness reserved value). This is safe for submitted blocks. */
 void UpdateUncommittedBlockStructures(CBlock& block, const CBlockIndex* pindexPrev, const Consensus::Params& consensusParams);
 
@@ -743,8 +746,8 @@ private:
 
     bool RollforwardBlock(const CBlockIndex* pindex, CCoinsViewCache& inputs, const CChainParams& params) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
-    //! Mark a block as not having block data
-    void EraseBlockData(CBlockIndex* index) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    //! Mark a block as not having block data.
+    void EraseBlockData(CBlockIndex* index, bool preserve_tx_metadata = false) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
     friend ChainstateManager;
 };

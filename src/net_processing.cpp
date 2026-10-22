@@ -107,6 +107,12 @@ static const int MAX_BLOCKTXN_DEPTH = 10;
 static const int MAX_MWEB_LEAFSET_DEPTH = 10;
 /** Maximum number of MWEB UTXOs that can be requested in a batch. */
 static const uint16_t MAX_REQUESTED_MWEB_UTXOS = 4096;
+/** Serving an MWEB leafset/UTXO request rewinds and replays up to MAX_MWEB_LEAFSET_DEPTH blocks under cs_main,
+ *  so each request is expensive. Rate-limit these across the node to bound the CPU peers can force, including
+ *  by reconnecting. Values are deliberately conservative: a small burst, refilled slowly.
+ *  These messages are only used by external light clients, so throttling does not affect the node's own operation. */
+static constexpr double MWEB_SERVE_MAX_TOKENS{32.0};
+static constexpr double MWEB_SERVE_REFILL_PER_SECOND{0.5};
 /** Size of the "block download window": how far ahead of our current height do we fetch?
  *  Larger windows tolerate larger download speed differences between peer, but increase the potential
  *  degree of disordering of blocks on disk (which make reindexing and pruning harder). We'll probably
@@ -554,9 +560,15 @@ static void PushNodeVersion(CNode& pnode, CConnman& connman, int64_t nTime)
 
 // Returns a bool indicating whether we requested this block.
 // Also used if a block was /not/ received and timed out or started with another peer
-static bool MarkBlockAsReceived(const uint256& hash) EXCLUSIVE_LOCKS_REQUIRED(cs_main) {
+static bool MarkBlockAsReceived(const uint256& hash, Optional<NodeId> from_peer) EXCLUSIVE_LOCKS_REQUIRED(cs_main) {
     std::map<uint256, std::pair<NodeId, std::list<QueuedBlock>::iterator> >::iterator itInFlight = mapBlocksInFlight.find(hash);
     if (itInFlight != mapBlocksInFlight.end()) {
+        auto node_id = itInFlight->second.first;
+        if (from_peer && node_id != *from_peer) {
+            // Block was requested by another peer
+            return true;
+        }
+
         CNodeState *state = State(itInFlight->second.first);
         assert(state != nullptr);
         state->nBlocksInFlightValidHeaders -= itInFlight->second.second->fValidatedHeaders;
@@ -593,7 +605,7 @@ static bool MarkBlockAsInFlight(CTxMemPool& mempool, NodeId nodeid, const uint25
     }
 
     // Make sure it's not listed somewhere already.
-    MarkBlockAsReceived(hash);
+    MarkBlockAsReceived(hash, nullopt);
     MWEB::Block mweb_block;
     if (pit && (*pit)) {
         mweb_block = (*(*pit))->partialBlock->mweb_block;
@@ -1119,8 +1131,21 @@ bool PeerManager::MaybePunishNodeForBlock(NodeId nodeid, const BlockValidationSt
     case BlockValidationResult::BLOCK_RESULT_UNSET:
         break;
     // The node is providing invalid data:
-    case BlockValidationResult::BLOCK_CONSENSUS:
     case BlockValidationResult::BLOCK_MUTATED:
+        // BIP 152 permits compact-block peers to forward blocks after checking
+        // only the header. MWEB block bodies are not committed to by that
+        // header, however, so accepting bad MWEB bodies from compact-block
+        // peers without penalty permits their expensive validation to be
+        // replayed indefinitely.
+        if (!via_compact_block ||
+            state.GetRejectReason() == "bad-blk-mweb" ||
+            state.GetRejectReason() == "bad-mweb-empty-pegout" ||
+            state.GetRejectReason() == "bad-mweb-empty-extradata") {
+            Misbehaving(nodeid, 100, message);
+            return true;
+        }
+        break;
+    case BlockValidationResult::BLOCK_CONSENSUS:
         if (!via_compact_block) {
             Misbehaving(nodeid, 100, message);
             return true;
@@ -1482,6 +1507,23 @@ bool static AlreadyHaveTx(const GenTxid& gtxid, const CTxMemPool& mempool) EXCLU
     return recentRejects->contains(hash) || mempool.exists(gtxid);
 }
 
+/**
+ * Return true when a transaction's txid/wtxid can identify a different MWEB
+ * relay payload. MWEB data and the HogEx marker are excluded from both hashes.
+ * A pegin with its required MWEB body stripped must also be classified here,
+ * even though HasMWEBTx() is false for that invalid relay variant.
+ */
+bool static HasUncommittedMWEBPayload(const CTransaction& tx)
+{
+    if (tx.HasMWEBTx() || tx.IsHogEx()) return true;
+
+    for (const CTxOut& txout : tx.vout) {
+        if (txout.scriptPubKey.IsMWEBPegin()) return true;
+    }
+
+    return false;
+}
+
 bool static AlreadyHaveBlock(const uint256& block_hash) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
 {
     return LookupBlockIndex(block_hash) != nullptr;
@@ -1561,14 +1603,14 @@ static void ActivateBestChainIfNeeded(const CChainParams& chainparams, const CIn
     } // release cs_main before calling ActivateBestChain
 
     if (need_activate_chain) {
-	// Grab the current most_recent_block and pass it to ActivateBestChain
+        // Grab the current most_recent_block and pass it to ActivateBestChain
         // which hopefully will prevent needing to load blocks from disk.
         std::shared_ptr<const CBlock> a_recent_block;
         {
             LOCK(cs_most_recent_block);
             a_recent_block = most_recent_block;
         }
-	    
+
         BlockValidationState state;
         if (!ActivateBestChain(state, chainparams, a_recent_block)) {
             LogPrint(BCLog::NET, "failed to activate chain (%s)\n", state.ToString());
@@ -1699,11 +1741,11 @@ void static ProcessGetBlockData(CNode& pfrom, const CChainParams& chainparams, c
                 } else {
                     connman.PushMessage(&pfrom, msgMaker.Make(nSendFlags, NetMsgType::BLOCK, *pblock));
                 }
-	    } else if (inv.IsMsgMWEBHeader()) {
+            } else if (inv.IsMsgMWEBHeader()) {
                 if (pblock->GetHogEx() != nullptr && !pblock->mweb_block.IsNull()) {
                     CMerkleBlockWithMWEB merkle_block_with_mweb(*pblock);
                     connman.PushMessage(&pfrom, msgMaker.Make(NetMsgType::MWEBHEADER, merkle_block_with_mweb));
-                } 
+                }
             }
         }
 
@@ -1733,6 +1775,38 @@ struct MWEBLeafsetMsg
     BitSet leafset;
 };
 
+/** Node-wide token-bucket rate limiter for expensive MWEB leafset/UTXO serving
+ *  requests. Returns true (and consumes a token) if the request may be served
+ *  now. Serving each request rewinds/replays up to MAX_MWEB_LEAFSET_DEPTH
+ *  blocks under cs_main, so without this an unauthenticated peer could pin the
+ *  node by flooding valid requests. */
+static bool AllowMWEBServe(CNode& pfrom) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
+{
+    // Whitelisted peers (e.g. -whitelist / PF_NOBAN) are exempt.
+    if (pfrom.HasPermission(PF_NOBAN)) {
+        return true;
+    }
+
+    // This state is independent of CNodeState so reconnecting cannot reset the
+    // node-wide allowance.
+    static double node_tokens{MWEB_SERVE_MAX_TOKENS};
+    static std::chrono::microseconds node_timestamp{GetTime<std::chrono::microseconds>()};
+
+    const auto now = GetTime<std::chrono::microseconds>();
+    const auto node_time_diff = std::max(now - node_timestamp, std::chrono::microseconds{0});
+    node_tokens = std::min<double>(
+        node_tokens + Ticks<SecondsDouble>(node_time_diff) * MWEB_SERVE_REFILL_PER_SECOND,
+        MWEB_SERVE_MAX_TOKENS);
+    node_timestamp = now;
+
+    if (node_tokens < 1.0) {
+        return false;
+    }
+
+    node_tokens -= 1.0;
+    return true;
+}
+
 static void ProcessGetMWEBLeafset(CNode& pfrom, const ChainstateManager& chainman, const CChainParams& chainparams, const CInv& inv, CConnman& connman)
 {
     ActivateBestChainIfNeeded(chainparams, inv);
@@ -1742,7 +1816,7 @@ static void ProcessGetMWEBLeafset(CNode& pfrom, const ChainstateManager& chainma
         LogPrint(BCLog::NET, "Ignoring mweb leafset request from peer=%d because node is in initial block download\n", pfrom.GetId());
         return;
     }
-	
+
     CBlockIndex* pindex = LookupBlockIndex(inv.hash);
     if (!pindex || !chainman.ActiveChain().Contains(pindex)) {
         LogPrint(BCLog::NET, "Ignoring mweb leafset request from peer=%d because requested block hash is not in active chain\n", pfrom.GetId());
@@ -1770,6 +1844,12 @@ static void ProcessGetMWEBLeafset(CNode& pfrom, const ChainstateManager& chainma
         if (!pfrom.HasPermission(PF_NOBAN)) {
             pfrom.fDisconnect = true;
         }
+        return;
+    }
+
+    // Rate-limit before the expensive rewind/replay below.
+    if (!AllowMWEBServe(pfrom)) {
+        LogPrint(BCLog::NET, "Rate-limiting mweb leafset request from peer=%d\n", pfrom.GetId());
         return;
     }
 
@@ -1852,8 +1932,6 @@ static void ProcessGetMWEBUTXOs(CNode& pfrom, const ChainstateManager& chainman,
         return;
     }
 
-    // TODO: Add an outbound limit
-
     // For performance reasons, we limit how many blocks can be undone in order to rebuild the leafset
     if (chainman.ActiveChain().Tip()->nHeight - pindex->nHeight > MAX_MWEB_LEAFSET_DEPTH) {
         LogPrint(BCLog::NET, "Ignore getmwebutxos below MAX_MWEB_LEAFSET_DEPTH threshold from peer=%d\n", pfrom.GetId());
@@ -1872,6 +1950,12 @@ static void ProcessGetMWEBUTXOs(CNode& pfrom, const ChainstateManager& chainman,
         if (!pfrom.HasPermission(PF_NOBAN)) {
             pfrom.fDisconnect = true;
         }
+        return;
+    }
+
+    // Rate-limit before the expensive rewind/replay below.
+    if (!AllowMWEBServe(pfrom)) {
+        LogPrint(BCLog::NET, "Rate-limiting getmwebutxos request from peer=%d\n", pfrom.GetId());
         return;
     }
 
@@ -1910,7 +1994,7 @@ static void ProcessGetMWEBUTXOs(CNode& pfrom, const ChainstateManager& chainman,
         utxos.push_back(NetUTXO(get_utxos.output_format, utxo));
     }
 
-        std::vector<mw::Hash> proof_hashes = segment.hashes;
+    std::vector<mw::Hash> proof_hashes = segment.hashes;
     if (segment.lower_peak) {
         proof_hashes.push_back(*segment.lower_peak);
     }
@@ -2021,8 +2105,8 @@ void static ProcessGetData(CNode& pfrom, Peer& peer, const ChainstateManager& ch
         const CInv &inv = *it++;
         if (inv.IsGenBlkMsg()) {
             ProcessGetBlockData(pfrom, chainparams, inv, connman);
-	} else if (inv.IsMsgMWEBLeafset()) {
-            ProcessGetMWEBLeafset(pfrom, chainman, chainparams, inv, connman);	
+        } else if (inv.IsMsgMWEBLeafset()) {
+            ProcessGetMWEBLeafset(pfrom, chainman, chainparams, inv, connman);
         }
         // else: If the first item on the queue is an unknown type, we erase it
         // and continue processing the queue on the next call.
@@ -2329,7 +2413,9 @@ void PeerManager::ProcessOrphanTx(std::set<uint256>& orphan_work_set)
                 // for concerns around weakening security of unupgraded nodes
                 // if we start doing this too early.
                 assert(recentRejects);
-                recentRejects->insert(porphanTx->GetWitnessHash());
+                if (!HasUncommittedMWEBPayload(*porphanTx)) {
+                    recentRejects->insert(porphanTx->GetWitnessHash());
+                }
                 // If the transaction failed for TX_INPUTS_NOT_STANDARD,
                 // then we know that the witness was irrelevant to the policy
                 // failure, since this check depends only on the txid
@@ -2338,7 +2424,9 @@ void PeerManager::ProcessOrphanTx(std::set<uint256>& orphan_work_set)
                 // processing of this transaction in the event that child
                 // transactions are later received (resulting in
                 // parent-fetching by txid via the orphan-handling logic).
-                if (state.GetResult() == TxValidationResult::TX_INPUTS_NOT_STANDARD && porphanTx->GetWitnessHash() != porphanTx->GetHash()) {
+                if (!HasUncommittedMWEBPayload(*porphanTx) &&
+                    state.GetResult() == TxValidationResult::TX_INPUTS_NOT_STANDARD &&
+                    porphanTx->GetWitnessHash() != porphanTx->GetHash()) {
                     // We only add the txid if it differs from the wtxid, to
                     // avoid wasting entries in the rolling bloom filter.
                     recentRejects->insert(porphanTx->GetHash());
@@ -2738,7 +2826,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
             // Get recent addresses
             m_connman.PushMessage(&pfrom, CNetMsgMaker(greatest_common_version).Make(NetMsgType::GETADDR));
             pfrom.fGetAddr = true;
-	    // When requesting a getaddr, accept an additional MAX_ADDR_TO_SEND addresses in response
+            // When requesting a getaddr, accept an additional MAX_ADDR_TO_SEND addresses in response
             // (bypassing the MAX_ADDR_PROCESSING_TOKEN_BUCKET limit).
             peer->m_addr_token_bucket += MAX_ADDR_TO_SEND;
         }
@@ -2898,7 +2986,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
         int64_t nNow = GetAdjustedTime();
         int64_t nSince = nNow - 10 * 60;
 
-	// Update/increment addr rate limiting bucket.
+        // Update/increment addr rate limiting bucket.
         const auto current_time{GetTime<std::chrono::microseconds>()};
         if (peer->m_addr_token_bucket < MAX_ADDR_PROCESSING_TOKEN_BUCKET) {
             // Don't increment bucket if it's already full
@@ -2911,13 +2999,13 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
         const bool rate_limited = !pfrom.HasPermission(NetPermissionFlags::PF_ADDR);
         uint64_t num_proc = 0;
         uint64_t num_rate_limit = 0;
-        Shuffle(vAddr.begin(), vAddr.end(), FastRandomContext());    
+        Shuffle(vAddr.begin(), vAddr.end(), FastRandomContext());
         for (CAddress& addr : vAddr)
         {
             if (interruptMsgProc)
                 return;
-		
-	    // Apply rate limiting.
+
+            // Apply rate limiting.
             if (peer->m_addr_token_bucket < 1.0) {
                 if (rate_limited) {
                     ++num_rate_limit;
@@ -2939,7 +3027,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
                 // Do not process banned/discouraged addresses beyond remembering we received them
                 continue;
             }
-	    ++num_proc;
+            ++num_proc;
             bool fReachable = IsReachable(addr);
             if (addr.nTime > nSince && !pfrom.fGetAddr && vAddr.size() <= 10 && addr.IsRoutable())
             {
@@ -2950,11 +3038,11 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
             if (fReachable)
                 vAddrOk.push_back(addr);
         }
-	peer->m_addr_processed += num_proc;
+        peer->m_addr_processed += num_proc;
         peer->m_addr_rate_limited += num_rate_limit;
         LogPrint(BCLog::NET, "Received addr: %u addresses (%u processed, %u rate-limited) from peer=%d\n",
                  vAddr.size(), num_proc, num_rate_limit, pfrom.GetId());
-	    
+
         m_connman.AddNewAddresses(vAddrOk, pfrom.addr, 2 * 60 * 60);
         if (vAddr.size() < 1000)
             pfrom.fGetAddr = false;
@@ -3450,8 +3538,14 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
                 // for concerns around weakening security of unupgraded nodes
                 // if we start doing this too early.
                 assert(recentRejects);
-                recentRejects->insert(tx.GetWitnessHash());
-                m_txrequest.ForgetTxHash(tx.GetWitnessHash());
+                // MWEB transaction identifiers do not commit to the MWEB
+                // payload. Caching a rejection would allow an invalid relay
+                // variant to suppress a valid transaction with the same
+                // identifiers.
+                if (!HasUncommittedMWEBPayload(tx)) {
+                    recentRejects->insert(tx.GetWitnessHash());
+                    m_txrequest.ForgetTxHash(tx.GetWitnessHash());
+                }
                 // If the transaction failed for TX_INPUTS_NOT_STANDARD,
                 // then we know that the witness was irrelevant to the policy
                 // failure, since this check depends only on the txid
@@ -3460,7 +3554,9 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
                 // processing of this transaction in the event that child
                 // transactions are later received (resulting in
                 // parent-fetching by txid via the orphan-handling logic).
-                if (state.GetResult() == TxValidationResult::TX_INPUTS_NOT_STANDARD && tx.GetWitnessHash() != tx.GetHash()) {
+                if (!HasUncommittedMWEBPayload(tx) &&
+                    state.GetResult() == TxValidationResult::TX_INPUTS_NOT_STANDARD &&
+                    tx.GetWitnessHash() != tx.GetHash()) {
                     recentRejects->insert(tx.GetHash());
                     m_txrequest.ForgetTxHash(tx.GetHash());
                 }
@@ -3625,7 +3721,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
                 PartiallyDownloadedBlock& partialBlock = *(*queuedBlockIt)->partialBlock;
                 ReadStatus status = partialBlock.InitData(cmpctblock, vExtraTxnForCompact);
                 if (status == READ_STATUS_INVALID) {
-                    MarkBlockAsReceived(pindex->GetBlockHash()); // Reset in-flight state in case Misbehaving does not result in a disconnect
+                    MarkBlockAsReceived(pindex->GetBlockHash(), pfrom.GetId()); // Reset in-flight state in case Misbehaving does not result in a disconnect
                     Misbehaving(pfrom.GetId(), 100, "invalid compact block");
                     return;
                 } else if (status == READ_STATUS_FAILED) {
@@ -3727,7 +3823,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
                 // process from some other peer.  We do this after calling
                 // ProcessNewBlock so that a malleated cmpctblock announcement
                 // can't be used to interfere with block relay.
-                MarkBlockAsReceived(pblock->GetHash());
+                MarkBlockAsReceived(pblock->GetHash(), nullopt);
             }
         }
         return;
@@ -3759,7 +3855,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
             PartiallyDownloadedBlock& partialBlock = *it->second.second->partialBlock;
             ReadStatus status = partialBlock.FillBlock(*pblock, resp.txn);
             if (status == READ_STATUS_INVALID) {
-                MarkBlockAsReceived(resp.blockhash); // Reset in-flight state in case Misbehaving does not result in a disconnect
+                MarkBlockAsReceived(resp.blockhash, pfrom.GetId()); // Reset in-flight state in case Misbehaving does not result in a disconnect
                 Misbehaving(pfrom.GetId(), 100, "invalid compact block/non-matching block transactions");
                 return;
             } else if (status == READ_STATUS_FAILED) {
@@ -3785,7 +3881,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
                 // though the block was successfully read, and rely on the
                 // handling in ProcessNewBlock to ensure the block index is
                 // updated, etc.
-                MarkBlockAsReceived(resp.blockhash); // it is now an empty pointer
+                MarkBlockAsReceived(resp.blockhash, pfrom.GetId()); // it is now an empty pointer
                 fBlockRead = true;
                 // mapBlockSource is used for potentially punishing peers and
                 // updating which peers send us compact blocks, so the race
@@ -3859,7 +3955,7 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
             LOCK(cs_main);
             // Also always process if we requested the block explicitly, as we may
             // need it even though it is not a candidate for a new best tip.
-            forceProcessing |= MarkBlockAsReceived(hash);
+            forceProcessing |= MarkBlockAsReceived(hash, pfrom.GetId());
             // mapBlockSource is only used for punishing peers and setting
             // which peers send us compact blocks, so the race between here and
             // cs_main in ProcessNewBlock is fine.

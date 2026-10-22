@@ -2,6 +2,7 @@
 
 #include <chain.h>
 #include <consensus/validation.h>
+#include <mw/consensus/Amount.h>
 #include <mw/node/BlockValidator.h>
 #include <primitives/block.h>
 #include <primitives/transaction.h>
@@ -36,21 +37,16 @@ bool Node::ContextualCheckBlock(const CBlock& block, const Consensus::Params& co
             return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "unexpected-mweb-data", "MWEB not activated, but extension block found");
         }
 
+        // The HogEx marker is not committed by the canonical merkle root, so before activation it is mutated data, just like an extension block.
+        for (const CTransactionRef& pTx : block.vtx) {
+            if (pTx->IsHogEx()) {
+                return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "unexpected-mweb-data", "MWEB not activated, but HogEx marker found");
+            }
+        }
+
         return true;
     } else if (block.mweb_block.IsNull()) {
         return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "mweb-missing", "MWEB activated but extension block not found");
-    }
-
-    // Validate each transaction in the block.
-    for (const auto& tx : block.vtx) {
-        // Verify that there are no pegin outputs in the coinbase or HogEx transactions.
-        if (tx->IsCoinBase() || tx->IsHogEx()) {
-            for (const CTxOut& out : tx->vout) {
-                if (out.scriptPubKey.IsMWEBPegin()) {
-                    return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-tx-unexpected-pegin", "Pegin found in coinbase or HogEx");
-                }
-            }
-        }
     }
 
     // Last transaction must be marked as HogEx.
@@ -64,6 +60,19 @@ bool Node::ContextualCheckBlock(const CBlock& block, const Consensus::Params& co
     for (size_t i = 0; i < block.vtx.size() - 1; i++) {
         if (block.vtx[i]->IsHogEx()) {
             return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "bad-hogex-position", "hogex in wrong position");
+        }
+    }
+
+    // Validate each transaction in the block. HogEx placement must be checked
+    // first because the marker is not committed by the canonical merkle root.
+    for (const auto& tx : block.vtx) {
+        // Verify that there are no pegin outputs in the coinbase or HogEx transactions.
+        if (tx->IsCoinBase() || tx->IsHogEx()) {
+            for (const CTxOut& out : tx->vout) {
+                if (out.scriptPubKey.IsMWEBPegin()) {
+                    return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-tx-unexpected-pegin", "Pegin found in coinbase or HogEx");
+                }
+            }
         }
     }
 
@@ -84,6 +93,39 @@ bool Node::ContextualCheckBlock(const CBlock& block, const Consensus::Params& co
     // Verify that the MWEB block's height is correct.
     if (block.mweb_block.GetHeight() != (pindexPrev->nHeight + 1)) {
         return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "mweb-height-mismatch", "Invalid MWEB block height");
+    }
+
+    // Kernel data is not directly committed by the canonical block hash, so
+    // authenticate it against the HogEx-committed header before using feature
+    // bits for permanent consensus decisions.
+    if (!block.mweb_block.m_block->HasValidKernelMMR()) {
+        return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "bad-blk-mweb", "MWEB kernel root doesn't match body");
+    }
+
+    // Both rules below are enforced once the mwebkernel deployment is active (signalled from block 1,250,000 on mainnet).
+    const bool kernel_rule_enabled = IsMWEBKernelRuleEnabled(pindexPrev, consensus_params);
+
+    // Verify that pegout features are canonical once the pegout rule is active.
+    if (kernel_rule_enabled) {
+        for (const Kernel& kernel : block.mweb_block.m_block->GetKernels()) {
+            if (!kernel.HasCanonicalPegOutFeature()) {
+                // Empty feature fields can have alternate wire encodings that
+                // reserialize to the same kernel MMR leaf. Do not permanently
+                // invalidate the canonical block hash based on those fields.
+                return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "bad-mweb-empty-pegout", "Pegout feature set without pegouts");
+            }
+        }
+    }
+
+    // Verify that extra data features are canonical once the extra data rule is active.
+    if (kernel_rule_enabled) {
+        for (const Kernel& kernel : block.mweb_block.m_block->GetKernels()) {
+            if (!kernel.HasCanonicalExtraDataFeature()) {
+                // See the empty pegout case above. The block remains invalid,
+                // but the failure must not poison another body with this hash.
+                return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "bad-mweb-empty-extradata", "Extra data feature set without extra data");
+            }
+        }
     }
 
     // For the very first HogEx transaction, all inputs are pegins, so start at index of 0.
@@ -162,6 +204,11 @@ bool Node::ValidateMWEBBlock(const CBlock& block)
 
 bool Node::ConnectBlock(const CBlock& block, const Consensus::Params& consensus_params, const CBlockIndex* pindexPrev, CBlockUndo& blockundo, mw::CoinsViewCache& mweb_view, BlockValidationState& state)
 {
+    // Revalidate the body actually being applied, including after disk reload.
+    if (!ContextualCheckBlock(block, consensus_params, pindexPrev, state)) {
+        return false;
+    }
+
     if (!block.mweb_block.IsNull()) {
         const CTransactionRef& pHogEx = block.vtx.back();
 
@@ -197,25 +244,51 @@ bool Node::ConnectBlock(const CBlock& block, const Consensus::Params& consensus_
             }
         }
 
+        const auto mweb_fee = block.mweb_block.GetTotalFee();
+        const auto supply_change = block.mweb_block.GetSupplyChange();
+        if (!mweb_fee || !supply_change) {
+            return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-mweb-amount", "Invalid MWEB amount accounting");
+        }
+
         // For the HogEx transaction, the fee must be equal to the total fee of the extension block.
         CAmount hogex_fee = hogex_input_amount - pHogEx->GetValueOut();
-        if (!MoneyRange(hogex_fee) || hogex_fee != block.mweb_block.GetTotalFee()) {
-            return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "bad-txns-mweb-fee-mismatch", "HogEx fee does not match MWEB fee."); // TODO: This can be CONSENSUS
+        if (!MoneyRange(hogex_fee) || hogex_fee != *mweb_fee) {
+            return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-txns-mweb-fee-mismatch", "HogEx fee does not match MWEB fee.");
         }
 
         // Verify that the value of the first HogEx output matches the expected new value of the MWEB.
         // This is calculated simply as: 'mweb_amount = previous_amount + supply_change'
         // where 'supply_change = (pegins - pegouts) - fees'
-        CAmount mweb_amount = pindexPrev->mweb_amount + block.mweb_block.GetSupplyChange();
-        if (mweb_amount != pHogEx->vout.front().nValue) {
-            return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "mweb-amount-mismatch", "HogEx amount does not match expected MWEB amount"); // TODO: This can be CONSENSUS
+        const auto mweb_amount = AmountUtil::TrySafeAdd(pindexPrev->mweb_amount, *supply_change);
+        if (!mweb_amount) {
+            return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "bad-mweb-amount", "Invalid MWEB supply change");
         }
 
+        if (!MoneyRange(*mweb_amount) || *mweb_amount != pHogEx->vout.front().nValue) {
+            return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "mweb-amount-mismatch", "HogEx amount does not match expected MWEB amount");
+        }
+
+        const bool allow_historical_metadata_mismatch =
+            !consensus_params.mweb_input_metadata_grandfather_blockhash.IsNull()
+            && block.GetHash() == consensus_params.mweb_input_metadata_grandfather_blockhash;
+
         try {
-            blockundo.mwundo = mweb_view.ApplyBlock(block.mweb_block.m_block);
+            blockundo.mwundo = mweb_view.ApplyBlock(block.mweb_block.m_block, allow_historical_metadata_mismatch);
         } catch (const std::exception& e) {
-            // MWEB: Need to distinguish between invalid blocks and mutated blocks
+            // ApplyBlock reconciles the serialized MWEB body against the
+            // header/state commitments. Some failures here can be caused by
+            // mutating MWEB body data without changing the canonical block hash.
             return state.Invalid(BlockValidationResult::BLOCK_MUTATED, "mweb-connect-failed", strprintf("MWEB::Node::ConnectBlock(): Failed to connect MWEB block: %s", e.what()));
+        }
+
+        for (const auto& input : block.mweb_block.m_block->GetInputs()) {
+            // Verify that none of the MWEB inputs are spending frozen MWEB outputs.
+            for (const uint256& frozen_output_id : consensus_params.frozen_mweb_output_ids) {
+                if (uint256(input.GetOutputID().vec()) == frozen_output_id) {
+                    return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "frozen-mweb-output-spent",
+                        strprintf("MWEB::Node::ConnectBlock(): Frozen MWEB output spent: %s", input.GetOutputID().ToHex()));
+                }
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2020 The Litecoin Core developers
+// Copyright(C) 2011 - 2020 The Litecoin Core developers
 // Copyright (c) 2023 The Ferrite Core Developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -27,14 +27,14 @@ struct Block {
     Block(const mw::Block::CPtr& block)
         : m_block(block) {}
 
-    CAmount GetTotalFee() const noexcept
+    boost::optional<CAmount> GetTotalFee() const noexcept
     {
-        return IsNull() ? 0 : m_block->GetTotalFee();
+        return IsNull() ? boost::optional<CAmount>(0) : m_block->GetTotalFee();
     }
 
-    CAmount GetSupplyChange() const noexcept
+    boost::optional<CAmount> GetSupplyChange() const noexcept
     {
-        return IsNull() ? 0 : m_block->GetSupplyChange();
+        return IsNull() ? boost::optional<CAmount>(0) : m_block->GetSupplyChange();
     }
 
     mw::Hash GetHash() const noexcept
@@ -191,9 +191,9 @@ struct Tx {
         return IsNull() ? 0 : m_transaction->CalcWeight();
     }
 
-    CAmount GetFee() const noexcept
+    boost::optional<CAmount> GetFee() const noexcept
     {
-        return IsNull() ? 0 : CAmount(m_transaction->GetTotalFee());
+        return IsNull() ? boost::optional<CAmount>(0) : m_transaction->GetTotalFee();
     }
 
     int32_t GetLockHeight() const noexcept

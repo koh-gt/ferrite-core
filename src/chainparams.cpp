@@ -60,6 +60,19 @@ static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits
 }
 
 /**
+ * MWEB output IDs that consensus forbids spending.
+ *
+ * Litecoin Core v0.21.5.4+ freezes one output on Litecoin's chain after its 2026
+ * MWEB incident. Ferrite does not blacklist any outputs or addresses, so this
+ * list is intentionally empty. The consensus and wallet plumbing is kept so the
+ * code stays in sync with upstream.
+ */
+static std::vector<uint256> GetFrozenMWEBOutputIDs()
+{
+    return {};
+}
+
+/**
  * Main network
  */
 class CMainParams : public CChainParams {
@@ -81,7 +94,7 @@ public:
         consensus.nPowTargetTimespan = 10 * 60;                   // A target Timespan of 1h. Not 10 blocks. If blocks take longer than usual, difficulty will adjust earlier than usual.
         consensus.nPowTargetSpacing = 1 * 60;                    // Block confirmation time of 60 seconds.
         consensus.nPowKGWHeight = 250000;
-	    consensus.nPowDGWHeight = 250000;
+            consensus.nPowDGWHeight = 250000;
         consensus.fPowAllowMinDifficultyBlocks = false;         // All blocks must have minimum difficulty of 1
         consensus.fPowNoRetargeting = false;                   // Difficulty will be dynamically adjusted.
         consensus.nRuleChangeActivationThreshold = 39;        // 97.5% of 40 to count as consensus
@@ -104,17 +117,29 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 99999999; // never*
         // MWEB will be automatically activated after block 99999999 for now.
 
+        // Deployment of the MWEB kernel rules (v3.3.0): kernels that set the pegout feature must carry a pegout
+        // (Litecoin b250b016a), and kernels that set the extra-data feature must carry extra data (Litecoin a399fc4ca).
+        // Bit 5 is unused (Taproot 2, MWEB 4) and outside the BIP320 version-rolling bits 13-28.
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].bit = 5;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nStartHeight = 1250000;
+        // When 39 of the 40 blocks in a window signal bit 5, the next window is locked in and the rules apply from the
+        // window after it (block 1250080 at the earliest).
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nTimeoutHeight = 99999999; // never*
+
         // The best chain should have at least this much work.
-	    consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000023343814f3f8d19a"); 
-        // A total of 2 536 714 152 760 103 322 hashes (2.537 EH) of work as of block 200 000.
-	    
+
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000006aefe2248ff21e3f");
+        // A total of 7 705 626 134 115 917 375 hashes (7.706 EH) of work as of block 1 046 922.
+
+        // consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000064294d02b1db55a8"); 
+        // A total of 7 217 384 551 807 145 384 hashes (7.217 EH) of work as of block 292 000.    
         // consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000023343814f3f8d19a"); 
         // A total of 2 536 714 152 760 103 322 hashes (2.537 EH) of work as of block 200 000.
-	    //consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000001aba64d960a7fb79"); 
+        //consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000001aba64d960a7fb79"); 
         // A total of 1 925 962 675 446 610 809 hashes (1.926 EH) of work as of block 178 000. 
-	    // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000088358036fda6c15"); 
+        // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000088358036fda6c15"); 
         // A total of   613 430 746 037 251 093 hashes (613.4 PH) of work as of block 154 000. MWEB Activation height 150 120.
-	    // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000050c151ee81a40c9");  
+        // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000050c151ee81a40c9");  
         // A total of   363 688 892 397 404 361 hashes (363.7 PH) of work as of block 149 000.
         // consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000009cec62dc44b76d");  
         // A total of    44 170 005 713 303 405 hashes (44.17 PH) of work as of block 100 000.
@@ -126,31 +151,30 @@ public:
         // A total of       187 976 044 125 601 hashes (188.0 TH) of work as of block  10 000.
         
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0xf2ac05fbd6974e9292ca462368a15bbb1818a442c2f5e72a4035165f3ae9ea01");  
-        // Block 178000
-
-        // consensus.defaultAssumeValid = uint256S("0xf2ac05fbd6974e9292ca462368a15bbb1818a442c2f5e72a4035165f3ae9ea01");  
-        // Block 200000
-	    // consensus.defaultAssumeValid = uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb");  
-        // Block 178000    
-	    // consensus.defaultAssumeValid = uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2");  
-        // Block 154000    
-        // consensus.defaultAssumeValid = uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1");  
-        // Block 149000
-        // consensus.defaultAssumeValid = uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297");  
-        // Block 100000
-        // consensus.defaultAssumeValid = uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286");  
-        // Block 60000
-        // consensus.defaultAssumeValid = uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95");  
-        // Block 30000
-        // consensus.defaultAssumeValid = uint256S("0xf5da0fabe25733a186805366c0fdede73e2454e782083676e7627b8ec991ef9b");  
-        // Block 10000
+        consensus.defaultAssumeValid = uint256S("0x189f2e593168534ec9fe3b393d2543ff7804ce74a6fe5018f9267fa89f9e652d");
+        // Block 1046922
+        
+        // consensus.defaultAssumeValid = uint256S("0x189f2e593168534ec9fe3b393d2543ff7804ce74a6fe5018f9267fa89f9e652d");  // Block 1046922
+        // consensus.defaultAssumeValid = uint256S("0xb42d405513ca11a37bda4420f99577861258a593627401c6143026799e63d1e3");  // Block 292000
+        // consensus.defaultAssumeValid = uint256S("0xf2ac05fbd6974e9292ca462368a15bbb1818a442c2f5e72a4035165f3ae9ea01");  // Block 200000
+        // consensus.defaultAssumeValid = uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb");  // Block 178000    
+        // consensus.defaultAssumeValid = uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2");  // Block 154000    
+        // consensus.defaultAssumeValid = uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1");  // Block 149000
+        // consensus.defaultAssumeValid = uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297");  // Block 100000
+        // consensus.defaultAssumeValid = uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286");  // Block 60000
+        // consensus.defaultAssumeValid = uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95");  // Block 30000
+        // consensus.defaultAssumeValid = uint256S("0xf5da0fabe25733a186805366c0fdede73e2454e782083676e7627b8ec991ef9b");  // Block 10000
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 32-bit integer with any alignment.
          */
+
+        // No block is exempt from the MWEB input-metadata check (null = disabled), and no MWEB outputs are frozen.
+        consensus.mweb_input_metadata_grandfather_blockhash = uint256();
+        consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
+
         pchMessageStart[0] = 0x4a;
         pchMessageStart[1] = 0x82;
         pchMessageStart[2] = 0x10;
@@ -167,7 +191,7 @@ public:
 
         // Seed servers to connect to other nodes.
         // Default configuration file contains nodes of popular ferritecoin mining pools.
-	vSeeds.emplace_back("dnsseed.ferritecoin.com");
+        vSeeds.emplace_back("dnsseed.ferritecoin.com");
         vSeeds.emplace_back("vps.ferritecoin.com");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,36);
@@ -201,18 +225,25 @@ public:
                 {    30000, uint256S("0x64ddec3dde1a4fd6c41d06aacfc27694cfc9c3094574ae83fe51ef4740956a95")},
                 {    60000, uint256S("0xf38b639a8db731e7dac96eaae8f9ab443eaf85039433197345a72e1961d7f286")},
                 {   100000, uint256S("0x022dc4410add84d46359013d45df952493c53343304296a9066fc3df03dc8297")},
-		        {   149000, uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1")},
-		        {   154000, uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2")},
-		        {   178000, uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb")},
+                {   149000, uint256S("0xef695bb26b2655308cba06c2dd9b303c833db933d0cd872104f3073e471da2b1")},
+                {   154000, uint256S("0xe4925099992f4ca3337c9f85deb52b88da80a6ea40127adf2bc6c2851d5d49b2")},
+                {   178000, uint256S("0xd4f18be5a123aedbe1a091d0a0ae27412ff4acb4219e783f36391e6baac7fedb")},
                 {   200000, uint256S("0xf2ac05fbd6974e9292ca462368a15bbb1818a442c2f5e72a4035165f3ae9ea01")},  // added 20240922
+                {   292000, uint256S("0xb42d405513ca11a37bda4420f99577861258a593627401c6143026799e63d1e3")},  // added 20250216
+                {   450000, uint256S("0x3fed4270c7fdae13403707a82c4e7ad0bc9d5dec1e4d277ed2e2bf3dc14002b9")},  // added 20261015, Taproot signalling start (active from 450080)
+                {   602214, uint256S("0x2399672fc2e4303198f56734ccfe43202e0657de61a92141343f4c16e05e05f1")},  // added 20261015, 2nd halving (25 FEC)
+                {   750000, uint256S("0x5b6bc3044a65a0a6625275b0bf0eaa4f080de0dc1b9431cc82ca1f434a0905f5")},  // added 20261015
+                {   903321, uint256S("0xb0ef59c7fc0e42672d2b660cee3f00dbb84ca90e80a4ddf0aaad3f4f2ddd6115")},  // added 20261015, 3rd halving (12.5 FEC)
+                {  1000000, uint256S("0xc75f4a8694eb7ef8b398bef7510feb37495e9c6994ae3be0594190295b3cc247")},  // added 20261015
             }
         };
 
         chainTxData = ChainTxData{
-            /* nTime    */ 1726928677,
-            /* nTxCount */ 273404,
-            /* dTxRate  */ 0.00587725
-        };  // height 201408
+            // Data from RPC: getchaintxstats 4096 189f2e593168534ec9fe3b393d2543ff7804ce74a6fe5018f9267fa89f9e652d
+            /* nTime    */ 1791451691,
+            /* nTxCount */ 2023430,
+            /* dTxRate  */ 0.0297290455060091
+        };  // height 1046922
     }
 };
 
@@ -238,7 +269,7 @@ public:
         consensus.nPowTargetTimespan = 10 * 60; // 1 hour
         consensus.nPowTargetSpacing = 1 * 60;
         consensus.nPowKGWHeight = 26; // DGW uses past 24 blocks
-	consensus.nPowDGWHeight = 26; // DGW uses past 24 blocks
+        consensus.nPowDGWHeight = 26; // DGW uses past 24 blocks
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 10; // 50% for testchains
@@ -256,11 +287,18 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].bit = 4;
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 160; 
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 99999999;
-	    
-	
+
+        // Deployment of the MWEB kernel rules, always enforced on testnet
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].bit = 5;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+            
+        
         consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000000000019a894b");
-	// 26 904907  (26.9 MH) hashes of work since block 250. (testnet)
+        // 26 904907  (26.9 MH) hashes of work since block 250. (testnet)
         consensus.defaultAssumeValid = uint256S("0xd710251db07b4b5ad58ff59edcda83642af83e757fdf791424cf9d85e977bd65");
+        consensus.mweb_input_metadata_grandfather_blockhash = uint256();
+        consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
 
         pchMessageStart[0] = 0xba;
         pchMessageStart[1] = 0x76;
@@ -304,16 +342,16 @@ public:
         checkpointData = {
             {
                 {        0, uint256S("0x7a9f43d6e86eefa66e2b79918b2235c9362106f3d9f11f37f7a33450ceae73c1")},
-		{        1, uint256S("0x9fe0eff34a1501c47e476c66d9cdca3133aebf3b1d8e2db13be04525f39301aa")},
-		{       10, uint256S("0x269cc5bc0f63df93ca6e65a6d39ab4450dcbba5c6f9069bcfe141071e42171b0")},     // taproot compatible
-		{       20, uint256S("0xc57940588a334cecf9bbaa1434892c074a6c532ea52c1b0adf9b1a55c07372ff")},     // taproot mandatory
-		{       28, uint256S("0xdb2b80687bd0d731e052b2e1370f36409fdbfd1b1852b4e66d2f30df1f3d684e")},     // DarkGravityWave v3 hardfork
-		{      100, uint256S("0x6e423dcbe5e9f98776f856cf54eafc00d65f42f4c4718cd6caaf9cd45711c129")},     
-		{      160, uint256S("0xbf82199c7f3985ebd673372a328e6a1cf409c46d18c505e0fc2536f6c51ac885")},     // MWEB compatible
-		{      250, uint256S("0xd710251db07b4b5ad58ff59edcda83642af83e757fdf791424cf9d85e977bd65")},
-		{     1000, uint256S("0xb17ea0a86515e347878e11ccbddc2f9b0769f13418681b6bc95f1384ec58b38f")},
-		{     6000, uint256S("0x0e753be814e8c5cb8801ad5a291a9e52c7e06eeb01a8cd3ab92dad1c5c67afe6")},
-		    
+                {        1, uint256S("0x9fe0eff34a1501c47e476c66d9cdca3133aebf3b1d8e2db13be04525f39301aa")},
+                {       10, uint256S("0x269cc5bc0f63df93ca6e65a6d39ab4450dcbba5c6f9069bcfe141071e42171b0")},     // taproot compatible
+                {       20, uint256S("0xc57940588a334cecf9bbaa1434892c074a6c532ea52c1b0adf9b1a55c07372ff")},     // taproot mandatory
+                {       28, uint256S("0xdb2b80687bd0d731e052b2e1370f36409fdbfd1b1852b4e66d2f30df1f3d684e")},     // DarkGravityWave v3 hardfork
+                {      100, uint256S("0x6e423dcbe5e9f98776f856cf54eafc00d65f42f4c4718cd6caaf9cd45711c129")},     
+                {      160, uint256S("0xbf82199c7f3985ebd673372a328e6a1cf409c46d18c505e0fc2536f6c51ac885")},     // MWEB compatible
+                {      250, uint256S("0xd710251db07b4b5ad58ff59edcda83642af83e757fdf791424cf9d85e977bd65")},
+                {     1000, uint256S("0xb17ea0a86515e347878e11ccbddc2f9b0769f13418681b6bc95f1384ec58b38f")},
+                {     6000, uint256S("0x0e753be814e8c5cb8801ad5a291a9e52c7e06eeb01a8cd3ab92dad1c5c67afe6")},
+                    
             }
         };
 
@@ -348,7 +386,7 @@ public:
         consensus.nPowTargetTimespan = 10 * 60; // 1 hour
         consensus.nPowTargetSpacing = 1 * 60;
         consensus.nPowKGWHeight = 26;
-	consensus.nPowDGWHeight = 26;
+        consensus.nPowDGWHeight = 26;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.fPowNoRetargeting = true;
         consensus.nRuleChangeActivationThreshold = 108; // 75% for testchains
@@ -367,9 +405,15 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartTime = 1601450001; // September 30, 2020
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
 
+        // Deployment of the MWEB kernel rules, always enforced on regtest
+        // (-vbparams=mwebkernel:0:0:<start height>:<timeout height> tests the signalling)
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].bit = 5;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+
         consensus.nMinimumChainWork = uint256{};
         consensus.defaultAssumeValid = uint256{};
-
+        consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
         pchMessageStart[0] = 0xfa;
         pchMessageStart[1] = 0xbf;
         pchMessageStart[2] = 0xb5;
@@ -381,8 +425,11 @@ public:
 
         UpdateActivationParametersFromArgs(args);
 
-        genesis = CreateGenesisBlock(1296688602, 0, 0x207fffff, 1, 100 * COIN);
+        // Nonce 1: with Ferrite's genesis coinbase, nonce 0 does not satisfy the scrypt proof of work,
+        // which made regtest nodes abort when reading the genesis block back from disk.
+        genesis = CreateGenesisBlock(1296688602, 1, 0x207fffff, 1, 100 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
+        assert(consensus.hashGenesisBlock == uint256S("0x66a1fad2536f94a2bc200b133bd65713fe8e4ec3a7cc7c50c2390e7e2d153930"));
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
         vSeeds.clear();      //!< Regtest mode doesn't have any DNS seeds.
@@ -394,7 +441,7 @@ public:
 
         checkpointData = {
             {
-                {0, uint256S("492258df125bae6c6f95eed66a5d6d8be785bcb7d10da025226b57a5c0e42837")},
+                {0, uint256S("66a1fad2536f94a2bc200b133bd65713fe8e4ec3a7cc7c50c2390e7e2d153930")},
             }
         };
 

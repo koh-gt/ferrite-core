@@ -56,10 +56,10 @@ public:
     bool operator<(const OutputMessage& output_message) const noexcept { return m_hash < output_message.m_hash; }
     bool operator==(const OutputMessage& output_message) const noexcept { return m_hash == output_message.m_hash; }
 
-    uint8_t features;
+    uint8_t features{0};
     PublicKey key_exchange_pubkey;
-    uint8_t view_tag;
-    uint64_t masked_value;
+    uint8_t view_tag{0};
+    uint64_t masked_value{0};
     BigInt<16> masked_nonce;
     std::vector<uint8_t> extra_data;
 
@@ -159,7 +159,12 @@ public:
     const OutputMessage& GetOutputMessage() const noexcept { return m_message; }
     const Signature& GetSignature() const noexcept { return m_signature; }
 
-    bool IsStandard() const noexcept { return m_message.features == OutputMessage::STANDARD_FIELDS_FEATURE_BIT; }
+    bool IsStandard() const noexcept
+    {
+        return m_message.features == OutputMessage::STANDARD_FIELDS_FEATURE_BIT
+            && m_message.key_exchange_pubkey.IsValid()
+            && m_receiverPubKey.IsValid();
+    }
     const std::vector<uint8_t>& GetExtraData() const noexcept { return m_message.extra_data; }
     uint8_t GetFeatures() const noexcept { return m_message.features; }
     bool HasStandardFields() const noexcept { return m_message.features & OutputMessage::STANDARD_FIELDS_FEATURE_BIT; }
