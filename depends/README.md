@@ -44,7 +44,23 @@ The paths are automatically configured and no other options are needed unless ta
 
 #### For macOS cross compilation
 
-    sudo apt-get install curl librsvg2-bin libtiff-tools bsdmainutils cmake imagemagick libcap-dev libz-dev libbz2-dev python3-setuptools libtinfo5
+    sudo apt-get install curl librsvg2-bin libtiff-tools bsdmainutils cmake imagemagick libcap-dev libz-dev libbz2-dev python3-setuptools libtinfo5 xorriso
+
+The macOS build also needs Apple's SDK, which depends cannot download: extract
+`Xcode-12.1-12A7403-extracted-SDK-with-libcxx-headers.tar.gz` from Xcode 12.1 as described in
+[the macdeploy notes](../contrib/macdeploy/README.md#sdk-extraction). Then, from the root of the
+repository, as the macOS release build in `contrib/gitian-descriptors/gitian-osx.yml` does:
+
+    mkdir -p depends/SDKs
+    tar -C depends/SDKs -xf /path/to/Xcode-12.1-12A7403-extracted-SDK-with-libcxx-headers.tar.gz
+    make -C depends HOST=x86_64-apple-darwin18 -j$(nproc)
+    ./autogen.sh
+    CONFIG_SITE=$PWD/depends/x86_64-apple-darwin18/share/config.site ./configure --prefix=/
+    make -j$(nproc)
+    PATH=$PWD/depends/x86_64-apple-darwin18/native/bin:$PATH make deploy
+
+The last step writes the `.dmg`. The prebuilt clang 10 that depends uses needs `libtinfo5`,
+which Ubuntu 22.04 has but Ubuntu 24.04 no longer ships.
 
 #### For Win64 cross compilation
 
