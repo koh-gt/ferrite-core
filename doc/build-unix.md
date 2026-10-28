@@ -14,7 +14,7 @@ For example, when specifying the path of the dependency:
 Here BDB_PREFIX must be an absolute path - it is defined using $(pwd) which ensures
 the usage of the absolute path.
 
-fmt: the distribution's `libfmt-dev` is enough, whatever its version (7.1.3 to 12 are known to work).
+fmt: the distribution's `libfmt-dev` is enough, whatever its version (6.1.2 to 12 are known to work).
 Ferrite Core uses fmt header-only, so no fmt library, static or shared, is linked.
 
 To Build (64 bit x86 Ubuntu Linux)
