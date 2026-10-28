@@ -97,38 +97,15 @@ Now, you can either build from self-compiled [depends](/depends/README.md) or in
 
     sudo apt-get install libevent-dev libboost-system-dev libboost-filesystem-dev libboost-test-dev libboost-thread-dev libfmt-dev
 
-BerkeleyDB is required for the wallet.
+BerkeleyDB 4.8 is required for the wallet. Build it with the script in contrib/, from the root
+of the repository. It checks the download's SHA-256 hash and applies the patch that renames
+BerkeleyDB's `__atomic_compare_exchange`, which recent GCC versions reject:
 
 ```
-wget http://download.oracle.com/berkeley-db/db-4.8.30.zip
-unzip db-4.8.30.zip
-cd db-4.8.30
-cd build_unix/
-../dist/configure --prefix=/usr/local --enable-cxx
-make -j$(nproc) 
-make install
+./contrib/install_db4.sh `pwd`
 ```
 
-Note that you may see this error. 
-This is because the GCC C++ compiler function for an atomic operation and Berkeley DB 4.8.30 both have a `__atomic_compare_exchange`...
-```
-ake: *** [Makefile:2020: cxx_dbc.lo] Error 1
-In file included from ../dist/../dbinc/mutex_int.h:12,
-                 from ../dist/../dbinc/mutex.h:15,
-                 from ./db_int.h:884,
-                 from ../dist/../cxx/cxx_mpool.cpp:11:
-../dist/../dbinc/atomic.h:179:19: error: definition of ‘int __atomic_compare_exchange(db_atomic_t*, atomic_value_t, atomic_value_t)’ ambiguates built-in declaration ‘bool __atomic_compare_exchange(long unsigned int, volatile void*, void*, void*, int, int)’
-  179 | static inline int __atomic_compare_exchange(
-      |      
-```
-You will want to
-```
-cd ..
-cd dbinc
-sudo nano atomic.h
-```
-Change Line 179 to `static inline int __atomic_compare_exchange_db(` and `Ctrl+S`, `Ctrl+X`.
-Now `cd ..`, `cd build_unix` and continue your `make -j$(nproc) ` 
+Then pass the `BDB_LIBS` and `BDB_CFLAGS` that it prints to `./configure`.
 
 Ubuntu and Debian have their own `libdb-dev` and `libdb++-dev` packages, but these will install
 BerkeleyDB 5.1 or later. This will break binary wallet compatibility with the distributed executables, which
