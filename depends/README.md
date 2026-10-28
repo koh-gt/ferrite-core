@@ -89,6 +89,8 @@ The following can be set when running make: `make FOO=bar`
 <dd>built packages will be placed here</dd>
 <dt>SDK_PATH</dt>
 <dd>Path where sdk's can be found (used by macOS)</dd>
+<dt>MIRROR_DOWNLOAD_PATH</dt>
+<dd>Try here first for every source file, which it holds under the file's SHA-256 hash (see Source mirror below). Set it empty to skip it</dd>
 <dt>FALLBACK_DOWNLOAD_PATH</dt>
 <dd>If a source file can't be fetched, try here before giving up</dd>
 <dt>NO_QT</dt>
@@ -132,6 +134,25 @@ options will be passed to ferrite's configure. In this case, `--disable-wallet`.
     download-osx: run 'make download-osx' to fetch all sources needed for macOS builds
     download-win: run 'make download-win' to fetch all sources needed for win builds
     download-linux: run 'make download-linux' to fetch all sources needed for linux builds
+
+### Source mirror
+
+Every source file is pinned by its SHA-256 hash in `packages/*.mk`. depends fetches
+it from `MIRROR_DOWNLOAD_PATH` first, then from the package's own download path, then
+from `FALLBACK_DOWNLOAD_PATH`, and uses it only if its hash matches the pin, whichever
+host supplied it. The mirror is the `depends-sources` release of the Ferrite Core
+repository; each file there is named by its hash, so a package that moves or vanishes
+upstream can still be built. To skip the mirror, run `make MIRROR_DOWNLOAD_PATH=`.
+
+When a package is added or its version changes, run
+`contrib/devtools/depends-sources.sh <outdir>`. It fetches every source for the Linux,
+Windows and macOS builds from their own hosts, and prints the command that uploads the
+files the mirror does not have yet.
+
+To build on a machine without network access, run `make download` (or `download-win`,
+`download-linux`, `download-osx`) elsewhere and copy `sources/` (or the directory given
+as `SOURCES_PATH`) to it. depends downloads nothing that is already there. The macOS SDK
+is not among the sources; see [the macdeploy notes](../contrib/macdeploy/README.md).
 
 
 ### Android

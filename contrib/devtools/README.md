@@ -75,6 +75,27 @@ year rather than two hyphenated years.
 If the file already has a copyright for `The Bitcoin Core developers`, the
 script will exit.
 
+depends-sources.sh
+==================
+
+Fetches every depends source for the Linux, Windows and macOS builds from its own host
+and collects the files that the depends source mirror (`MIRROR_DOWNLOAD_PATH`, see
+[depends/README.md](../../depends/README.md)) does not have yet, each named by its SHA-256
+hash, then prints the command that uploads them. Run it whenever a depends package is
+added or its version changes:
+
+```bash
+contrib/devtools/depends-sources.sh /tmp/depends-sources
+```
+
+The release has to exist before the first upload. Create it as a pre-release, so that it
+is never shown as the latest Ferrite Core release:
+
+```bash
+gh release create depends-sources --repo koh-gt/ferrite-core --prerelease \
+    --title "depends sources" --notes "Source files for depends, each named by its SHA-256 hash."
+```
+
 gen-manpages.sh
 ===============
 
