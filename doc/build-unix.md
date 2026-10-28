@@ -32,6 +32,21 @@ make install # optional
 
 This will build ferrite-qt as well, if the dependencies are met.
 
+These binaries use the build machine's shared libraries (Boost, libevent, OpenSSL, and BerkeleyDB 5.3
+with `--with-incompatible-bdb`, among others), whatever `LDFLAGS="-static"` suggests, so they run only
+where the same library versions are installed. For binaries to distribute, build the dependencies
+with [depends](/depends/README.md), as for Windows:
+
+```bash
+make -C depends HOST=x86_64-pc-linux-gnu -j$(nproc)
+./autogen.sh
+CONFIG_SITE=$PWD/depends/x86_64-pc-linux-gnu/share/config.site ./configure --prefix=/ LDFLAGS="-static-libstdc++"
+make -j$(nproc)
+```
+
+These link only glibc and libgcc dynamically. They need the build machine's glibc or a newer one:
+built on Ubuntu 22.04, glibc 2.34 or later.
+
 Known Issues:
 ```
 src/qt/bitcoin.cpp:461: undefined reference to `qInitResources_bitcoin()'
