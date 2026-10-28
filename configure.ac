@@ -1417,7 +1417,11 @@ if test "x$use_zmq" = xyes; then
 fi
 
 
-AC_CHECK_LIB([fmt],[main],MWEB_LIBS=-lfmt,AC_MSG_ERROR(libfmt missing))
+dnl libmw uses fmt header-only (FMT_HEADER_ONLY in mw/util/StringUtil.h), so only the headers are needed.
+AC_LANG_PUSH([C++])
+AC_CHECK_HEADER([fmt/format.h],,[AC_MSG_ERROR([fmt headers missing: install libfmt-dev, or build with depends])])
+AC_LANG_POP([C++])
+MWEB_LIBS=
 
 dnl univalue check
 

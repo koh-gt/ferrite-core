@@ -14,26 +14,8 @@ For example, when specifying the path of the dependency:
 Here BDB_PREFIX must be an absolute path - it is defined using $(pwd) which ensures
 the usage of the absolute path.
 
-YOU NEED fmt v9.0           - 8.0 wont cut it, so if you are using Ubuntu <= Jammy Jellyfish
-
-```bash
-wget -c https://launchpad.net/ubuntu/+archive/primary/+files/libfmt9_9.1.0+ds1-2_amd64.deb
-wget -c https://launchpad.net/ubuntu/+archive/primary/+files/libfmt-dev_9.1.0+ds1-2_amd64.deb
-```
-install fmt before fmt-dev
-```bash
-sudo apt install ./libfmt9_9.1.0+ds1-2_amd64.deb
-sudo apt install ./libfmt-dev_9.1.0+ds1-2_amd64.deb
-```
-build libfmt from source with static lib support
-```bash
-git clone https://github.com/fmtlib/fmt.git
-cd fmt
-mkdir build && cd build
-cmake .. -DBUILD_SHARED_LIBS=OFF
-make
-sudo make install
-```
+fmt: the distribution's `libfmt-dev` is enough, whatever its version (7.1.3 to 12 are known to work).
+Ferrite Core uses fmt header-only, so no fmt library, static or shared, is linked.
 
 To Build (64 bit x86 Ubuntu Linux)
 ---------------------

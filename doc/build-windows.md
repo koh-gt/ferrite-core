@@ -96,15 +96,7 @@ results in `Autoconf` configure scripts being able to execute Windows Portable E
 unexpected behaviour during the build, such as Win32 error dialogs for missing libraries. The recommended approach
 is to temporarily disable WSL support for Win32 applications.
 
-YOU NEED fmt v9.0           - 8.0 wont cut it, so if you are using Ubuntu <= Jammy Jellyfish
-
-wget -c https://launchpad.net/ubuntu/+archive/primary/+files/libfmt9_9.1.0+ds1-2_amd64.deb
-wget -c https://launchpad.net/ubuntu/+archive/primary/+files/libfmt-dev_9.1.0+ds1-2_amd64.deb
-
-install fmt before fmt-dev
-
-sudo apt install ./libfmt9_9.1.0+ds1-2_amd64.deb
-sudo apt install ./libfmt-dev_9.1.0+ds1-2_amd64.deb
+The depends build supplies fmt (pinned at 7.1.3) for the Windows binaries; the build machine's own fmt is not used.
 
 Build using:
 
