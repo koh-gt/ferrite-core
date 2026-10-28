@@ -124,15 +124,8 @@ Build using:
     
 No more 32-bit builds available.
     
-Common qt errors
-    common qt errors - numeric_limits is not a member of std
-    
-    go to qbytearraymatcher.h 
-    /ferrite-core-main/depends/work/build/x86_64-w64-mingw32/qt/5.9.8-e9d8e4b8361/qtbase/src/corelib/tools/qbytearraymatcher.h
-    #include <stddef.h>
-    #include <limits.h>
-    #include <stdexcept>
-    #include <limits>
+The Qt build in depends applies `fix_limits_header.patch`, so GCC 11 and later no longer stop it with
+"numeric_limits is not a member of std" in qbytearraymatcher.h; no manual edit is needed.
 
 ## Depends system
 
