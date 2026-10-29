@@ -71,6 +71,14 @@ after running v3.3.0, start it once with `-reindex-chainstate`.
 
 For more details see https://github.com/koh-gt/ferrite-core/pull/66 and `doc/ferrite-3.3.0-review.md`
 
+### Building
+Windows and Linux builds with `depends` work again: the Boost libraries are built again, the Qt and zlib downloads
+point at their current paths, and Qt no longer needs a manual edit for GCC 11. The macOS recipes parse again
+OpenSSL is no longer needed: scrypt uses Ferrite Core's own SHA-256, and the proof-of-work hash is unchanged
+fmt is used header-only: any `libfmt-dev` from 6.1.2 on works, and no fmt library is linked
+`depends` tries Ferrite Core's copy of each source file first (the `depends-sources` release), then the file's own host
+Linux binaries to distribute are best built with `depends`, as `doc/build-unix.md` now describes
+
 ## Future changes
 v4.0.0 soft fork: post-quantum (P2QRH) outputs, under evaluation
 v5.0.0 hard fork: CPU proof of work and tail emission, under evaluation
