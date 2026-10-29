@@ -32,8 +32,8 @@ make install # optional
 
 This will build ferrite-qt as well, if the dependencies are met.
 
-These binaries use the build machine's shared libraries (Boost, libevent, OpenSSL, and BerkeleyDB 5.3
-with `--with-incompatible-bdb`, among others), whatever `LDFLAGS="-static"` suggests, so they run only
+These binaries use the build machine's shared libraries (Boost, libevent, and BerkeleyDB 5.3 with
+`--with-incompatible-bdb`, among others), whatever `LDFLAGS="-static"` suggests, so they run only
 where the same library versions are installed. For binaries to distribute, build the dependencies
 with [depends](/depends/README.md), as for Windows:
 
@@ -106,7 +106,7 @@ Finally, clang (often less resource hungry) can be used instead of gcc, which is
 
 Build requirements:
 
-    sudo apt-get install build-essential libtool autotools-dev automake pkg-config bsdmainutils python3 libssl-dev
+    sudo apt-get install build-essential libtool autotools-dev automake pkg-config bsdmainutils python3
 
 Now, you can either build from self-compiled [depends](/depends/README.md) or install the required dependencies:
 

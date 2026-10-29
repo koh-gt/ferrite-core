@@ -635,7 +635,7 @@ std::string LicenseInfo()
 
            _("\n\nThis is experimental software.").translated +
            strprintf(_("\nDistributed under the MIT software license, see the accompanying file %s or %s").translated, "COPYING", "<https://opensource.org/licenses/MIT>") +
-           strprintf(_("\n\nThis product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit %s and cryptographic software written by Eric Young and UPnP software written by Thomas Bernard.").translated, "<https://opensource.org/licenses/MIT>");
+           _("\n\nThis product includes UPnP software written by Thomas Bernard.").translated;
 }
 
 /*

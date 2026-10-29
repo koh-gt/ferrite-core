@@ -18,7 +18,6 @@ These are the dependencies currently used by Ferrite Core. You can find instruct
 | libpng |  |  |  |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) |
 | librsvg | |  |  |  |  |
 | MiniUPnPc | [2.2.2](https://miniupnp.tuxfamily.org/files) |  | No |  |  |
-| OpenSSL (libcrypto, for scrypt's SHA-256) | [1.0.1k](https://www.openssl.org/source/old/1.0.1/) |  |  |  |  |
 | PCRE |  |  |  |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) |
 | Python (tests) |  | [3.5](https://www.python.org/downloads) |  |  |  |
 | qrencode | [3.4.4](https://fukuchi.org/works/qrencode) |  | No |  |  |
