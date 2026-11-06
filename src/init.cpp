@@ -635,7 +635,7 @@ std::string LicenseInfo()
 
            _("\n\nThis is experimental software.").translated +
            strprintf(_("\nDistributed under the MIT software license, see the accompanying file %s or %s").translated, "COPYING", "<https://opensource.org/licenses/MIT>") +
-           strprintf(_("\n\nThis product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit %s and cryptographic software written by Eric Young and UPnP software written by Thomas Bernard.").translated, "<https://opensource.org/licenses/MIT>");
+           _("\n\nThis product includes UPnP software written by Thomas Bernard.").translated;
 }
 
 /*
@@ -1049,9 +1049,10 @@ bool AppInitParameterInteraction(const ArgsManager& args)
     }
 
     // parse and validate enabled filter types
-    bool fReindexChainState = args.GetBoolArg("-reindex-chainstate", false);
+    const bool fReindexChainState = args.GetBoolArg("-reindex-chainstate", false);
+    const bool fPrune = args.GetArg("-prune", 0);
     std::string blockfilterindex_value = args.GetArg("-blockfilterindex", DEFAULT_BLOCKFILTERINDEX);
-    if (fReindexChainState && !args.IsArgSet("-blockfilterindex")) {
+    if ((fReindexChainState || fPrune) && !args.IsArgSet("-blockfilterindex")) {
         blockfilterindex_value = "0";
     }
     if (blockfilterindex_value == "" || blockfilterindex_value == "1") {
@@ -1069,7 +1070,7 @@ bool AppInitParameterInteraction(const ArgsManager& args)
 
     // Signal NODE_COMPACT_FILTERS if peerblockfilters and basic filters index are both enabled.
     bool peerblockfilters = args.GetBoolArg("-peerblockfilters", DEFAULT_PEERBLOCKFILTERS);
-    if (fReindexChainState && !args.IsArgSet("-peerblockfilters")) {
+    if ((fReindexChainState || fPrune) && !args.IsArgSet("-peerblockfilters")) {
         peerblockfilters = false;
     }
     if (peerblockfilters) {

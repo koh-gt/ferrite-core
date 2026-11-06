@@ -67,7 +67,7 @@ then mines the first MWEB block which includes that pegin.
 
 mining_node - The node to use to generate blocks
 """
-def setup_mweb_chain(node):
+def setup_mweb_chain(mining_node):
     # Create all pre-MWEB blocks
     mining_node.generate(FIRST_MWEB_HEIGHT - 1)
 
@@ -130,12 +130,12 @@ mweb_hash - The hash of the MWEB to commit to.
 
 Returns the built HogEx transaction as a 'CTransaction'
 """
-def create_hogex(node, mweb_hash):
+def create_hogex(node, mweb_hash, amount=None):
     hogex_tx = get_hogex_tx(node)
 
     tx = CTransaction()
     tx.vin = [CTxIn(COutPoint(hogex_tx.sha256, 0))]
-    tx.vout = [CTxOut(hogex_tx.vout[0].nValue, hogaddr_script(mweb_hash.to_byte_arr()))]
+    tx.vout = [CTxOut(hogex_tx.vout[0].nValue if amount is None else amount, hogaddr_script(mweb_hash.to_byte_arr()))]
     tx.hogex = True
     tx.rehash()
     return tx

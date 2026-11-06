@@ -75,6 +75,27 @@ year rather than two hyphenated years.
 If the file already has a copyright for `The Bitcoin Core developers`, the
 script will exit.
 
+depends-sources.sh
+==================
+
+Fetches every depends source for the Linux, Windows and macOS builds from its own host
+and collects the files that the depends source mirror (`MIRROR_DOWNLOAD_PATH`, see
+[depends/README.md](../../depends/README.md)) does not have yet, each named by its SHA-256
+hash, then prints the command that uploads them. Run it whenever a depends package is
+added or its version changes:
+
+```bash
+contrib/devtools/depends-sources.sh /tmp/depends-sources
+```
+
+The release has to exist before the first upload. Create it as a pre-release, so that it
+is never shown as the latest Ferrite Core release:
+
+```bash
+gh release create depends-sources --repo koh-gt/ferrite-core --prerelease \
+    --title "depends sources" --notes "Source files for depends, each named by its SHA-256 hash."
+```
+
 gen-manpages.sh
 ===============
 
@@ -128,3 +149,18 @@ Example usage:
 
     cd .../src
     ../contrib/devtools/circular-dependencies.py {*,*/*,*/*/*}.{h,cpp}
+
+mweb\_history\_check.py
+=======================
+
+Read-only scan of a synced node's MWEB history against the MWEB rules added in Ferrite Core v3.3.0:
+every MWEB input must match the output it spends, and kernel lock heights above 903,321 must not
+exceed the block height. Kernels that would break the two MWEB rules of the `mwebkernel` soft fork,
+which miners signal for from block 1,250,000, are reported for information. The script only calls `getblockchaininfo`,
+`getblockhash` and `getblock`; it needs Python 3.8+ and no extra packages.
+
+Example usage (reads the RPC cookie from the default data directory):
+
+    python3 contrib/devtools/mweb_history_check.py
+    python3 contrib/devtools/mweb_history_check.py --datadir /path/to/datadir
+    python3 contrib/devtools/mweb_history_check.py --rpcuser USER --rpcpassword PASS

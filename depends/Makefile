@@ -39,6 +39,9 @@ NO_ZMQ ?=
 NO_UPNP ?=
 MULTIPROCESS ?=
 FALLBACK_DOWNLOAD_PATH ?= https://bitcoincore.org/depends-sources
+# Ferrite's copy of every source file, each named by its SHA-256 hash. It is tried
+# first; the pinned hash is checked whatever the source. Set it empty to skip it.
+MIRROR_DOWNLOAD_PATH ?= https://github.com/koh-gt/ferrite-core/releases/download/depends-sources
 
 BUILD = $(shell ./config.guess)
 HOST ?= $(BUILD)

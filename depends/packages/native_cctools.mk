@@ -24,11 +24,9 @@ define $(package)_build_cmds
   $(MAKE)
 endef
 
-ifeq ($(strip $(FORCE_USE_SYSTEM_CLANG)),)
 define $(package)_stage_cmds
   $(MAKE) DESTDIR=$($(package)_staging_dir) install
 endef
-else
 
 define $(package)_postprocess_cmds
   rm -rf share

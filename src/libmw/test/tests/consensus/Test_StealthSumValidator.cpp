@@ -18,6 +18,14 @@ BOOST_FIXTURE_TEST_SUITE(TestStealthSumValidator, MWEBTestingSetup)
 //
 BOOST_AUTO_TEST_CASE(ValidateStealthSum)
 {
+    const StealthSumValidator::SumState empty_sums = StealthSumValidator::ValidateAndAdd(
+        BlindingFactor{},
+        TxBody{},
+        StealthSumValidator::SumState{}
+    );
+    BOOST_CHECK(!empty_sums.lhs);
+    BOOST_CHECK(!empty_sums.rhs);
+
     ////////////////////////////////////////
     // Build inputs
     ////////////////////////////////////////
@@ -81,10 +89,10 @@ BOOST_AUTO_TEST_CASE(ValidateStealthSum)
         .Add(input2_key)
         .Sub(input1_output_key)
         .Sub(input2_output_key)
-        .Total().data();
+        .ToKey();
     SecretKey stealth_excess_with_offset = Blinds::From(stealth_excess_no_offset)
         .Sub(stealth_offset)
-        .Total().data();
+        .ToKey();
 
     ////////////////////////////////////////
     // Build kernels

@@ -529,7 +529,14 @@ public:
         if (IsHDEnabled() && m_hd_chain.mweb_scan_key) {
             return *m_hd_chain.mweb_scan_key;
         }
-        
+        return SecretKey::Null();
+    };
+    SecretKey GetSpendSecret() const noexcept
+    {
+        if (m_mwebKeychain) {
+            return m_mwebKeychain->GetSpendSecret();
+        }
+
         return SecretKey::Null();
     };
 };

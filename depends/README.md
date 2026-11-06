@@ -44,7 +44,23 @@ The paths are automatically configured and no other options are needed unless ta
 
 #### For macOS cross compilation
 
-    sudo apt-get install curl librsvg2-bin libtiff-tools bsdmainutils cmake imagemagick libcap-dev libz-dev libbz2-dev python3-setuptools libtinfo5
+    sudo apt-get install curl librsvg2-bin libtiff-tools bsdmainutils cmake imagemagick libcap-dev libz-dev libbz2-dev python3-setuptools libtinfo5 xorriso
+
+The macOS build also needs Apple's SDK, which depends cannot download: extract
+`Xcode-12.1-12A7403-extracted-SDK-with-libcxx-headers.tar.gz` from Xcode 12.1 as described in
+[the macdeploy notes](../contrib/macdeploy/README.md#sdk-extraction). Then, from the root of the
+repository, as the macOS release build in `contrib/gitian-descriptors/gitian-osx.yml` does:
+
+    mkdir -p depends/SDKs
+    tar -C depends/SDKs -xf /path/to/Xcode-12.1-12A7403-extracted-SDK-with-libcxx-headers.tar.gz
+    make -C depends HOST=x86_64-apple-darwin18 -j$(nproc)
+    ./autogen.sh
+    CONFIG_SITE=$PWD/depends/x86_64-apple-darwin18/share/config.site ./configure --prefix=/
+    make -j$(nproc)
+    PATH=$PWD/depends/x86_64-apple-darwin18/native/bin:$PATH make deploy
+
+The last step writes the `.dmg`. The prebuilt clang 10 that depends uses needs `libtinfo5`,
+which Ubuntu 22.04 has but Ubuntu 24.04 no longer ships.
 
 #### For Win64 cross compilation
 
@@ -89,6 +105,8 @@ The following can be set when running make: `make FOO=bar`
 <dd>built packages will be placed here</dd>
 <dt>SDK_PATH</dt>
 <dd>Path where sdk's can be found (used by macOS)</dd>
+<dt>MIRROR_DOWNLOAD_PATH</dt>
+<dd>Try here first for every source file, which it holds under the file's SHA-256 hash (see Source mirror below). Set it empty to skip it</dd>
 <dt>FALLBACK_DOWNLOAD_PATH</dt>
 <dd>If a source file can't be fetched, try here before giving up</dd>
 <dt>NO_QT</dt>
@@ -132,6 +150,31 @@ options will be passed to ferrite's configure. In this case, `--disable-wallet`.
     download-osx: run 'make download-osx' to fetch all sources needed for macOS builds
     download-win: run 'make download-win' to fetch all sources needed for win builds
     download-linux: run 'make download-linux' to fetch all sources needed for linux builds
+
+### Source mirror
+
+Every source file is pinned by its SHA-256 hash in `packages/*.mk`. depends fetches
+it from `MIRROR_DOWNLOAD_PATH` first, then from the package's own download path, then
+from `FALLBACK_DOWNLOAD_PATH`, and uses it only if its hash matches the pin, whichever
+host supplied it. The mirror is the `depends-sources` release of the Ferrite Core
+repository; each file there is named by its hash, so a package that moves or vanishes
+upstream can still be built. To skip the mirror, run `make MIRROR_DOWNLOAD_PATH=`.
+
+A file that the mirror does not have, or a mirror release that does not exist, is not an
+error: depends prints `curl: (22) The requested URL returned error: 404` and goes on to the
+next host. qrencode 3.4.4 is no longer on its own host (fukuchi.org answers 404), so it
+comes from the mirror or from `FALLBACK_DOWNLOAD_PATH` (bitcoincore.org).
+
+When a package is added or its version changes, run
+`contrib/devtools/depends-sources.sh <outdir>`. It fetches every source for the Linux,
+Windows and macOS builds from their own hosts (or from `FALLBACK_DOWNLOAD_PATH` where
+the own host fails, as for qrencode), and prints the command that uploads the files the
+mirror does not have yet.
+
+To build on a machine without network access, run `make download` (or `download-win`,
+`download-linux`, `download-osx`) elsewhere and copy `sources/` (or the directory given
+as `SOURCES_PATH`) to it. depends downloads nothing that is already there. The macOS SDK
+is not among the sources; see [the macdeploy notes](../contrib/macdeploy/README.md).
 
 
 ### Android

@@ -246,9 +246,18 @@ BASE_SCRIPTS = [
     'feature_dersig.py',
     'feature_cltv.py',
     'mweb_basic.py',
+    'mweb_mempool.py',
     'mweb_mining.py',
+    'mweb_kernel_activation.py',
     'mweb_reorg.py',
+    'mweb_dbcrash.py',
+    'mweb_duplicate_pegin.py',
     'mweb_p2p.py',
+    'mweb_p2p_mutated_compactblock.py',
+    'mweb_p2p_mutated_block_submitblock.py',
+    'mweb_newpowvalidblock.py',
+    'mweb_wtxid_recentrejects.py',
+    'mweb_pre_activation_hogex_marker.py',
     'mweb_pegout_all.py',
     'mweb_node_compatibility.py',
     'mweb_wallet_address.py',
@@ -309,6 +318,7 @@ NON_SCRIPTS = [
     # These are python files that live in the functional tests directory, but are not test scripts.
     "combine_logs.py",
     "create_cache.py",
+    "ferrite_scrypt.py",
     "test_runner.py",
 ]
 

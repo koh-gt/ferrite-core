@@ -218,6 +218,12 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     // GetNextWorkRequiredFerrite is valid for block heights before nPowKGWHeight
     // After nPowKGWHeight, FEU and FEC will be two separate coins.
 
+    // KGW/DGW do not honour fPowNoRetargeting (only regtest sets it). Without this, quickly mined
+    // regtest blocks drive the difficulty up exponentially from nPowDGWHeight on. Same as Dash.
+    if (params.fPowNoRetargeting) {
+        return bnPowLimit.GetCompact();
+    }
+
     if (params.fPowAllowMinDifficultyBlocks) {
 	// recent block is more than 2 hours old
 	if (pblock->GetBlockTime() > pindexLast->GetBlockTime() + 2 * 60 * 60) {

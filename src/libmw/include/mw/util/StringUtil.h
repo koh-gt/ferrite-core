@@ -6,6 +6,10 @@
 
 #include <mw/common/Traits.h>
 
+// fmt is used header-only, so no libfmt library is linked and static builds need no libfmt.a.
+#ifndef FMT_HEADER_ONLY
+#define FMT_HEADER_ONLY
+#endif
 #include <fmt/format.h>
 #include <memory>
 #include <iostream>
