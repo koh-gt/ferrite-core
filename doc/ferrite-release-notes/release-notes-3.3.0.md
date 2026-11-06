@@ -72,12 +72,15 @@ after running v3.3.0, start it once with `-reindex-chainstate`.
 For more details see https://github.com/koh-gt/ferrite-core/pull/66 and `doc/ferrite-3.3.0-review.md`
 
 ### Building
-Windows and Linux builds with `depends` work again: the Boost libraries are built again, the Qt and zlib downloads
-point at their current paths, and Qt no longer needs a manual edit for GCC 11. The macOS recipes parse again
+Windows and Linux builds with `depends` work again, the Qt wallet included: the Boost libraries are built again, the Qt
+and zlib downloads point at their current paths, and Qt no longer needs a manual edit for GCC 11. The macOS recipes parse again
 OpenSSL is no longer needed: scrypt uses Ferrite Core's own SHA-256, and the proof-of-work hash is unchanged
 fmt is used header-only: any `libfmt-dev` from 6.1.2 on works, and no fmt library is linked
-`depends` tries Ferrite Core's copy of each source file first (the `depends-sources` release), then the file's own host
-Linux binaries to distribute are best built with `depends`, as `doc/build-unix.md` now describes
+`depends` tries Ferrite Core's copy of each source file first (the `depends-sources` release), then the file's own host,
+then bitcoincore.org, and uses a file only if it matches its pinned SHA-256 hash. qrencode 3.4.4 is no longer on its own host,
+so until the mirror is filled it comes from bitcoincore.org
+Linux binaries to distribute are best built with `depends`, as `doc/build-unix.md` now describes. Built on Ubuntu 22.04, they
+need glibc 2.34 or later (Ubuntu 22.04, Debian 12 or newer), and `ferrite-qt` also needs the system's fontconfig, FreeType and libxcb
 
 ## Future changes
 v4.0.0 soft fork: post-quantum (P2QRH) outputs, under evaluation

@@ -160,10 +160,16 @@ host supplied it. The mirror is the `depends-sources` release of the Ferrite Cor
 repository; each file there is named by its hash, so a package that moves or vanishes
 upstream can still be built. To skip the mirror, run `make MIRROR_DOWNLOAD_PATH=`.
 
+A file that the mirror does not have, or a mirror release that does not exist, is not an
+error: depends prints `curl: (22) The requested URL returned error: 404` and goes on to the
+next host. qrencode 3.4.4 is no longer on its own host (fukuchi.org answers 404), so it
+comes from the mirror or from `FALLBACK_DOWNLOAD_PATH` (bitcoincore.org).
+
 When a package is added or its version changes, run
 `contrib/devtools/depends-sources.sh <outdir>`. It fetches every source for the Linux,
-Windows and macOS builds from their own hosts, and prints the command that uploads the
-files the mirror does not have yet.
+Windows and macOS builds from their own hosts (or from `FALLBACK_DOWNLOAD_PATH` where
+the own host fails, as for qrencode), and prints the command that uploads the files the
+mirror does not have yet.
 
 To build on a machine without network access, run `make download` (or `download-win`,
 `download-linux`, `download-osx`) elsewhere and copy `sources/` (or the directory given

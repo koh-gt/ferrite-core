@@ -19,15 +19,16 @@ Ferrite Core uses fmt header-only, so no fmt library, static or shared, is linke
 
 To Build (64 bit x86 Ubuntu Linux)
 ---------------------
+First install the packages listed under [Ubuntu & Debian](#ubuntu--debian) below. Then:
+
 ```bash
-sudo chmod -R +x ferrite-core-ferrite-main
-cd ferrite-core-ferrite-main
-PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
+git clone https://github.com/koh-gt/ferrite-core.git
+cd ferrite-core
 ./autogen.sh
-./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp --disable-tests --disable-shared --enable-static LDFLAGS="-static"
-make -j$(nproc) STATIC=all # -j4 represents 4 threads being used
+./configure --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --disable-tests --disable-shared --enable-static LDFLAGS="-static"
+make -j$(nproc) # $(nproc) runs one compile job per CPU core
 strip src/ferrite-cli src/ferrited src/ferrite-tx src/ferrite-wallet src/qt/ferrite-qt
-make install # optional
+sudo make install # optional, installs into /usr/local
 ```
 
 This will build ferrite-qt as well, if the dependencies are met.
@@ -35,7 +36,8 @@ This will build ferrite-qt as well, if the dependencies are met.
 These binaries use the build machine's shared libraries (Boost, libevent, and BerkeleyDB 5.3 with
 `--with-incompatible-bdb`, among others), whatever `LDFLAGS="-static"` suggests, so they run only
 where the same library versions are installed. For binaries to distribute, build the dependencies
-with [depends](/depends/README.md), as for Windows:
+with [depends](/depends/README.md), as for Windows. depends downloads the sources with `curl` and
+runs `python3`, both in the build requirements below; the library packages below are for building without depends:
 
 ```bash
 make -C depends HOST=x86_64-pc-linux-gnu -j$(nproc)
@@ -44,8 +46,20 @@ CONFIG_SITE=$PWD/depends/x86_64-pc-linux-gnu/share/config.site ./configure --pre
 make -j$(nproc)
 ```
 
-These link only glibc and libgcc dynamically. They need the build machine's glibc or a newer one:
-built on Ubuntu 22.04, glibc 2.34 or later.
+`ferrited`, `ferrite-cli`, `ferrite-tx` and `ferrite-wallet` link only glibc and libgcc dynamically.
+`ferrite-qt` also loads the system's fontconfig, FreeType and libxcb (`libfontconfig.so.1`,
+`libfreetype.so.6` and `libxcb.so.1`, from the packages `libfontconfig1`, `libfreetype6` and `libxcb1`
+on Debian and Ubuntu), and it needs `xkb-data` for keyboard input; desktop installs have all four.
+The binaries need a glibc at least as new as the newest symbol version they use, which depends on the
+build machine: built on Ubuntu 22.04 (glibc 2.35), glibc 2.34 or later. To see it:
+
+    objdump -T src/ferrited | grep -o 'GLIBC_[0-9.]*' | sort -uV | tail -1
+
+`make -C src check-security` checks that the binaries are hardened. `make -C src check-symbols`
+checks Linux binaries only when configure was given `--enable-glibc-back-compat`; otherwise it prints nothing.
+
+UPnP: this build includes UPnP support but leaves it off unless `-upnp=1` is set. The Windows
+instructions pass `--enable-upnp-default`, which turns it on by default in the Windows binaries.
 
 Known Issues:
 ```
@@ -64,6 +78,7 @@ These dependencies are required:
  ------------|------------------|----------------------
  libboost    | Utility          | Library for threading, data structures, etc
  libevent    | Networking       | OS independent asynchronous networking
+ fmt         | Formatting       | String formatting in the MWEB code, used header-only (only the headers are needed)
 
 Optional dependencies:
 
@@ -106,7 +121,7 @@ Finally, clang (often less resource hungry) can be used instead of gcc, which is
 
 Build requirements:
 
-    sudo apt-get install build-essential libtool autotools-dev automake pkg-config bsdmainutils python3
+    sudo apt-get install build-essential libtool autotools-dev automake pkg-config bsdmainutils python3 curl git
 
 Now, you can either build from self-compiled [depends](/depends/README.md) or install the required dependencies:
 
@@ -168,7 +183,7 @@ built by default.
 
 Build requirements:
 
-    sudo dnf install gcc-c++ libtool make autoconf automake libevent-devel boost-devel libdb4-devel libdb4-cxx-devel python3 fmt
+    sudo dnf install gcc-c++ libtool make autoconf automake libevent-devel boost-devel libdb4-devel libdb4-cxx-devel python3 fmt-devel
 
 Optional (see `--with-miniupnpc` and `--enable-upnp-default`):
 
@@ -192,8 +207,9 @@ SQLite can be installed with:
 
 Notes
 -----
-The release is built with GCC and then "strip ferrited" to strip the debug
-symbols, which reduces the executable size by about 90%.
+The release is built with GCC and then "strip ferrited" to strip the symbols. The depends builds
+are compiled with `-O2` and no `-g`, so this makes them only about 15-20% smaller (v3.3.0 on
+Ubuntu 22.04: ferrited 16.9 MB to 13.9 MB, ferrite-qt 42.4 MB to 36.2 MB).
 
 
 miniupnpc
@@ -299,9 +315,9 @@ Setup and Build Example: Arch Linux
 -----------------------------------
 This example lists the steps necessary to setup and build a command line only, non-wallet distribution of the latest changes on Arch Linux:
 
-    pacman -S git base-devel boost libevent python
-    git clone https://github.com/ferrite-project/ferrite.git
-    cd ferrite/
+    pacman -S git base-devel boost libevent fmt python
+    git clone https://github.com/koh-gt/ferrite-core.git
+    cd ferrite-core/
     ./autogen.sh
     ./configure --disable-wallet --without-gui --without-miniupnpc
     make check

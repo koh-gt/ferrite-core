@@ -38,10 +38,11 @@ To install WSL on Windows 10 with Fall Creators Update installed (version >= 162
   * Enable 'Windows Subsystem for Linux'
   * Click 'OK' and restart if necessary
 2. Install Ubuntu
-  * Open Microsoft Store and search for "Ubuntu 22.04" or use [this link](https://www.microsoft.com/store/productId/9N9TNGVNDL3Q)
+  * Open Microsoft Store and search for "Ubuntu 22.04 LTS"
   * Click Install
+  * On Windows 10 version 2004 and later, typing `wsl --install -d Ubuntu-22.04` in a cmd prompt does steps 1 and 2
 3. Complete Installation
-  * Open a cmd prompt and type "Ubuntu1804"
+  * Open a cmd prompt and type `wsl -d Ubuntu-22.04`
   * Create a new UNIX user account (this is a separate account from your Windows account)
 
 After the bash shell is active, you can follow the instructions below, starting
@@ -55,33 +56,36 @@ The steps below can be performed on Ubuntu (including in a VM) or WSL. The depen
 will also work on other Linux distributions, however the commands for
 installing the toolchain will be different.
 
-First, install the general dependencies (you need to get the dependencies in build-unix first!):
+First, install the general dependencies. The depends system builds every library the Windows
+binaries use, so the libraries listed in [build-unix.md](build-unix.md) are not needed:
 
     sudo apt update
     sudo apt upgrade
-    sudo apt install build-essential libtool autotools-dev automake pkg-config bsdmainutils curl git
+    sudo apt install build-essential libtool autotools-dev automake pkg-config bsdmainutils curl git python3 nsis
 
 A host toolchain (`build-essential`) is necessary because some dependency
 packages need to build host utilities that are used in the build process.
+`python3` runs `make -C src check-security` and `make -C src check-symbols`.
 
 See [dependencies.md](dependencies.md) for a complete overview.
 
-If you want to build the windows installer with `make deploy` you need [NSIS](https://nsis.sourceforge.io/Main_Page):
-
-    sudo apt install nsis
+`make deploy` builds the Windows installer with [NSIS](https://nsis.sourceforge.io/Main_Page) (`nsis`).
+Without it, configure warns "makensis not found. Cannot create installer." and `make deploy` prints
+"error: could not build ..." and then "built ...", and exits without an error, but makes no installer.
 
 Acquire the source in the usual way:
 
-    git clone https://github.com/koh-gt/ferrite-main.git
-    cd ferrite-main
+    git clone https://github.com/koh-gt/ferrite-core.git
+    cd ferrite-core
 
 ## Building for 64-bit Windows
 
-The first step is to install the mingw-w64 cross-compilation tool chain:
+The first step is to install the mingw-w64 cross-compilation tool chain, in its posix threads variant <sup>[1](#footnote1)</sup>:
 
-    sudo apt install g++-mingw-w64-x86-64
+    sudo apt install g++-mingw-w64-x86-64-posix
 
-Ubuntu Bionic 18.04 <sup>[1](#footnote1)</sup>:
+If you installed `g++-mingw-w64-x86-64` instead, it brings both variants and makes the win32 one the default,
+also on Ubuntu 22.04, so set the default to posix:
 
     sudo update-alternatives --config x86_64-w64-mingw32-g++ # Set the default mingw32 g++ compiler option to posix.
 
@@ -98,21 +102,21 @@ is to temporarily disable WSL support for Win32 applications.
 
 The depends build supplies fmt (pinned at 7.1.3) for the Windows binaries; the build machine's own fmt is not used.
 
-Build using:
+Build using, from the `ferrite-core` directory (on Ubuntu, leave out the three lines marked WSL only):
 
-    sudo chmod +x -R ferrite-main
-    cd ferrite-main
-    PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # strip out problematic Windows %PATH% imported var
-    sudo bash -c "echo 0 > /proc/sys/fs/binfmt_misc/status" # Disable WSL (Windows Subsystem for Linux) support for Win32 applications.
+    PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g') # WSL only: strip out problematic Windows %PATH% imported var
+    sudo bash -c "echo 0 > /proc/sys/fs/binfmt_misc/status" # WSL only: disable WSL support for Win32 applications.
     cd depends
     make HOST=x86_64-w64-mingw32 -j$(nproc)
     cd ..
     ./autogen.sh
-    CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/ --with-incompatible-bdb --with-miniupnpc --enable-upnp-default --with-natpmp --disable-tests
-    # sudo apt-get install libminiupnpc-dev
+    CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/ --with-miniupnpc --enable-upnp-default --disable-tests
     make -j$(nproc)
-    sudo bash -c "echo 1 > /proc/sys/fs/binfmt_misc/status" # Enable WSL (Windows Subsystem for Linux) support for Win32 applications.
+    sudo bash -c "echo 1 > /proc/sys/fs/binfmt_misc/status" # WSL only: enable WSL support for Win32 applications again.
     make deploy
+
+`make deploy` writes the installer, `ferrite-<version>-win64-setup.exe`, to the `ferrite-core` directory.
+`make -C src check-security` and `make -C src check-symbols` check the binaries, as the release build does.
     
 No more 32-bit builds available.
     
