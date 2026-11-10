@@ -36,7 +36,8 @@ endef
 
 define fetch_file
     ( test -f $$($(1)_source_dir)/$(4) || \
-    ( $(call fetch_file_inner,$(1),$(2),$(3),$(4),$(5)) || \
+    ( $(if $(MIRROR_DOWNLOAD_PATH),$(call fetch_file_inner,$(1),$(MIRROR_DOWNLOAD_PATH),$(5),$(4),$(5)) ||) \
+      $(call fetch_file_inner,$(1),$(2),$(3),$(4),$(5)) || \
       $(call fetch_file_inner,$(1),$(FALLBACK_DOWNLOAD_PATH),$(3),$(4),$(5))))
 endef
 

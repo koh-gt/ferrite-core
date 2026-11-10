@@ -19,4 +19,8 @@ const struct VBDeploymentInfo VersionBitsDeploymentInfo[Consensus::MAX_VERSION_B
         /*.name =*/ "mweb",
         /*.gbt_force =*/ true,
     },
+    {
+        /*.name =*/ "mwebkernel",
+        /*.gbt_force =*/ true,
+    },
 };

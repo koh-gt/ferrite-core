@@ -1,0 +1,18 @@
+[Desktop Entry]
+Version=1.0
+Name=Ferrite Core
+Comment=Connect to the Ferrite P2P Network
+Comment[de]=Verbindung mit dem Ferrite Peer-to-Peer-Netzwerk herstellen
+Comment[es]=Conectar a la red P2P de Ferrite
+Comment[fr]=Se connecter au réseau pair à pair Ferrite
+GenericName=Cryptocurrency Wallet
+Exec=ferrite-qt %u
+Terminal=false
+Type=Application
+# share/pixmaps/bitcoin128.png holds the Ferrite logo (legacy upstream file name)
+Icon=bitcoin128
+MimeType=x-scheme-handler/ferrite;
+Categories=Office;Finance;Network;
+Keywords=ferrite;ferritecoin;crypto;cryptocurrency;wallet;blockchain;
+StartupNotify=true
+StartupWMClass=Ferrite-qt

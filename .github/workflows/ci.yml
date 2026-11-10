@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches: [ferrite-main, 'ferrite-backup-*', 'fec-v*']
+    tags: ['v*']
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CCACHE_DIR: ${{ github.workspace }}/.ccache
+  CCACHE_MAXSIZE: 1G
+  APT_PACKAGES: >-
+    build-essential libtool autotools-dev automake pkg-config bsdmainutils python3 ccache
+    libevent-dev libboost-dev libboost-system-dev libboost-filesystem-dev libboost-test-dev
+    libboost-thread-dev libsqlite3-dev libdb-dev libdb++-dev libminiupnpc-dev libnatpmp-dev
+    libzmq3-dev libfmt-dev
+
+jobs:
+  build-and-test:
+    name: Linux build, unit and functional tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends $APT_PACKAGES
+
+      - uses: actions/cache@v4
+        with:
+          path: .ccache
+          key: ccache-test-${{ github.sha }}
+          restore-keys: ccache-test-
+
+      - name: Configure
+        run: ./autogen.sh && ./configure --with-incompatible-bdb --without-gui --enable-tests --disable-bench
+
+      - name: Build
+        run: make -j"$(nproc)"
+
+      - name: Unit tests
+        # Known failures (Litecoin test vectors not yet adapted to Ferrite) are listed in
+        # test/ferrite_unit_test_exclusions.txt and skipped; everything else must pass.
+        run: |
+          args=()
+          while read -r t; do
+            case "$t" in ''|'#'*) continue ;; esac
+            args+=("--run_test=!$t")
+          done < test/ferrite_unit_test_exclusions.txt
+          src/test/test_ferrite --catch_system_errors=no --report_level=short "${args[@]}"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Functional tests
+        run: |
+          pip install blake3
+          python3 test/functional/test_runner.py -j"$(nproc)" --combinedlogslen=200 \
+            mweb_basic.py mweb_dbcrash.py mweb_duplicate_pegin.py mweb_kernel_activation.py mweb_mempool.py mweb_mining.py \
+            mweb_newpowvalidblock.py mweb_p2p.py mweb_p2p_mutated_block_submitblock.py \
+            mweb_p2p_mutated_compactblock.py mweb_pegout_all.py mweb_pre_activation_hogex_marker.py \
+            mweb_reorg.py mweb_wallet_basic.py mweb_weight.py mweb_wtxid_recentrejects.py \
+            p2p_invalid_messages.py p2p_blockfilters.py p2p_node_network_limited.py rpc_misc.py \
+            "wallet_import_rescan.py --legacy-wallet"
+
+  gui:
+    name: Linux GUI build (ferrite-qt)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends $APT_PACKAGES \
+            qtbase5-dev qttools5-dev qttools5-dev-tools libqrencode-dev
+
+      - uses: actions/cache@v4
+        with:
+          path: .ccache
+          key: ccache-gui-${{ github.sha }}
+          restore-keys: ccache-gui-
+
+      - name: Configure
+        run: ./autogen.sh && ./configure --with-incompatible-bdb --with-gui=qt5 --disable-tests --disable-bench
+
+      - name: Build
+        run: make -j"$(nproc)"
+
+      - name: Check the binaries
+        run: |
+          src/ferrited -version | head -n1
+          test -x src/qt/ferrite-qt

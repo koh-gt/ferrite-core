@@ -23,6 +23,7 @@
 #include <mw/node/CoinsView.h>
 #include <mweb/mweb_db.h>
 #include <mweb/mweb_node.h>
+#include <mweb/mweb_policy.h>
 #include <node/ui_interface.h>
 #include <optional.h>
 #include <policy/fees.h>
@@ -105,6 +106,10 @@ bool CBlockIndexWorkComparator::operator()(const CBlockIndex *pa, const CBlockIn
 }
 
 ChainstateManager g_chainman;
+
+// Serialize block storage and activation so concurrent same-hash bodies
+// cannot connect one representation while retaining another on disk.
+static Mutex g_process_new_block_mutex;
 
 CChainState& ChainstateActive()
 {
@@ -579,6 +584,18 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
     // MWEB: Don't accept MWEB transactions before activation.
     if (tx.HasMWEBTx() && !IsMWEBEnabled(::ChainActive().Tip(), args.m_chainparams.GetConsensus())) {
         return state.Invalid(TxValidationResult::TX_NOT_STANDARD, "mweb-before-activation");
+    }
+
+    // MWEB: Reject oversized MWEB transactions under relay policy *before* the
+    // expensive signature/rangeproof verification in MWEB::Node::CheckTransaction.
+    // The consensus limits allow a single tx to carry a whole block's worth of
+    // inputs/outputs; verifying that for an unpaid, invalid tx would be a
+    // cheap-to-relay, expensive-to-verify DoS.
+    if (fRequireStandard && tx.HasMWEBTx()) {
+        std::string mweb_reason;
+        if (!MWEB::Policy::CheckWeight(tx, mweb_reason)) {
+            return state.Invalid(TxValidationResult::TX_NOT_STANDARD, mweb_reason);
+        }
     }
 
     // MWEB: Check MWEB tx
@@ -1829,7 +1846,7 @@ DisconnectResult CChainState::DisconnectBlock(const CBlock& block, const CBlockI
         try {
             view.GetMWEBCacheView()->UndoBlock(blockUndo.mwundo);
         } catch (const std::exception& e) {
-            error("DisconnectBlock(): Failed to disconnect MWEB block");
+            error("DisconnectBlock(): Failed to disconnect MWEB block: %s", e.what());
             return DISCONNECT_FAILED;
         }
     }
@@ -2180,13 +2197,13 @@ bool CChainState::ConnectBlock(const CBlock& block, BlockValidationState& state,
 
     CBlockUndo blockundo;
 
-    // Precomputed transaction data pointers must not be invalidated
-    // until after `control` has run the script checks (potentially
-    // in multiple threads). Preallocate the vector size so a new allocation
-    // doesn't invalidate pointers into the vector, and keep txsdata in scope
-    // for as long as `control`.
-    CCheckQueueControl<CScriptCheck> control(fScriptChecks && g_parallel_script_checks ? &scriptcheckqueue : nullptr);
+    // CScriptCheck objects may hold pointers into txsdata while running in the
+    // script-check queue. txsdata must therefore outlive the CCheckQueueControl
+    // object, whose destructor waits for queued checks to finish on early returns.
+    // Declare txsdata before control so destruction happens in the safe order.
     std::vector<PrecomputedTransactionData> txsdata(block.vtx.size());
+
+    CCheckQueueControl<CScriptCheck> control(fScriptChecks && g_parallel_script_checks ? &scriptcheckqueue : nullptr);
 
     std::vector<int> prevheights;
     CAmount nFees = 0;
@@ -2711,8 +2728,14 @@ bool CChainState::ConnectTip(BlockValidationState& state, const CChainParams& ch
         bool rv = ConnectBlock(blockConnecting, state, pindexNew, view, chainparams);
         GetMainSignals().BlockChecked(blockConnecting, state);
         if (!rv) {
-            if (state.IsInvalid())
+            if (state.IsInvalid()) {
                 InvalidBlockFound(pindexNew, state);
+                if (state.GetResult() == BlockValidationResult::BLOCK_MUTATED) {
+                    // The same block hash may be valid with different
+                    // non-committed data, so do not retain these bytes.
+                    EraseBlockData(pindexNew, /*preserve_tx_metadata=*/true);
+                }
+            }
             return error("%s: ConnectBlock %s failed, %s", __func__, pindexNew->GetBlockHash().ToString(), state.ToString());
         }
         nTime3 = GetTimeMicros(); nTimeConnectTotal += nTime3 - nTime2;
@@ -2737,6 +2760,14 @@ bool CChainState::ConnectTip(BlockValidationState& state, const CChainParams& ch
     int64_t nTime6 = GetTimeMicros(); nTimePostConnect += nTime6 - nTime5; nTimeTotal += nTime6 - nTime1;
     LogPrint(BCLog::BENCH, "  - Connect postprocess: %.2fms [%.2fs (%.2fms/blk)]\n", (nTime6 - nTime5) * MILLI, nTimePostConnect * MICRO, nTimePostConnect * MILLI / nBlocksTotal);
     LogPrint(BCLog::BENCH, "- Connect block: %.2fms [%.2fs (%.2fms/blk)]\n", (nTime6 - nTime1) * MILLI, nTimeTotal * MICRO, nTimeTotal * MILLI / nBlocksTotal);
+
+    // The MWEB body is not committed by the block hash and is only fully
+    // checked while connecting it to the MWEB UTXO set. AcceptBlock therefore
+    // defers this signal for MWEB blocks until the exact body has connected.
+    // Signal before moving pthisBlock into the connection trace.
+    if (!IsInitialBlockDownload() && !blockConnecting.mweb_block.IsNull()) {
+        GetMainSignals().NewPoWValidBlock(pindexNew, pthisBlock);
+    }
 
     connectTrace.BlockConnected(pindexNew, std::move(pthisBlock));
     return true;
@@ -3347,6 +3378,7 @@ void CChainState::ReceivedBlockTransactions(const CBlock& block, CBlockIndex* pi
     pindexNew->nFile = pos.nFile;
     pindexNew->nDataPos = pos.nPos;
     pindexNew->nUndoPos = 0;
+    pindexNew->nStatus &= ~BLOCK_DISCARDED_MUTATED_DATA;
     pindexNew->nStatus |= BLOCK_HAVE_DATA;
     if (IsWitnessEnabled(pindexNew->pprev, consensusParams)) {
         pindexNew->nStatus |= BLOCK_OPT_WITNESS;
@@ -3559,6 +3591,12 @@ bool IsMWEBEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& param
 {
     LOCK(cs_main);
     return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_MWEB, versionbitscache) == ThresholdState::ACTIVE);
+}
+
+bool IsMWEBKernelRuleEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params)
+{
+    LOCK(cs_main);
+    return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_MWEB_KERNEL, versionbitscache) == ThresholdState::ACTIVE);
 }
 
 void UpdateUncommittedBlockStructures(CBlock& block, const CBlockIndex* pindexPrev, const Consensus::Params& consensusParams)
@@ -3937,7 +3975,9 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, Block
     // and unrequested blocks.
     if (fAlreadyHave) return true;
     if (!fRequested) {  // If we didn't ask for it:
-        if (pindex->nTx != 0) return true;    // This is a previously-processed block that was pruned
+        if (pindex->nTx != 0 && !(pindex->nStatus & BLOCK_DISCARDED_MUTATED_DATA)) {
+            return true; // This is a previously-processed block that was pruned
+        }
         if (!fHasMoreOrSameWork) return true; // Don't process less-work chains
         if (fTooFarAhead) return true;        // Block height is too high
 
@@ -3958,8 +3998,10 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, Block
     }
 
     // Header is valid/has work, merkle tree and segwit merkle tree are good...RELAY NOW
-    // (but if it does not build on our best tip, let the SendMessages loop relay it)
-    if (!IsInitialBlockDownload() && m_chain.Tip() == pindex->pprev)
+    // (but if it does not build on our best tip, let the SendMessages loop relay it).
+    // MWEB blocks are deferred to ConnectTip because their bodies are not
+    // committed by the block hash and require UTXO-dependent validation.
+    if (!IsInitialBlockDownload() && m_chain.Tip() == pindex->pprev && block.mweb_block.IsNull())
         GetMainSignals().NewPoWValidBlock(pindex, pblock);
 
     // Write block to history file
@@ -3985,6 +4027,7 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, Block
 bool ChainstateManager::ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<const CBlock> pblock, bool fForceProcessing, bool* fNewBlock)
 {
     AssertLockNotHeld(cs_main);
+    LOCK(g_process_new_block_mutex);
 
     {
         CBlockIndex *pindex = nullptr;
@@ -4523,6 +4566,16 @@ bool CChainState::RollforwardBlock(const CBlockIndex* pindex, CCoinsViewCache& i
         // Pass check = true as every addition may be an overwrite.
         AddCoins(inputs, *tx, pindex->nHeight, true);
     }
+
+    if (!block.mweb_block.IsNull()) {
+        // ReplayBlocks recovers after undo data was already written, so the
+        // MWEB undo produced here is only needed transiently while applying state.
+        CBlockUndo blockundo;
+        BlockValidationState state;
+        if (!MWEB::Node::ConnectBlock(block, params.GetConsensus(), pindex->pprev, blockundo, *inputs.GetMWEBCacheView(), state)) {
+            return error("ReplayBlock(): MWEB ConnectBlock failed at %d, hash=%s (%s)", pindex->nHeight, pindex->GetBlockHash().ToString(), state.ToString());
+        }
+    }
     return true;
 }
 
@@ -4557,6 +4610,10 @@ bool CChainState::ReplayBlocks(const CChainParams& params)
         pindexFork = LastCommonAncestor(pindexOld, pindexNew);
         assert(pindexFork != nullptr);
     }
+
+    // DB_BEST_BLOCK is erased while DB_HEAD_BLOCKS marks an interrupted flush, so
+    // initialize the MWEB replay cache from the old head tracked in DB_HEAD_BLOCKS.
+    cache.GetMWEBCacheView()->SetBestHeader(pindexOld ? pindexOld->mweb_header : nullptr);
 
     // Rollback along the old branch.
     while (pindexOld != pindexFork) {
@@ -4593,24 +4650,31 @@ bool CChainState::ReplayBlocks(const CChainParams& params)
     return true;
 }
 
-//! Helper for CChainState::RewindBlockIndex
-void CChainState::EraseBlockData(CBlockIndex* index)
+//! Discard stored block data, optionally retaining validated transaction metadata.
+void CChainState::EraseBlockData(CBlockIndex* index, bool preserve_tx_metadata)
 {
     AssertLockHeld(cs_main);
     assert(!m_chain.Contains(index)); // Make sure this block isn't active
 
-    // Reduce validity
-    index->nStatus = std::min<unsigned int>(index->nStatus & BLOCK_VALID_MASK, BLOCK_VALID_TREE) | (index->nStatus & ~BLOCK_VALID_MASK);
+    if (preserve_tx_metadata) {
+        // Keep descendants linked without walking the entire block index. The
+        // block passed transaction validation; only its mutable serialization
+        // needs to be replaced.
+        index->nStatus |= BLOCK_DISCARDED_MUTATED_DATA;
+    } else {
+        // Reduce validity.
+        index->nStatus = std::min<unsigned int>(index->nStatus & BLOCK_VALID_MASK, BLOCK_VALID_TREE) | (index->nStatus & ~BLOCK_VALID_MASK);
+        index->nStatus &= ~BLOCK_DISCARDED_MUTATED_DATA;
+        index->nTx = 0;
+        index->nChainTx = 0;
+        index->nSequenceId = 0;
+    }
     // Remove have-data flags.
     index->nStatus &= ~(BLOCK_HAVE_DATA | BLOCK_HAVE_UNDO);
     // Remove storage location.
     index->nFile = 0;
     index->nDataPos = 0;
     index->nUndoPos = 0;
-    // Remove various other things
-    index->nTx = 0;
-    index->nChainTx = 0;
-    index->nSequenceId = 0;
     // Make sure it gets written.
     setDirtyBlockIndex.insert(index);
     // Update indexes
@@ -4991,12 +5055,19 @@ void CChainState::CheckBlockIndex(const Consensus::Params& consensusParams)
         // VALID_TRANSACTIONS is equivalent to nTx > 0 for all nodes (whether or not pruning has occurred).
         // HAVE_DATA is only equivalent to nTx > 0 (or VALID_TRANSACTIONS) if no pruning has occurred.
         if (!fHavePruned) {
-            // If we've never pruned, then HAVE_DATA should be equivalent to nTx > 0
-            assert(!(pindex->nStatus & BLOCK_HAVE_DATA) == (pindex->nTx == 0));
-            assert(pindexFirstMissing == pindexFirstNeverProcessed);
+            // If we've never pruned, transaction metadata implies either
+            // available data or an explicitly discarded mutated serialization.
+            assert(((pindex->nStatus & BLOCK_HAVE_DATA) != 0 ||
+                    (pindex->nStatus & BLOCK_DISCARDED_MUTATED_DATA) != 0) == (pindex->nTx > 0));
+            assert(pindexFirstMissing == pindexFirstNeverProcessed ||
+                   (pindexFirstMissing && (pindexFirstMissing->nStatus & BLOCK_DISCARDED_MUTATED_DATA)));
         } else {
             // If we have pruned, then we can only say that HAVE_DATA implies nTx > 0
             if (pindex->nStatus & BLOCK_HAVE_DATA) assert(pindex->nTx > 0);
+        }
+        if (pindex->nStatus & BLOCK_DISCARDED_MUTATED_DATA) {
+            assert(!(pindex->nStatus & BLOCK_HAVE_DATA));
+            assert(pindex->nTx > 0);
         }
         if (pindex->nStatus & BLOCK_HAVE_UNDO) assert(pindex->nStatus & BLOCK_HAVE_DATA);
         assert(((pindex->nStatus & BLOCK_VALID_MASK) >= BLOCK_VALID_TRANSACTIONS) == (pindex->nTx > 0)); // This is pruning-independent.
@@ -5049,7 +5120,7 @@ void CChainState::CheckBlockIndex(const Consensus::Params& consensusParams)
         if (pindexFirstMissing == nullptr) assert(!foundInUnlinked); // We aren't missing data for any parent -- cannot be in m_blocks_unlinked.
         if (pindex->pprev && (pindex->nStatus & BLOCK_HAVE_DATA) && pindexFirstNeverProcessed == nullptr && pindexFirstMissing != nullptr) {
             // We HAVE_DATA for this block, have received data for all parents at some point, but we're currently missing data for some parent.
-            assert(fHavePruned); // We must have pruned.
+            assert(fHavePruned || (pindexFirstMissing->nStatus & BLOCK_DISCARDED_MUTATED_DATA));
             // This block may have entered m_blocks_unlinked if:
             //  - it has a descendant that at some point had more work than the
             //    tip, and

@@ -1,14 +1,43 @@
-// Copyright (c) 2021-2023 The Litecoin Core developers
+// Copyright (c) 2021 The Litecoin Core developers
 // Copyright (c) 2023 The Ferrite Core Developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <mw/crypto/Schnorr.h>
 #include <mw/models/tx/Kernel.h>
+#include <mw/models/tx/Transaction.h>
+
+#include <mweb/mweb_policy.h>
+#include <chainparams.h>
+#include <primitives/transaction.h>
 
 #include <test_framework/TestMWEB.h>
 
+#include <limits>
+
 BOOST_FIXTURE_TEST_SUITE(TestKernel, MWEBTestingSetup)
+
+BOOST_AUTO_TEST_CASE(FeatureActivationDeployment_Test)
+{
+    // Ferrite mainnet signals both rules on bit 5 from block 1,250,000 (v3.3.0, the mwebkernel deployment);
+    // Litecoin activates them at heights 3'154'440 and 3'172'640.
+    const auto main_params = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
+    const Consensus::Params& main_consensus = main_params->GetConsensus();
+    const Consensus::BIP9Deployment& main_deployment = main_consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL];
+    BOOST_REQUIRE_EQUAL(main_deployment.bit, 5);
+    BOOST_REQUIRE_EQUAL(main_deployment.nStartTime, 0);
+    BOOST_REQUIRE_EQUAL(main_deployment.nTimeout, 0);
+    BOOST_REQUIRE_EQUAL(main_deployment.nStartHeight, 1'250'000);
+    BOOST_REQUIRE_EQUAL(main_deployment.nTimeoutHeight, 99'999'999);
+    BOOST_REQUIRE_EQUAL(main_deployment.nStartHeight % main_consensus.nMinerConfirmationWindow, 0);
+
+    for (const std::string& chain : {CBaseChainParams::TESTNET, CBaseChainParams::REGTEST}) {
+        const auto params = CreateChainParams(*m_node.args, chain);
+        const Consensus::BIP9Deployment& deployment = params->GetConsensus().vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL];
+        BOOST_REQUIRE_EQUAL(deployment.bit, 5);
+        BOOST_REQUIRE(deployment.nStartTime == Consensus::BIP9Deployment::ALWAYS_ACTIVE);
+    }
+}
 
 BOOST_AUTO_TEST_CASE(PlainKernel_Test)
 {
@@ -58,10 +87,10 @@ BOOST_AUTO_TEST_CASE(NonStandardKernel_Test)
 {
     CAmount fee = 1000;
     CAmount pegin = 10000;
-    std::vector<uint8_t> rand1 = secret_key_t<30>::Random().vec();
+    std::vector<uint8_t> rand1 = RandomBytes<30>();
     PegOutCoin pegout(2000, CScript(rand1.data(), rand1.data() + rand1.size()));
     int32_t lock_height = 123456;
-    std::vector<uint8_t> rand2 = secret_key_t<30>::Random().vec();
+    std::vector<uint8_t> rand2 = RandomBytes<30>();
     Kernel standard_kernel(
         Kernel::FEE_FEATURE_BIT | Kernel::PEGIN_FEATURE_BIT | Kernel::PEGOUT_FEATURE_BIT | Kernel::HEIGHT_LOCK_FEATURE_BIT | Kernel::STEALTH_EXCESS_FEATURE_BIT,
         fee,
@@ -71,9 +100,9 @@ BOOST_AUTO_TEST_CASE(NonStandardKernel_Test)
         PublicKey::Random(),
         std::vector<uint8_t>{},
         Commitment::Random(),
-        Signature(SecretKey64::Random().GetBigInt())
+        Signature(RandomBigInt<Signature::SIZE>())
     );
-    std::vector<uint8_t> rand3 = secret_key_t<30>::Random().vec();
+    std::vector<uint8_t> rand3 = RandomBytes<30>();
     Kernel nonstandard_kernel1(
         Kernel::ALL_FEATURE_BITS,
         fee,
@@ -81,7 +110,7 @@ BOOST_AUTO_TEST_CASE(NonStandardKernel_Test)
         std::vector<PegOutCoin>{PegOutCoin(2000, CScript(rand3.data(), rand3.data() + rand3.size()))},
         lock_height,
         PublicKey::Random(),
-        secret_key_t<20>::Random().vec(),
+        RandomBytes<20>(),
         standard_kernel.GetCommitment(),
         standard_kernel.GetSignature()
     );
@@ -98,9 +127,125 @@ BOOST_AUTO_TEST_CASE(NonStandardKernel_Test)
         standard_kernel.GetSignature()
     );
 
+    CDataStream serialized(SER_DISK, 0);
+    serialized << uint8_t(Kernel::PEGOUT_FEATURE_BIT);
+    serialized << std::vector<PegOutCoin>{};
+    serialized << standard_kernel.GetCommitment();
+    serialized << standard_kernel.GetSignature();
+    Kernel nonstandard_kernel3;
+    serialized >> nonstandard_kernel3;
+
     BOOST_REQUIRE(standard_kernel.IsStandard());
     BOOST_REQUIRE(!nonstandard_kernel1.IsStandard());
     BOOST_REQUIRE(!nonstandard_kernel2.IsStandard());
+    BOOST_REQUIRE(!nonstandard_kernel3.IsStandard());
+    BOOST_REQUIRE(nonstandard_kernel1.HasCanonicalExtraDataFeature());
+    BOOST_REQUIRE(!nonstandard_kernel2.HasCanonicalExtraDataFeature());
+    BOOST_REQUIRE(!nonstandard_kernel3.HasCanonicalPegOutFeature());
+
+    mw::Transaction::CPtr nonstandard_tx = mw::Transaction::Create(
+        BlindingFactor::Random(), BlindingFactor::Random(), {}, {}, { nonstandard_kernel3 });
+    CMutableTransaction transaction;
+    transaction.mweb_tx = MWEB::Tx{std::move(nonstandard_tx)};
+    std::string reason;
+    BOOST_REQUIRE(!MWEB::Policy::IsStandardTx(CTransaction{std::move(transaction)}, reason));
+    BOOST_REQUIRE_EQUAL(reason, "non-standard-mweb-tx");
+}
+
+BOOST_AUTO_TEST_CASE(EmptyPegOutFeature_Test)
+{
+    const BlindingFactor blind = BlindingFactor::Random();
+    const Commitment excess = Commitment::Blinded(blind, 0);
+    const uint8_t features = Kernel::PEGOUT_FEATURE_BIT;
+    const auto message = Kernel::GetSignatureMessage(
+        features,
+        excess,
+        boost::none,
+        boost::none,
+        boost::none,
+        {},
+        boost::none,
+        {}
+    );
+    const Kernel kernel(
+        features,
+        boost::none,
+        boost::none,
+        {},
+        boost::none,
+        boost::none,
+        {},
+        excess,
+        Schnorr::Sign(blind.data(), message)
+    );
+
+    BOOST_REQUIRE(!kernel.HasCanonicalPegOutFeature());
+    BOOST_REQUIRE_NO_THROW(TxBody({}, {}, {kernel}).Validate());
+}
+
+BOOST_AUTO_TEST_CASE(EmptyExtraDataFeature_Test)
+{
+    const BlindingFactor blind = BlindingFactor::Random();
+    const Commitment excess = Commitment::Blinded(blind, 0);
+    const uint8_t features = Kernel::EXTRA_DATA_FEATURE_BIT;
+    const auto message = Kernel::GetSignatureMessage(
+        features,
+        excess,
+        boost::none,
+        boost::none,
+        boost::none,
+        {},
+        boost::none,
+        {}
+    );
+    const Kernel kernel(
+        features,
+        boost::none,
+        boost::none,
+        {},
+        boost::none,
+        boost::none,
+        {},
+        excess,
+        Schnorr::Sign(blind.data(), message)
+    );
+
+    BOOST_REQUIRE(!kernel.HasCanonicalExtraDataFeature());
+    BOOST_REQUIRE_NO_THROW(TxBody({}, {}, {kernel}).Validate());
+}
+
+BOOST_AUTO_TEST_CASE(PegOutAmountOutOfRange_Test)
+{
+    std::vector<uint8_t> script_bytes = RandomBytes<30>();
+    CScript script(script_bytes.data(), script_bytes.data() + script_bytes.size());
+
+    Kernel kernel = Kernel::Create(
+        BlindingFactor::Random(),
+        boost::none,
+        boost::none,
+        boost::none,
+        std::vector<PegOutCoin>{ PegOutCoin(MAX_MONEY, script), PegOutCoin(1, script) },
+        boost::none
+    );
+
+    BOOST_REQUIRE(!kernel.GetPegOutAmount().has_value());
+}
+
+BOOST_AUTO_TEST_CASE(SupplyChangeOutOfRange_Test)
+{
+    std::vector<uint8_t> script_bytes = RandomBytes<30>();
+    CScript script(script_bytes.data(), script_bytes.data() + script_bytes.size());
+
+    Kernel kernel = Kernel::Create(
+        BlindingFactor::Random(),
+        boost::none,
+        std::numeric_limits<CAmount>::max(),
+        boost::none,
+        std::vector<PegOutCoin>{ PegOutCoin(1, script) },
+        boost::none
+    );
+
+    BOOST_REQUIRE(!kernel.GetSupplyChange().has_value());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

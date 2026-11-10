@@ -602,7 +602,8 @@ static void entryToJSON(const CTxMemPool& pool, UniValue& info, const CTxMemPool
         mweb_weight.pushKV("descendant", (int)e.GetMWEBWeightWithDescendants());
         mweb_info.pushKV("weight", mweb_weight);
 
-        mweb_info.pushKV("fee", ValueFromAmount(tx.mweb_tx.GetFee()));
+        const auto mweb_fee = tx.mweb_tx.GetFee();
+        mweb_info.pushKV("fee", mweb_fee ? ValueFromAmount(*mweb_fee) : UniValue(UniValue::VNULL));
         mweb_info.pushKV("lock_height", tx.mweb_tx.GetLockHeight());
 
         // Pegins
@@ -919,6 +920,11 @@ static RPCHelpMan getmempoolentry()
     CTxMemPool::txiter it = mempool.mapTx.find(hash);
     if (it == mempool.mapTx.end()) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transaction not in mempool");
+    }
+
+    if (RPCSerializationFlags() & SERIALIZE_NO_MWEB && it->GetTx().IsMWEBOnly()) {
+        // Don't return MWEB-only transactions to clients that don't support them.
+        throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "MWEB-only transaction not serializable for rpcserialversion<2");
     }
 
     const CTxMemPoolEntry &e = *it;
@@ -1539,6 +1545,7 @@ RPCHelpMan getblockchaininfo()
     VBSoftForkDescPushBack(softforks, "testdummy", consensusParams, Consensus::DEPLOYMENT_TESTDUMMY);
     VBSoftForkDescPushBack(softforks, "taproot", consensusParams, Consensus::DEPLOYMENT_TAPROOT);
     VBSoftForkDescPushBack(softforks, "mweb", consensusParams, Consensus::DEPLOYMENT_MWEB);
+    VBSoftForkDescPushBack(softforks, "mwebkernel", consensusParams, Consensus::DEPLOYMENT_MWEB_KERNEL);
     obj.pushKV("softforks",             softforks);
 
     obj.pushKV("warnings", GetWarnings(false).original);

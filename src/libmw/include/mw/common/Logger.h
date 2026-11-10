@@ -9,7 +9,7 @@ namespace LoggerAPI
     {
         NONE = 0,
         TRACE = 1,
-        DEBUG = 2,
+        DBG = 2,  // Named DBG to avoid conflict with -DDEBUG preprocessor macro
         INFO = 3,
         WARN = 4,
         ERR = 5
@@ -46,26 +46,26 @@ static void LOG_F(
 
 // Node Logger
 #define LOG_TRACE(message) LoggerAPI::Log(LoggerAPI::LogLevel::TRACE, __FUNCTION__, __LINE__, message)
-#define LOG_DEBUG(message) LoggerAPI::Log(LoggerAPI::LogLevel::DEBUG, __FUNCTION__, __LINE__, message)
+#define LOG_DEBUG(message) LoggerAPI::Log(LoggerAPI::LogLevel::DBG, __FUNCTION__, __LINE__, message)
 #define LOG_INFO(message) LoggerAPI::Log(LoggerAPI::LogLevel::INFO, __FUNCTION__, __LINE__, message)
 #define LOG_WARNING(message) LoggerAPI::Log(LoggerAPI::LogLevel::WARN, __FUNCTION__, __LINE__, message)
 #define LOG_ERROR(message) LoggerAPI::Log(LoggerAPI::LogLevel::ERR, __FUNCTION__, __LINE__, message)
 
 #define LOG_TRACE_F(message, ...) LOG_F(LoggerAPI::LogLevel::TRACE, __FUNCTION__, __LINE__, message, __VA_ARGS__)
-#define LOG_DEBUG_F(message, ...) LOG_F(LoggerAPI::LogLevel::DEBUG, __FUNCTION__, __LINE__, message, __VA_ARGS__)
+#define LOG_DEBUG_F(message, ...) LOG_F(LoggerAPI::LogLevel::DBG, __FUNCTION__, __LINE__, message, __VA_ARGS__)
 #define LOG_INFO_F(message, ...) LOG_F(LoggerAPI::LogLevel::INFO, __FUNCTION__, __LINE__, message, __VA_ARGS__)
 #define LOG_WARNING_F(message, ...) LOG_F(LoggerAPI::LogLevel::WARN, __FUNCTION__, __LINE__, message, __VA_ARGS__)
 #define LOG_ERROR_F(message, ...) LOG_F(LoggerAPI::LogLevel::ERR, __FUNCTION__, __LINE__, message, __VA_ARGS__)
 
 // Wallet Logger
 #define WALLET_TRACE(message) LoggerAPI::Log(LoggerAPI::LogLevel::TRACE, __FUNCTION__, __LINE__, message)
-#define WALLET_DEBUG(message) LoggerAPI::Log(LoggerAPI::LogLevel::DEBUG, __FUNCTION__, __LINE__, message)
+#define WALLET_DEBUG(message) LoggerAPI::Log(LoggerAPI::LogLevel::DBG, __FUNCTION__, __LINE__, message)
 #define WALLET_INFO(message) LoggerAPI::Log(LoggerAPI::LogLevel::INFO, __FUNCTION__, __LINE__, message)
 #define WALLET_WARNING(message) LoggerAPI::Log(LoggerAPI::LogLevel::WARN, __FUNCTION__, __LINE__, message)
 #define WALLET_ERROR(message) LoggerAPI::Log(LoggerAPI::LogLevel::ERR, __FUNCTION__, __LINE__, message)
 
 #define WALLET_TRACE_F(message, ...) LOG_F(LoggerAPI::LogLevel::TRACE, __FUNCTION__, __LINE__, message, __VA_ARGS__)
-#define WALLET_DEBUG_F(message, ...) LOG_F(LoggerAPI::LogLevel::DEBUG, __FUNCTION__, __LINE__, message, __VA_ARGS__)
+#define WALLET_DEBUG_F(message, ...) LOG_F(LoggerAPI::LogLevel::DBG, __FUNCTION__, __LINE__, message, __VA_ARGS__)
 #define WALLET_INFO_F(message, ...) LOG_F(LoggerAPI::LogLevel::INFO, __FUNCTION__, __LINE__, message, __VA_ARGS__)
 #define WALLET_WARNING_F(message, ...) LOG_F(LoggerAPI::LogLevel::WARN, __FUNCTION__, __LINE__, message, __VA_ARGS__)
 #define WALLET_ERROR_F(message, ...) LOG_F(LoggerAPI::LogLevel::ERR, __FUNCTION__, __LINE__, message, __VA_ARGS__)

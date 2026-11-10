@@ -6,26 +6,31 @@ These are the dependencies currently used by Ferrite Core. You can find instruct
 | Dependency | Version used | Minimum required | CVEs | Shared | [Bundled Qt library](https://doc.qt.io/qt-5/configure-options.html#third-party-libraries) |
 | --- | --- | --- | --- | --- | --- |
 | Berkeley DB | [4.8.30](https://www.oracle.com/technetwork/database/database-technologies/berkeleydb/downloads/index.html) | 4.8.x | No |  |  |
-| Boost | [1.70.0](https://www.boost.org/users/download/) | [1.58.0](https://github.com/bitcoin/bitcoin/pull/19667) | No |  |  |
-| Clang |  | [3.3+](https://releases.llvm.org/download.html) (C++11 support) |  |  |  |
+| Boost | [1.81.0](https://www.boost.org/users/download/) | [1.58.0](https://github.com/bitcoin/bitcoin/pull/19667) | No |  |  |
+| Clang |  | [3.4+](https://releases.llvm.org/download.html) (C++14 support) |  |  |  |
 | Expat | [2.2.7](https://libexpat.github.io/) |  | No | Yes |  |
-| fontconfig | [2.12.1](https://www.freedesktop.org/software/fontconfig/release/) |  | No | Yes |  |
-| FreeType | [2.7.1](https://download.savannah.gnu.org/releases/freetype) |  | No |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) (Android only) |
-| GCC |  | [4.8+](https://gcc.gnu.org/) (C++11 support) |  |  |  |
+| fontconfig | [2.12.6](https://www.freedesktop.org/software/fontconfig/release/) |  | No | Yes |  |
+| fmt | [7.1.3](https://github.com/fmtlib/fmt/releases) | 6.1.2 |  |  |  |
+| FreeType | [2.7.1](https://download.savannah.gnu.org/releases/freetype) |  | No | Yes | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) (Android only) |
+| GCC |  | [5+](https://gcc.gnu.org/) (C++14 support) |  |  |  |
 | HarfBuzz-NG |  |  |  |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) |
 | libevent | [2.1.11-stable](https://github.com/libevent/libevent/releases) | [2.0.21](https://github.com/bitcoin/bitcoin/pull/18676) | No |  |  |
 | libpng |  |  |  |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) |
 | librsvg | |  |  |  |  |
-| MiniUPnPc | [2.0.20180203](https://miniupnp.tuxfamily.org/files) |  | No |  |  |
+| MiniUPnPc | [2.2.2](https://miniupnp.tuxfamily.org/files) |  | No |  |  |
 | PCRE |  |  |  |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) |
 | Python (tests) |  | [3.5](https://www.python.org/downloads) |  |  |  |
 | qrencode | [3.4.4](https://fukuchi.org/works/qrencode) |  | No |  |  |
-| Qt | [5.9.8](https://download.qt.io/official_releases/qt/) | [5.5.1](https://github.com/bitcoin/bitcoin/issues/13478) | No |  |  |
+| Qt | [5.9.8](https://download.qt.io/archive/qt/5.9/) | [5.5.1](https://github.com/bitcoin/bitcoin/issues/13478) | No |  |  |
 | SQLite | [3.32.1](https://sqlite.org/download.html) | [3.7.17](https://github.com/bitcoin/bitcoin/pull/19077) |  |  |  |
-| XCB |  |  |  |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) (Linux only) |
+| XCB | [1.10](https://xcb.freedesktop.org/dist/) |  |  | Yes | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) (Linux only) |
 | xkbcommon |  |  |  |  | [Yes](https://github.com/bitcoin/bitcoin/blob/master/depends/packages/qt.mk) (Linux only) |
 | ZeroMQ | [4.3.1](https://github.com/zeromq/libzmq/releases) | 4.0.0 | No |  |  |
-| zlib | [1.2.11](https://zlib.net/) |  |  |  | No |
+| zlib | [1.3.1](https://zlib.net/fossils/) |  |  |  | No |
+
+Shared: in the Linux build with depends, `ferrite-qt` loads these from the system at run time
+(`libfontconfig.so.1`, `libfreetype.so.6` and `libxcb.so.1`; Expat through fontconfig). Every
+other library is linked statically, and the Windows binaries import only Windows system DLLs.
 
 Controlling dependencies
 ------------------------
@@ -37,7 +42,7 @@ Some dependencies are not needed in all configurations. The following are some f
 * SQLite is not needed with `--disable-wallet` or `--without-sqlite`.
 * Qt is not needed with `--without-gui`.
 * If the qrencode dependency is absent, QR support won't be added. To force an error when that happens, pass `--with-qrencode`.
-* ZeroMQ is needed only with the `--with-zmq` option.
+* ZeroMQ is not needed with `--disable-zmq`; without it, ZMQ notifications are built when libzmq is found.
 
 #### Other
 * librsvg is only needed if you need to run `make deploy` on (cross-compilation to) macOS.
