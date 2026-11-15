@@ -300,6 +300,7 @@ BASE_SCRIPTS = [
     'feature_blocksdir.py',
     'wallet_startup.py',
     'feature_config_args.py',
+    'feature_generated_config.py',
     'feature_settings.py',
     'rpc_getdescriptorinfo.py',
     'rpc_getpeerinfo_deprecation.py',
