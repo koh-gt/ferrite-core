@@ -260,6 +260,7 @@ BASE_SCRIPTS = [
     'mweb_p2p_mutated_compactblock.py',
     'mweb_p2p_mutated_block_submitblock.py',
     'mweb_p2p_mutated_block_unlinked_dup.py',
+    'mweb_p2p_large_block.py',
     'mweb_newpowvalidblock.py',
     'mweb_wtxid_recentrejects.py',
     'mweb_pre_activation_hogex_marker.py',
