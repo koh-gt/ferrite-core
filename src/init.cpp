@@ -1037,7 +1037,7 @@ bool AppInitParameterInteraction(const ArgsManager& args)
     // Warn if unrecognized section name are present in the config file.
     bilingual_str warnings;
     for (const auto& section : args.GetUnrecognizedSections()) {
-        warnings += strprintf(_("[%s] is not recognized.\n"), section.m_file, section.m_line, section.m_name);
+        warnings += strprintf(Untranslated("%s:%i ") + _("Section [%s] is not recognized.") + Untranslated("\n"), section.m_file, section.m_line, section.m_name);
     }
 
     if (!warnings.empty()) {

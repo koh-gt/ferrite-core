@@ -10,7 +10,8 @@ file the node writes holds only comments, blank lines, the [main] and [test]
 section headers and addnode lines, with no addnode line outside those sections;
 that the node starts again on that file, without warnings and without taking
 its addnode lines on regtest; and that the node leaves an existing ferrite.conf
-as it is.
+as it is. It also checks that a section name the node does not recognize gives
+a warning that names the file and the line.
 """
 
 import os
@@ -82,6 +83,14 @@ class GeneratedConfigTest(BitcoinTestFramework):
         self.start_node(0)
         self.stop_node(0)
         assert_equal(self.read_conf(), framework_conf)
+
+        self.log.info("Check that an unrecognized section gives a warning")
+        with open(self.conf_path, 'a', encoding='utf8') as f:
+            f.write('[testnet]\n')
+        self.start_node(0)
+        # The warning gives the file name as -conf has it (the default, ferrite.conf).
+        line = len(framework_conf.splitlines()) + 1
+        self.stop_node(0, expected_stderr='Warning: ferrite.conf:{} Section [testnet] is not recognized.'.format(line))
 
 
 if __name__ == '__main__':
