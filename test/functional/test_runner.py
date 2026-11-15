@@ -168,6 +168,7 @@ BASE_SCRIPTS = [
     'feature_proxy.py',
     'rpc_signrawtransaction.py',
     'rpc_signrawtransaction.py --descriptors',
+    'rpc_signrawtransaction_taproot.py',
     'wallet_groups.py',
     'p2p_addrv2_relay.py',
     'wallet_groups.py --descriptors',

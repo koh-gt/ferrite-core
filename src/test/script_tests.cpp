@@ -7,6 +7,7 @@
 #include <core_io.h>
 #include <fs.h>
 #include <key.h>
+#include <policy/policy.h>
 #include <rpc/util.h>
 #include <script/script.h>
 #include <script/script_error.h>
@@ -1511,6 +1512,71 @@ BOOST_AUTO_TEST_CASE(script_mweb_pegin)
     mw::Hash kernel_id2;
     BOOST_CHECK(script.IsMWEBPegin(&kernel_id2));
     BOOST_CHECK(kernel_id == kernel_id2);
+}
+
+BOOST_AUTO_TEST_CASE(script_checker_missing_data)
+{
+    // A signature hash may need data that a checker outside validation was
+    // not given: every spent output for Taproot, the amount for witness v0.
+    // With MissingDataBehavior::FAIL such a signature counts as invalid and
+    // is not checked.
+    CKey key;
+    key.MakeNewKey(true);
+    const CPubKey pubkey = key.GetPubKey();
+    FillableSigningProvider keystore;
+    BOOST_CHECK(keystore.AddKey(key));
+
+    CMutableTransaction tx;
+    tx.vin.resize(1);
+    tx.vin[0].prevout = COutPoint(InsecureRand256(), 0);
+    tx.vout.resize(1);
+    tx.vout[0].nValue = 1;
+    ScriptError err;
+
+    // Taproot key path, with a 64-byte signature that is not valid. Without
+    // precomputed data no script error is set. With precomputed data that
+    // lacks the spent outputs the signature hash cannot be computed, which
+    // the checker reports as a hash type error. Only with the spent outputs
+    // is the signature checked.
+    const CScript taproot = CScript() << OP_1 << std::vector<unsigned char>(pubkey.begin() + 1, pubkey.end());
+    const CTxOut spent{2, taproot};
+    tx.vin[0].scriptWitness.stack = {std::vector<unsigned char>(64, 1)};
+    const CScriptWitness* witness = &tx.vin[0].scriptWitness;
+    PrecomputedTransactionData no_spent_outputs;
+    no_spent_outputs.Init(tx, {});
+    PrecomputedTransactionData txdata;
+    txdata.Init(tx, {spent});
+    BOOST_CHECK(!VerifyScript(CScript(), taproot, witness, STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&tx, 0, 2, MissingDataBehavior::FAIL), &err));
+    BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
+    BOOST_CHECK(!VerifyScript(CScript(), taproot, witness, STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&tx, 0, 2, no_spent_outputs, MissingDataBehavior::FAIL), &err));
+    BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_SCHNORR_SIG_HASHTYPE, ScriptErrorString(err));
+    BOOST_CHECK(!VerifyScript(CScript(), taproot, witness, STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&tx, 0, 2, txdata, MissingDataBehavior::FAIL), &err));
+    BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_SCHNORR_SIG, ScriptErrorString(err));
+
+    // SignTransaction reports the input as not signed.
+    std::map<COutPoint, Coin> coins;
+    coins[tx.vin[0].prevout] = Coin(spent, 1, false, false);
+    std::map<int, std::string> input_errors;
+    CMutableTransaction to_sign{tx};
+    BOOST_CHECK(!SignTransaction(to_sign, &keystore, coins, SIGHASH_ALL, input_errors));
+    BOOST_CHECK_EQUAL(input_errors.size(), 1U);
+    BOOST_CHECK_EQUAL(input_errors.count(0), 1U);
+
+    // P2WPKH: a negative amount stands for a missing one. A signature that
+    // commits to it is not accepted, and none is made; with an amount both
+    // work.
+    const CScript p2wpkh = GetScriptForDestination(WitnessV0KeyHash(pubkey));
+    const CScript script_code = GetScriptForDestination(PKHash(pubkey));
+    for (const CAmount amount : {CAmount{-1}, CAmount{2}}) {
+        std::vector<unsigned char> sig;
+        BOOST_CHECK(key.Sign(SignatureHash(script_code, tx, 0, SIGHASH_ALL, amount, SigVersion::WITNESS_V0), sig));
+        sig.push_back(SIGHASH_ALL);
+        tx.vin[0].scriptWitness.stack = {sig, ToByteVector(pubkey)};
+        const bool valid = VerifyScript(CScript(), p2wpkh, witness, STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&tx, 0, amount, MissingDataBehavior::FAIL), &err);
+        BOOST_CHECK_EQUAL(valid, amount >= 0);
+        std::vector<unsigned char> created;
+        BOOST_CHECK_EQUAL(MutableTransactionSignatureCreator(&tx, 0, amount, SIGHASH_ALL).CreateSig(keystore, created, pubkey.GetID(), script_code, SigVersion::WITNESS_V0), amount >= 0);
+    }
 }
 
 #if defined(HAVE_CONSENSUS_LIB)
