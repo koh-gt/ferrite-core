@@ -17,6 +17,29 @@
 
 BOOST_FIXTURE_TEST_SUITE(TestKernel, MWEBTestingSetup)
 
+// Checks a kernel that sets one feature bit with an empty field and carries no other field. Blocks
+// and transactions write the empty field right after the features byte and read the kernel back
+// unchanged, while the kernel ID is still computed over the bytes without it.
+static void CheckEmptyFlaggedFieldReadsBack(const Kernel& kernel)
+{
+    CDataStream stream(SER_DISK, PROTOCOL_VERSION);
+    stream << kernel;
+
+    std::vector<uint8_t> expected = kernel.Serialized();
+    expected.insert(expected.begin() + 1, 0x00);
+    BOOST_CHECK(std::vector<uint8_t>(stream.begin(), stream.end()) == expected);
+
+    Kernel reloaded;
+    BOOST_REQUIRE_NO_THROW(stream >> reloaded);
+    BOOST_CHECK(stream.empty());
+    BOOST_CHECK_EQUAL(reloaded.GetFeatures(), kernel.GetFeatures());
+    BOOST_CHECK(reloaded.GetKernelID() == kernel.GetKernelID());
+
+    CDataStream rewritten(SER_DISK, PROTOCOL_VERSION);
+    rewritten << reloaded;
+    BOOST_CHECK(std::vector<uint8_t>(rewritten.begin(), rewritten.end()) == expected);
+}
+
 BOOST_AUTO_TEST_CASE(FeatureActivationDeployment_Test)
 {
     // Ferrite mainnet signals both rules on bit 5 from block 1,250,000 (v3.3.0, the mwebkernel deployment);
@@ -181,6 +204,7 @@ BOOST_AUTO_TEST_CASE(EmptyPegOutFeature_Test)
 
     BOOST_REQUIRE(!kernel.HasCanonicalPegOutFeature());
     BOOST_REQUIRE_NO_THROW(TxBody({}, {}, {kernel}).Validate());
+    CheckEmptyFlaggedFieldReadsBack(kernel);
 }
 
 BOOST_AUTO_TEST_CASE(EmptyExtraDataFeature_Test)
@@ -212,6 +236,89 @@ BOOST_AUTO_TEST_CASE(EmptyExtraDataFeature_Test)
 
     BOOST_REQUIRE(!kernel.HasCanonicalExtraDataFeature());
     BOOST_REQUIRE_NO_THROW(TxBody({}, {}, {kernel}).Validate());
+    CheckEmptyFlaggedFieldReadsBack(kernel);
+}
+
+// Writes the fields of a kernel in the order the deserializer reads them: every field whose feature
+// bit is set, except those whose bits are in `omitted`.
+static std::vector<uint8_t> KernelBytes(const Kernel& kernel, const uint8_t omitted)
+{
+    const int written = kernel.GetFeatures() & ~omitted;
+    std::vector<uint8_t> bytes;
+    CVectorWriter s(SER_NETWORK, PROTOCOL_VERSION, bytes, 0);
+    s << kernel.GetFeatures();
+    if (written & Kernel::FEE_FEATURE_BIT) ::WriteVarInt<CVectorWriter, VarIntMode::NONNEGATIVE_SIGNED, CAmount>(s, kernel.GetFee());
+    if (written & Kernel::PEGIN_FEATURE_BIT) ::WriteVarInt<CVectorWriter, VarIntMode::NONNEGATIVE_SIGNED, CAmount>(s, kernel.GetPegIn());
+    if (written & Kernel::PEGOUT_FEATURE_BIT) s << kernel.GetPegOuts();
+    if (written & Kernel::HEIGHT_LOCK_FEATURE_BIT) ::WriteVarInt<CVectorWriter, VarIntMode::NONNEGATIVE_SIGNED, int32_t>(s, kernel.GetLockHeight());
+    if (written & Kernel::STEALTH_EXCESS_FEATURE_BIT) s << kernel.GetStealthExcess();
+    if (written & Kernel::EXTRA_DATA_FEATURE_BIT) s << kernel.GetExtraData();
+    s << kernel.GetExcess() << kernel.GetSignature();
+    return bytes;
+}
+
+BOOST_AUTO_TEST_CASE(FeatureCombinationsReadBack_Test)
+{
+    // A kernel read from a block or a transaction carries the fields its feature bits name, but its
+    // peg-out list or extra data may be empty although the bit is set. For every such kernel, the
+    // kernel ID is computed over the bytes that leave out an empty field, while kernels written on
+    // their own or inside a transaction carry every field whose bit is set and read back unchanged.
+    const std::vector<uint8_t> script_bytes(22, 0x51);
+    const std::vector<PegOutCoin> pegouts{PegOutCoin(5000, CScript(script_bytes.begin(), script_bytes.end()))};
+    const std::vector<uint8_t> extra_data{0x01, 0x02, 0x03};
+    const PublicKey stealth_excess(BigInt<33>::ValueOf(2));
+    const Commitment excess(BigInt<Commitment::SIZE>::ValueOf(8));
+    const Signature signature(BigInt<Signature::SIZE>::ValueOf(9));
+    const uint8_t empty_fields[] = {
+        0,
+        Kernel::PEGOUT_FEATURE_BIT,
+        Kernel::EXTRA_DATA_FEATURE_BIT,
+        Kernel::PEGOUT_FEATURE_BIT | Kernel::EXTRA_DATA_FEATURE_BIT,
+    };
+
+    for (int features = 0; features <= Kernel::ALL_FEATURE_BITS; ++features) {
+        for (const uint8_t empty : empty_fields) {
+            if ((features & empty) != empty) continue;
+            BOOST_TEST_CONTEXT("features " << features << ", empty fields " << int{empty})
+            {
+                const int present = features & ~empty;
+                const Kernel kernel(
+                    features,
+                    (present & Kernel::FEE_FEATURE_BIT) ? boost::make_optional<CAmount>(1000) : boost::none,
+                    (present & Kernel::PEGIN_FEATURE_BIT) ? boost::make_optional<CAmount>(20000) : boost::none,
+                    (present & Kernel::PEGOUT_FEATURE_BIT) ? pegouts : std::vector<PegOutCoin>{},
+                    (present & Kernel::HEIGHT_LOCK_FEATURE_BIT) ? boost::make_optional<int32_t>(300) : boost::none,
+                    (present & Kernel::STEALTH_EXCESS_FEATURE_BIT) ? boost::make_optional(stealth_excess) : boost::none,
+                    (present & Kernel::EXTRA_DATA_FEATURE_BIT) ? extra_data : std::vector<uint8_t>{},
+                    excess,
+                    signature
+                );
+
+                const std::vector<uint8_t> committed = KernelBytes(kernel, empty);
+                BOOST_CHECK(kernel.Serialized() == committed);
+                BOOST_CHECK(kernel.GetKernelID() == Hashed(committed));
+
+                CDataStream stream(SER_DISK, PROTOCOL_VERSION);
+                stream << kernel;
+                BOOST_CHECK(std::vector<uint8_t>(stream.begin(), stream.end()) == KernelBytes(kernel, 0));
+                Kernel reloaded;
+                BOOST_REQUIRE_NO_THROW(stream >> reloaded);
+                BOOST_CHECK(stream.empty());
+                BOOST_CHECK(reloaded.Serialized() == committed);
+                BOOST_CHECK(reloaded.GetKernelID() == kernel.GetKernelID());
+
+                const mw::Transaction tx(BlindingFactor(), BlindingFactor(), TxBody({}, {}, {kernel}));
+                CDataStream tx_stream(SER_DISK, PROTOCOL_VERSION);
+                tx_stream << tx;
+                mw::Transaction tx_reloaded;
+                BOOST_REQUIRE_NO_THROW(tx_stream >> tx_reloaded);
+                BOOST_CHECK(tx_stream.empty());
+                BOOST_CHECK(tx_reloaded.GetHash() == tx.GetHash());
+                BOOST_REQUIRE_EQUAL(tx_reloaded.GetKernels().size(), 1U);
+                BOOST_CHECK(tx_reloaded.GetKernels().front().GetKernelID() == kernel.GetKernelID());
+            }
+        }
+    }
 }
 
 BOOST_AUTO_TEST_CASE(PegOutAmountOutOfRange_Test)

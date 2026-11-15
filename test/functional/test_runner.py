@@ -249,6 +249,7 @@ BASE_SCRIPTS = [
     'mweb_mempool.py',
     'mweb_mining.py',
     'mweb_kernel_activation.py',
+    'mweb_kernel_roundtrip.py',
     'mweb_reorg.py',
     'mweb_dbcrash.py',
     'mweb_duplicate_pegin.py',
