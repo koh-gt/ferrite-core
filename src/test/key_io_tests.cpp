@@ -5,6 +5,7 @@
 #include <test/data/key_io_invalid.json.h>
 #include <test/data/key_io_valid.json.h>
 
+#include <bech32.h>
 #include <key.h>
 #include <key_io.h>
 #include <script/script.h>
@@ -144,6 +145,27 @@ BOOST_AUTO_TEST_CASE(key_io_invalid)
             BOOST_CHECK_MESSAGE(!privkey.IsValid(), "IsValid privkey in mainnet:" + strTest);
         }
     }
+}
+
+// Goal: check that a valid bech32 string on the MWEB prefix with no data, or with only the
+// version symbol, is an invalid address, and that a full MWEB address still decodes
+BOOST_AUTO_TEST_CASE(key_io_mweb_short)
+{
+    for (const auto& chain : {CBaseChainParams::MAIN, CBaseChainParams::TESTNET, CBaseChainParams::REGTEST}) {
+        SelectParams(chain);
+        const std::string& hrp = Params().MWEB_HRP();
+
+        for (const std::vector<uint8_t>& values : {std::vector<uint8_t>{}, std::vector<uint8_t>{0}}) {
+            const std::string str = bech32::Encode(bech32::Encoding::BECH32, hrp, values);
+            const auto dec = bech32::Decode(str, true);
+            BOOST_CHECK(dec.encoding == bech32::Encoding::BECH32 && dec.hrp == hrp && dec.data == values);
+            BOOST_CHECK_MESSAGE(!IsValidDestinationString(str), "IsValid:" + str);
+        }
+
+        const StealthAddress addr = StealthAddress::Random();
+        BOOST_CHECK(DecodeDestination(EncodeDestination(addr)) == CTxDestination(addr));
+    }
+    SelectParams(CBaseChainParams::MAIN);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
