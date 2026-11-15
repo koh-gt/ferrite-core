@@ -832,7 +832,11 @@ size_t CConnman::SocketSendData(CNode *pnode) const EXCLUSIVE_LOCKS_REQUIRED(pno
             if (pnode->nSendOffset == data.size()) {
                 pnode->nSendOffset = 0;
                 pnode->nSendSize -= data.size();
-                pnode->fPauseSend = pnode->nSendSize > nSendBufferMaxSize;
+                const bool pause_send{pnode->nSendSize > nSendBufferMaxSize};
+                if (pause_send && !pnode->fPauseSend) {
+                    pnode->m_pause_send_since = GetTime<std::chrono::seconds>();
+                }
+                pnode->fPauseSend = pause_send;
                 it++;
             } else {
                 // could not send full message; stop sending more
@@ -1291,6 +1295,11 @@ void CConnman::InactivityCheck(CNode *pnode)
         else if (nTime - pnode->nLastRecv > (pnode->GetCommonVersion() > BIP0031_VERSION ? TIMEOUT_INTERVAL : 90*60))
         {
             LogPrintf("socket receive timeout: %is\n", nTime - pnode->nLastRecv);
+            pnode->fDisconnect = true;
+        }
+        else if (pnode->fPauseSend && pnode->m_pause_send_since.load() + std::chrono::seconds{TIMEOUT_INTERVAL} < GetTime<std::chrono::seconds>())
+        {
+            LogPrint(BCLog::NET, "send buffer full for %is, disconnecting peer=%d\n", count_seconds(GetTime<std::chrono::seconds>() - pnode->m_pause_send_since.load()), pnode->GetId());
             pnode->fDisconnect = true;
         }
         else if (pnode->nPingNonceSent && pnode->m_ping_start.load() + std::chrono::seconds{TIMEOUT_INTERVAL} < GetTime<std::chrono::microseconds>())
@@ -3070,8 +3079,10 @@ void CConnman::PushMessage(CNode* pnode, CSerializedNetMsg&& msg)
         pnode->mapSendBytesPerMsgCmd[msg.m_type] += nTotalSize;
         pnode->nSendSize += nTotalSize;
 
-        if (pnode->nSendSize > nSendBufferMaxSize)
+        if (pnode->nSendSize > nSendBufferMaxSize && !pnode->fPauseSend) {
+            pnode->m_pause_send_since = GetTime<std::chrono::seconds>();
             pnode->fPauseSend = true;
+        }
         pnode->vSendMsg.push_back(std::move(serializedHeader));
         if (nMessageSize)
             pnode->vSendMsg.push_back(std::move(msg.data));

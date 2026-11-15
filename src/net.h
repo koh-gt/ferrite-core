@@ -918,6 +918,8 @@ public:
     const uint64_t nKeyedNetGroup;
     std::atomic_bool fPauseRecv{false};
     std::atomic_bool fPauseSend{false};
+    /** When was fPauseSend last set from false to true */
+    std::atomic<std::chrono::seconds> m_pause_send_since{std::chrono::seconds{0}};
 
     bool IsOutboundOrBlockRelayConn() const {
         switch (m_conn_type) {
