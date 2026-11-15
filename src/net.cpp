@@ -1398,7 +1398,11 @@ void CConnman::SocketEvents(std::set<SOCKET> &recv_set, std::set<SOCKET> &send_s
 void CConnman::SocketEvents(std::set<SOCKET> &recv_set, std::set<SOCKET> &send_set, std::set<SOCKET> &error_set)
 {
     std::set<SOCKET> recv_select_set, send_select_set, error_select_set;
-    if (!GenerateSelectSet(recv_select_set, send_select_set, error_select_set)) {
+    // Exceptional conditions are only watched on sockets that are also
+    // watched for reading (see below). With no socket to watch for reading or
+    // sending, sleep instead: select() fails on Windows when given no socket.
+    if (!GenerateSelectSet(recv_select_set, send_select_set, error_select_set) ||
+        (recv_select_set.empty() && send_select_set.empty())) {
         interruptNet.sleep_for(std::chrono::milliseconds(SELECT_TIMEOUT_MILLISECONDS));
         return;
     }
@@ -1428,9 +1432,14 @@ void CConnman::SocketEvents(std::set<SOCKET> &recv_set, std::set<SOCKET> &send_s
         hSocketMax = std::max(hSocketMax, hSocket);
     }
 
+    // Watch a socket for exceptional conditions only while also waiting to
+    // read from it. SocketHandler() reads from every socket reported here,
+    // which must not happen while receiving from that peer is paused or
+    // while its send buffer is being drained first.
     for (SOCKET hSocket : error_select_set) {
-        FD_SET(hSocket, &fdsetError);
-        hSocketMax = std::max(hSocketMax, hSocket);
+        if (recv_select_set.count(hSocket)) {
+            FD_SET(hSocket, &fdsetError);
+        }
     }
 
     int nSelect = select(hSocketMax + 1, &fdsetRecv, &fdsetSend, &fdsetError, &timeout);
