@@ -769,4 +769,158 @@ BOOST_AUTO_TEST_CASE(PoissonNextSend)
     g_mock_deterministic_tests = false;
 }
 
+BOOST_AUTO_TEST_CASE(large_message_budget)
+{
+    LargeMessageBudget budget{100};
+    BOOST_CHECK(budget.Reserve(60));
+    BOOST_CHECK(!budget.Reserve(41));
+    BOOST_CHECK_EQUAL(budget.GetTotal(), 60U);
+    BOOST_CHECK(budget.Reserve(40));
+    BOOST_CHECK_EQUAL(budget.GetTotal(), 100U);
+    BOOST_CHECK(!budget.Reserve(1));
+    budget.Release(60);
+    BOOST_CHECK_EQUAL(budget.GetTotal(), 40U);
+    BOOST_CHECK(budget.Reserve(60));
+    budget.Release(40);
+    budget.Release(60);
+    BOOST_CHECK_EQUAL(budget.GetTotal(), 0U);
+}
+
+static std::vector<unsigned char> SerializedMessageHeader(const std::string& command, uint32_t length)
+{
+    CDataStream stream{SER_NETWORK, INIT_PROTO_VERSION};
+    stream << CMessageHeader{Params().MessageStart(), command.c_str(), length};
+    return {stream.begin(), stream.end()};
+}
+
+// Feed a message header to the deserializer: returns the number of bytes taken, or -1 if the header is refused
+static int ReadMessageHeader(TransportDeserializer& deserializer, const std::string& command, uint32_t length)
+{
+    const std::vector<unsigned char> header{SerializedMessageHeader(command, length)};
+    return deserializer.Read((const char*)header.data(), header.size());
+}
+
+BOOST_AUTO_TEST_CASE(v1_transport_message_length_limits)
+{
+    const int header_size{CMessageHeader::HEADER_SIZE};
+    std::atomic_bool handshake_complete{false};
+    LargeMessageBudget budget{MAX_INBOUND_LARGE_MESSAGES_TOTAL};
+    auto make_deserializer = [&](LargeMessageBudget* large_message_budget) {
+        return MakeUnique<V1TransportDeserializer>(Params(), 0, SER_NETWORK, INIT_PROTO_VERSION, handshake_complete, large_message_budget);
+    };
+
+    // Before the version handshake, every message is limited to MAX_PROTOCOL_MESSAGE_LENGTH
+    for (const std::string command : {NetMsgType::BLOCK, NetMsgType::CMPCTBLOCK, NetMsgType::TX}) {
+        BOOST_CHECK_EQUAL(ReadMessageHeader(*make_deserializer(&budget), command, MAX_PROTOCOL_MESSAGE_LENGTH), header_size);
+        BOOST_CHECK_EQUAL(ReadMessageHeader(*make_deserializer(&budget), command, MAX_PROTOCOL_MESSAGE_LENGTH + 1), -1);
+    }
+    BOOST_CHECK_EQUAL(budget.GetTotal(), 0U);
+
+    // After it, block and compact block messages may be up to MAX_BLOCK_MESSAGE_LENGTH, and only these
+    handshake_complete = true;
+    for (const std::string command : {NetMsgType::BLOCK, NetMsgType::CMPCTBLOCK}) {
+        BOOST_CHECK_EQUAL(ReadMessageHeader(*make_deserializer(&budget), command, MAX_BLOCK_MESSAGE_LENGTH), header_size);
+        BOOST_CHECK_EQUAL(ReadMessageHeader(*make_deserializer(&budget), command, MAX_BLOCK_MESSAGE_LENGTH + 1), -1);
+    }
+    for (const std::string command : {NetMsgType::TX, NetMsgType::BLOCKTXN, NetMsgType::HEADERS, NetMsgType::MWEBHEADER,
+                                      NetMsgType::MWEBLEAFSET, NetMsgType::MWEBUTXOS, "badmsg"}) {
+        BOOST_CHECK_EQUAL(ReadMessageHeader(*make_deserializer(&budget), command, MAX_PROTOCOL_MESSAGE_LENGTH), header_size);
+        BOOST_CHECK_EQUAL(ReadMessageHeader(*make_deserializer(&budget), command, MAX_PROTOCOL_MESSAGE_LENGTH + 1), -1);
+    }
+    // Each deserializer above was destroyed right after its header, which released its share of the budget
+    BOOST_CHECK_EQUAL(budget.GetTotal(), 0U);
+
+    // A peer whose large messages are not counted (an outbound peer) has the same limits
+    auto uncounted{make_deserializer(nullptr)};
+    BOOST_CHECK_EQUAL(ReadMessageHeader(*uncounted, NetMsgType::BLOCK, MAX_BLOCK_MESSAGE_LENGTH), header_size);
+    BOOST_CHECK_EQUAL(budget.GetTotal(), 0U);
+}
+
+BOOST_AUTO_TEST_CASE(v1_transport_large_message_budget)
+{
+    const int header_size{CMessageHeader::HEADER_SIZE};
+    const std::atomic_bool handshake_complete{true};
+    LargeMessageBudget budget{MAX_INBOUND_LARGE_MESSAGES_TOTAL};
+    auto make_deserializer = [&]() {
+        return MakeUnique<V1TransportDeserializer>(Params(), 0, SER_NETWORK, INIT_PROTO_VERSION, handshake_complete, &budget);
+    };
+
+    // A complete block message one byte over MAX_PROTOCOL_MESSAGE_LENGTH, with its header
+    CSerializedNetMsg block_msg;
+    block_msg.m_type = NetMsgType::BLOCK;
+    block_msg.data.assign(MAX_PROTOCOL_MESSAGE_LENGTH + 1, 0);
+    std::vector<unsigned char> block_header;
+    V1TransportSerializer{}.prepareForTransport(block_msg, block_header);
+
+    // Messages up to MAX_PROTOCOL_MESSAGE_LENGTH are not counted
+    auto small{make_deserializer()};
+    BOOST_CHECK_EQUAL(ReadMessageHeader(*small, NetMsgType::BLOCK, MAX_PROTOCOL_MESSAGE_LENGTH), header_size);
+    BOOST_CHECK_EQUAL(budget.GetTotal(), 0U);
+
+    // A larger message counts with its whole length from its header on
+    auto first{make_deserializer()};
+    BOOST_CHECK_EQUAL(first->Read((const char*)block_header.data(), block_header.size()), header_size);
+    BOOST_CHECK_EQUAL(budget.GetTotal(), MAX_PROTOCOL_MESSAGE_LENGTH + 1);
+    std::vector<std::unique_ptr<V1TransportDeserializer>> peers;
+    for (int i = 0; i < 3; ++i) {
+        peers.push_back(make_deserializer());
+        BOOST_CHECK_EQUAL(ReadMessageHeader(*peers.back(), NetMsgType::BLOCK, MAX_BLOCK_MESSAGE_LENGTH), header_size);
+    }
+    const uint64_t remaining{MAX_INBOUND_LARGE_MESSAGES_TOTAL - budget.GetTotal()};
+    BOOST_CHECK_EQUAL(remaining, MAX_INBOUND_LARGE_MESSAGES_TOTAL - (MAX_PROTOCOL_MESSAGE_LENGTH + 1) - 3 * MAX_BLOCK_MESSAGE_LENGTH);
+
+    // A message that would take the total over the limit is refused; one that reaches it exactly is accepted
+    BOOST_CHECK_EQUAL(ReadMessageHeader(*make_deserializer(), NetMsgType::CMPCTBLOCK, remaining + 1), -1);
+    peers.push_back(make_deserializer());
+    BOOST_CHECK_EQUAL(ReadMessageHeader(*peers.back(), NetMsgType::CMPCTBLOCK, remaining), header_size);
+    BOOST_CHECK_EQUAL(budget.GetTotal(), MAX_INBOUND_LARGE_MESSAGES_TOTAL);
+    auto waiting{make_deserializer()};
+    BOOST_CHECK_EQUAL(ReadMessageHeader(*waiting, NetMsgType::BLOCK, MAX_PROTOCOL_MESSAGE_LENGTH + 1), -1);
+    BOOST_CHECK_EQUAL(budget.GetTotal(), MAX_INBOUND_LARGE_MESSAGES_TOTAL);
+
+    // Completing a message releases its length
+    BOOST_CHECK_EQUAL(first->Read((const char*)block_msg.data.data(), block_msg.data.size()), (int)block_msg.data.size());
+    BOOST_REQUIRE(first->Complete());
+    uint32_t out_err_raw_size{0};
+    const Optional<CNetMessage> msg{first->GetMessage(std::chrono::microseconds{0}, out_err_raw_size)};
+    BOOST_REQUIRE(msg);
+    BOOST_CHECK_EQUAL(msg->m_command, NetMsgType::BLOCK);
+    BOOST_CHECK_EQUAL(msg->m_message_size, MAX_PROTOCOL_MESSAGE_LENGTH + 1);
+    BOOST_CHECK_EQUAL(budget.GetTotal(), MAX_INBOUND_LARGE_MESSAGES_TOTAL - (MAX_PROTOCOL_MESSAGE_LENGTH + 1));
+    BOOST_CHECK_EQUAL(ReadMessageHeader(*waiting, NetMsgType::BLOCK, MAX_PROTOCOL_MESSAGE_LENGTH + 1), header_size);
+    BOOST_CHECK_EQUAL(budget.GetTotal(), MAX_INBOUND_LARGE_MESSAGES_TOTAL);
+
+    // Destroying a deserializer (the peer disconnects) releases the length of its partly received message
+    peers.erase(peers.begin());
+    BOOST_CHECK_EQUAL(budget.GetTotal(), MAX_INBOUND_LARGE_MESSAGES_TOTAL - MAX_BLOCK_MESSAGE_LENGTH);
+    peers.clear();
+    waiting.reset();
+    BOOST_CHECK_EQUAL(budget.GetTotal(), 0U);
+}
+
+BOOST_AUTO_TEST_CASE(cnode_large_messages)
+{
+    LargeMessageBudget budget{MAX_INBOUND_LARGE_MESSAGES_TOTAL};
+    const CAddress addr{CService{in_addr{0x0100007f}, 7777}, NODE_NETWORK};
+    const std::vector<unsigned char> header{SerializedMessageHeader(NetMsgType::BLOCK, MAX_BLOCK_MESSAGE_LENGTH)};
+    bool complete;
+
+    // An inbound peer: refused before the version handshake, counted after it
+    auto inbound{MakeUnique<CNode>(0, NODE_NETWORK, 0, INVALID_SOCKET, addr, 0, 0, CAddress{}, std::string{}, ConnectionType::INBOUND, false, &budget)};
+    BOOST_CHECK(!inbound->ReceiveMsgBytes((const char*)header.data(), header.size(), complete));
+    inbound->fSuccessfullyConnected = true;
+    BOOST_CHECK(inbound->ReceiveMsgBytes((const char*)header.data(), header.size(), complete));
+    BOOST_CHECK(!complete);
+    BOOST_CHECK_EQUAL(budget.GetTotal(), MAX_BLOCK_MESSAGE_LENGTH);
+    inbound.reset();
+    BOOST_CHECK_EQUAL(budget.GetTotal(), 0U);
+
+    // A peer created without a budget (as outbound peers are): accepted after the handshake, not counted
+    auto outbound{MakeUnique<CNode>(1, NODE_NETWORK, 0, INVALID_SOCKET, addr, 0, 0, CAddress{}, std::string{}, ConnectionType::OUTBOUND_FULL_RELAY)};
+    BOOST_CHECK(!outbound->ReceiveMsgBytes((const char*)header.data(), header.size(), complete));
+    outbound->fSuccessfullyConnected = true;
+    BOOST_CHECK(outbound->ReceiveMsgBytes((const char*)header.data(), header.size(), complete));
+    BOOST_CHECK_EQUAL(budget.GetTotal(), 0U);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

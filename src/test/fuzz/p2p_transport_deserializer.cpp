@@ -19,8 +19,10 @@ void initialize()
 
 void test_one_input(const std::vector<uint8_t>& buffer)
 {
-    // Construct deserializer, with a dummy NodeId
-    V1TransportDeserializer deserializer{Params(), (NodeId)0, SER_NETWORK, INIT_PROTO_VERSION};
+    // Construct deserializer, with a dummy NodeId, for an inbound peer after the version handshake
+    const std::atomic_bool handshake_complete{true};
+    LargeMessageBudget large_message_budget{MAX_INBOUND_LARGE_MESSAGES_TOTAL};
+    V1TransportDeserializer deserializer{Params(), (NodeId)0, SER_NETWORK, INIT_PROTO_VERSION, handshake_complete, &large_message_budget};
     const char* pch = (const char*)buffer.data();
     size_t n_bytes = buffer.size();
     while (n_bytes > 0) {

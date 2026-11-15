@@ -54,8 +54,13 @@ static const int TIMEOUT_INTERVAL = 20 * 60;
 static const int FEELER_INTERVAL = 120;
 /** The maximum number of addresses from our addrman to return in response to a getaddr message. */
 static constexpr size_t MAX_ADDR_TO_SEND = 1000;
-/** Maximum length of incoming protocol messages (no message over 32 MB is currently acceptable). */
-static const unsigned int MAX_PROTOCOL_MESSAGE_LENGTH = 32 * 1000 * 1000;
+/** Maximum length of incoming protocol messages (no message over 4 MB is currently acceptable). */
+static const unsigned int MAX_PROTOCOL_MESSAGE_LENGTH = 4 * 1000 * 1000;
+/** Maximum length of an incoming block or compact block message after the version handshake. These messages
+ *  carry a whole MWEB block, which can take them over MAX_PROTOCOL_MESSAGE_LENGTH. */
+static const unsigned int MAX_BLOCK_MESSAGE_LENGTH = 32 * 1000 * 1000;
+/** Maximum total length of the messages over MAX_PROTOCOL_MESSAGE_LENGTH that inbound peers are still sending. */
+static const uint64_t MAX_INBOUND_LARGE_MESSAGES_TOTAL = 128 * 1000 * 1000;
 /** Maximum length of the user agent string in `version` message */
 static const unsigned int MAX_SUBVERSION_LENGTH = 256;
 /** Maximum number of automatic outgoing nodes over which we'll relay everything (blocks, tx, addrs, etc) */
@@ -181,6 +186,24 @@ enum class ConnectionType {
      * AddrMan is empty.
      */
     ADDR_FETCH,
+};
+
+/** The total length of the messages over MAX_PROTOCOL_MESSAGE_LENGTH that peers are still sending, kept within a limit. */
+class LargeMessageBudget
+{
+public:
+    explicit LargeMessageBudget(uint64_t limit) : m_limit(limit) {}
+
+    /** Add a message's length to the total, unless that would take the total over the limit. Returns whether it was added. */
+    bool Reserve(uint64_t length);
+    /** Subtract a length that Reserve() added. */
+    void Release(uint64_t length);
+    uint64_t GetTotal() const;
+
+private:
+    const uint64_t m_limit;
+    mutable Mutex m_mutex;
+    uint64_t m_total GUARDED_BY(m_mutex){0};
 };
 
 class NetEventsInterface;
@@ -507,6 +530,9 @@ private:
     unsigned int nSendBufferMaxSize{0};
     unsigned int nReceiveFloodSize{0};
 
+    /** Large messages that inbound peers are still sending (see MAX_INBOUND_LARGE_MESSAGES_TOTAL). */
+    LargeMessageBudget m_inbound_large_messages{MAX_INBOUND_LARGE_MESSAGES_TOTAL};
+
     std::vector<ListenSocket> vhListenSocket;
     std::atomic<bool> fNetworkActive{true};
     bool fAddressesInitialized{false};
@@ -783,6 +809,9 @@ class V1TransportDeserializer final : public TransportDeserializer
 private:
     const CChainParams& m_chain_params;
     const NodeId m_node_id; // Only for logging
+    const std::atomic_bool& m_handshake_complete; // once true, block messages may be longer than MAX_PROTOCOL_MESSAGE_LENGTH
+    LargeMessageBudget* const m_large_message_budget; // counts this peer's large messages, unless nullptr
+    uint32_t m_large_message_length{0}; // length of the current message counted in m_large_message_budget, or 0
     mutable CHash256 hasher;
     mutable uint256 data_hash;
     bool in_data;                   // parsing header (false) or data (true)
@@ -796,7 +825,16 @@ private:
     int readHeader(const char *pch, unsigned int nBytes);
     int readData(const char *pch, unsigned int nBytes);
 
+    void ReleaseLargeMessage()
+    {
+        if (m_large_message_length > 0) {
+            m_large_message_budget->Release(m_large_message_length);
+            m_large_message_length = 0;
+        }
+    }
+
     void Reset() {
+        ReleaseLargeMessage();
         vRecv.clear();
         hdrbuf.clear();
         hdrbuf.resize(24);
@@ -808,14 +846,20 @@ private:
     }
 
 public:
-    V1TransportDeserializer(const CChainParams& chain_params, const NodeId node_id, int nTypeIn, int nVersionIn)
+    V1TransportDeserializer(const CChainParams& chain_params, const NodeId node_id, int nTypeIn, int nVersionIn,
+                            const std::atomic_bool& handshake_complete, LargeMessageBudget* large_message_budget)
         : m_chain_params(chain_params),
           m_node_id(node_id),
+          m_handshake_complete(handshake_complete),
+          m_large_message_budget(large_message_budget),
           hdrbuf(nTypeIn, nVersionIn),
           vRecv(nTypeIn, nVersionIn)
     {
         Reset();
     }
+    ~V1TransportDeserializer() override { ReleaseLargeMessage(); }
+    V1TransportDeserializer(const V1TransportDeserializer&) = delete;
+    V1TransportDeserializer& operator=(const V1TransportDeserializer&) = delete;
 
     bool Complete() const override
     {
@@ -1072,7 +1116,7 @@ public:
     // Whether a ping is requested.
     std::atomic<bool> fPingQueued{false};
 
-    CNode(NodeId id, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn, SOCKET hSocketIn, const CAddress &addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const CAddress &addrBindIn, const std::string &addrNameIn, ConnectionType conn_type_in, bool inbound_onion = false);
+    CNode(NodeId id, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn, SOCKET hSocketIn, const CAddress &addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const CAddress &addrBindIn, const std::string &addrNameIn, ConnectionType conn_type_in, bool inbound_onion = false, LargeMessageBudget* large_message_budget = nullptr);
     ~CNode();
     CNode(const CNode&) = delete;
     CNode& operator=(const CNode&) = delete;
