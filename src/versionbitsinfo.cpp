@@ -23,4 +23,16 @@ const struct VBDeploymentInfo VersionBitsDeploymentInfo[Consensus::MAX_VERSION_B
         /*.name =*/ "mwebkernel",
         /*.gbt_force =*/ true,
     },
+    {
+        /*.name =*/ "p2mr",
+        /*.gbt_force =*/ true,
+    },
+    {
+        /*.name =*/ "coinbasematurity",
+        /*.gbt_force =*/ true,
+    },
+    {
+        /*.name =*/ "timewarp",
+        /*.gbt_force =*/ true,
+    },
 };

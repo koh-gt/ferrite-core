@@ -3612,6 +3612,18 @@ bool IsMWEBKernelRuleEnabled(const CBlockIndex* pindexPrev, const Consensus::Par
     return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_MWEB_KERNEL, versionbitscache) == ThresholdState::ACTIVE);
 }
 
+bool IsP2MREnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params)
+{
+    LOCK(cs_main);
+    return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_P2MR, versionbitscache) == ThresholdState::ACTIVE);
+}
+
+bool IsTimewarpEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params)
+{
+    LOCK(cs_main);
+    return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_TIMEWARP, versionbitscache) == ThresholdState::ACTIVE);
+}
+
 void UpdateUncommittedBlockStructures(CBlock& block, const CBlockIndex* pindexPrev, const Consensus::Params& consensusParams)
 {
     int commitpos = GetWitnessCommitmentIndex(block);

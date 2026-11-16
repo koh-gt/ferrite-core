@@ -126,6 +126,28 @@ public:
         // window after it (block 1250080 at the earliest).
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nTimeoutHeight = 99999999; // never*
 
+        // Deployment of P2MR outputs (BIP 360): witness version 2 outputs with a 32-byte program commit to the
+        // Merkle root of a script tree and have no key path. Bit 6 is unused and outside the BIP320 bits 13-28.
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].bit = 6;
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].nStartHeight = 1300000;
+        // When 39 of the 40 blocks in a window signal bit 6, the next window is locked in and the rules apply from the
+        // window after it (block 1300080 at the earliest).
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].nTimeoutHeight = 99999999; // never*
+
+        // Deployment of coinbase maturity 100: coinbase outputs created once the rule is active can be spent only
+        // 100 blocks after their block (10 before). Bit 7 is unused and outside the BIP320 bits 13-28.
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].bit = 7;
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].nStartHeight = 1250000;
+        // Locked in by 39 of 40 signalling blocks; the rule applies from block 1250080 at the earliest.
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].nTimeoutHeight = 99999999; // never*
+
+        // Deployment of the block time rules: a block's time must be at least 480 seconds after the time of the
+        // block 23 below it. Bit 8 is unused and outside the BIP320 bits 13-28.
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].bit = 8;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nStartHeight = 1250000;
+        // Locked in by 39 of 40 signalling blocks; the rules apply from block 1250080 at the earliest.
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nTimeoutHeight = 99999999; // never*
+
         // The best chain should have at least this much work.
 
         consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000006b03e4a31762f086");
@@ -298,6 +320,18 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].bit = 5;
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+
+        // The deployments below are not scheduled on testnet until their start heights are set.
+        // coinbasematurity and timewarp start at the same height, p2mr 1,000 blocks later.
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].bit = 6;
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].bit = 7;
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].bit = 8;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
             
         
         consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000000000019a894b");
@@ -416,6 +450,18 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].bit = 5;
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+
+        // The deployments below are never active on regtest unless a test sets them with
+        // -vbparams=<name>:0:0:<start height>:<timeout height> (signalling) or -vbparams=<name>:-1:0 (always active).
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].bit = 6;
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].bit = 7;
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].bit = 8;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
 
         consensus.nMinimumChainWork = uint256{};
         consensus.defaultAssumeValid = uint256{};

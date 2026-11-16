@@ -1546,6 +1546,9 @@ RPCHelpMan getblockchaininfo()
     VBSoftForkDescPushBack(softforks, "taproot", consensusParams, Consensus::DEPLOYMENT_TAPROOT);
     VBSoftForkDescPushBack(softforks, "mweb", consensusParams, Consensus::DEPLOYMENT_MWEB);
     VBSoftForkDescPushBack(softforks, "mwebkernel", consensusParams, Consensus::DEPLOYMENT_MWEB_KERNEL);
+    VBSoftForkDescPushBack(softforks, "p2mr", consensusParams, Consensus::DEPLOYMENT_P2MR);
+    VBSoftForkDescPushBack(softforks, "coinbasematurity", consensusParams, Consensus::DEPLOYMENT_COINBASE_MATURITY);
+    VBSoftForkDescPushBack(softforks, "timewarp", consensusParams, Consensus::DEPLOYMENT_TIMEWARP);
     obj.pushKV("softforks",             softforks);
 
     obj.pushKV("warnings", GetWarnings(false).original);
