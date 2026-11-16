@@ -3,7 +3,6 @@
 # Every entry fails because the test hard-codes Bitcoin/Litecoin data or parameters
 # (keys, addresses, subsidy, coinbase maturity, retarget vectors) that Ferrite changed;
 # none points at a node bug. Remove a line once the test is adapted to Ferrite.
-# See doc/ferrite-3.3.0-review.md, sections 7.1 and 7.3.
 #
 # Format: <suite>/<case>, one per line. CI passes each as --run_test=!<entry>.
 
