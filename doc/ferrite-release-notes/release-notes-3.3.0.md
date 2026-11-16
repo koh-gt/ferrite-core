@@ -57,6 +57,113 @@ could crash a node with a crafted compact-block message.
 **No blacklist.** Unlike Litecoin, Ferrite freezes no coins and grandfathers no block. A scan of Ferrite's complete
 MWEB history (blocks 150,120 to 1,057,006) found no block that breaks the new rules.
 
+Fixed after the pre-release v3.3.0r1, which does not have these fixes; most of the problems also affect v3.2.x. None of
+them changes which blocks are valid.
+* MWEB blocks (Ferrite fix): a block holding certain unusual MWEB kernels could be accepted and then fail to be read
+  back from disk, which could stop the node. Such blocks are now stored and relayed in a form that reads back. Kernel
+  IDs, kernel roots and block hashes are computed exactly as before.
+* MWEB addresses (Ferrite fix): a malformed MWEB address, given to an RPC, ferrite-qt or ferrite-tx, or found in a
+  wallet's address book, could stop the node. It is now rejected like any other invalid address. Valid MWEB addresses
+  are not affected.
+* Signing (Bitcoin Core #21330 and part of #21365): a transaction that spends a Taproot output could stop the node in
+  `signrawtransactionwithkey`, `signrawtransactionwithwallet` or `combinerawtransaction`, and could stop `ferrite-tx`.
+  They still cannot check the signature of such an input, but now return the input without its witness.
+  `signrawtransactionwithkey` and `signrawtransactionwithwallet` report it as not complete; `combinerawtransaction` and
+  `ferrite-tx` give no error. The signing code also no longer makes or accepts a witness v0 signature for an input whose
+  amount is negative, which stands for a missing amount.
+* Wallet (from Bitcoin Core #23304): a legacy wallet that has been moved to a new HD seed with `sethdseed` could stop
+  the node when it received a payment to some keys of its earlier seed. Such payments are now recorded normally. The
+  wallet also derives the next keys of an earlier seed when an encrypted wallet is unlocked or its key pool is refilled,
+  so later payments to them are no longer missed, and keys it derives for an earlier seed after the wallet is loaded
+  again get the right derivation path. It no longer records MWEB keys of its current seed under an earlier seed.
+* PSBT (Bitcoin Core #29855): a malformed PSBT could stop the node in one of the PSBT RPCs. Such a PSBT is now
+  rejected when it is decoded.
+* Block index (Bitcoin Core #35070): a block waiting for the data of an earlier block could be recorded twice as
+  waiting. When that data arrived, the block was processed twice, which could leave the node's set of candidate chain
+  tips inconsistent. Each waiting block is now recorded only once.
+* Network, builds other than Linux, such as the Windows release (CVE-2026-117350, Bitcoin Core #36665): the node
+  watched every peer connection for exceptional conditions, also while it had paused receiving from that peer, and a
+  peer could use this to keep the node reading from it. Connections are now watched for these conditions only while the
+  node reads from them. Linux builds wait for sockets with `poll()` instead of `select()` and were not affected.
+* Network (CVE-2026-117349, Bitcoin Core #36667): a peer whose send buffer stays full for more than 20 minutes is now
+  disconnected. Before, a peer that read too slowly to drain its send buffer could keep its connection slot for much
+  longer, in some cases indefinitely.
+* Network (Ferrite fix): incoming messages are limited to 4 MB again, apart from blocks; see "Network message sizes"
+  below.
+
+> An upgrade does not repair an MWEB block of the kind above that an earlier version already stored. A node holding
+one may refuse to start, or stop later when it reads that block. Start it once with `-reindex` after upgrading: it then
+downloads that block again from a peer that runs this release. `-reindex` rebuilds the block index and the chain state
+from the block files, which can take hours; a pruned node downloads the chain again.
+
+### Changed defaults and settings
+#### New ferrite.conf in new data directories
+When Ferrite Core starts on a data directory that has no `ferrite.conf`, it still writes one, but the file now holds only
+comments and the `addnode` lines: the main network's under `[main]` and the test network's under `[test]`. Every other
+setting comes from the built-in defaults. Compared with the file that earlier versions wrote, a new install:
+* uses cookie authentication for RPC: no RPC user name or password is written, and `ferrite-cli` on the same computer
+  logs in through the `.cookie` file, also during the first run;
+* runs ferrite-qt without an RPC server unless you add `server=1` (`ferrited` always runs one);
+* does not run `ferrited` in the background (add `daemon=1` on Linux or macOS if you want that; Windows does not
+  support it);
+* keeps no transaction index (add `txindex=1` if you need one);
+* follows the pruning, incoming-connection and UPnP choices made in ferrite-qt;
+* uses the default limits: 125 connections, 4 RPC threads, a wallet fee limit (`-maxtxfee`) of 500 FEC and the default
+  OP_RETURN relay size (`-datacarriersize`);
+* starts on regtest and signet with the file in place.
+
+> Existing installs: the file is written only when none exists, so your `ferrite.conf` is not changed.
+> * Files written by earlier versions (since v2.1.1) contain an `rpcuser` and an `rpcpassword` line with the same
+>   values on every install. Remove both lines (`ferrite-cli` then uses the cookie file), or replace them with your own
+>   `rpcauth` line.
+> * Depending on the version that wrote them, these files also set `daemon=1`, `server=1`, `txindex=1`, `listen=1`,
+>   `upnp=1`, `rpcallowip=127.0.0.1`, `rpcthreads=32` and `maxconnections=500` (since v2.1.1), `prune=0` (since
+>   v2.1.2), `blockfilterindex=basic` and `maxtxfee=1000` (since v3.1.2), and `datacarriersize=10000` (v3.2.0 and
+>   v3.3.0r1). These lines override the defaults and the ferrite-qt options; remove any you did not choose. On Windows,
+>   remove every `daemon=1` line, the one in the `[test]` section included.
+> * Removing `prune=0` lets the pruning option of ferrite-qt take effect, if it is on. A pruning node does not start
+>   with `txindex=1` or `blockfilterindex=basic`; without them it deletes old block files, and a wallet can then no
+>   longer be rescanned over the deleted blocks.
+> * Files written by v2.1.1 to v3.1.0 also contain `rpcconnect=500`, with which `ferrite-cli` cannot reach the node
+>   ("Could not connect to the server 500:9573"). Remove it.
+> * Files written since v3.0.1 end with a `[test]` section, so a line added at the end of the file applies only to the
+>   test network. Put such lines near the top instead.
+
+#### Unrecognized ferrite.conf sections
+A section header that names no known network, such as `[testnet]` instead of `[test]`, stopped the node at start-up
+with an internal error. The node now prints the warning `<file>:<line> Section [<name>] is not recognized.` and starts,
+as Bitcoin Core does.
+
+#### Data carrier (OP_RETURN) size: `-datacarriersize`
+The node now relays and mines transactions with a data carrier (OP_RETURN) script of up to 100,000 bytes by default, up
+from 83 bytes, as Bitcoin Core does since v30. The limit counts the whole script, not just the data in it, as before,
+and the `-datacarriersize` help text now says so. It applies both to OP_RETURN outputs and to the script of an MWEB
+peg-out. With the new default, the standard transaction weight limit is what limits such a script, to just under
+100,000 bytes. A standard transaction may still carry only one OP_RETURN script among its outputs and peg-outs. A
+`ferrite.conf` written by v3.2.0 or v3.3.0r1 contains `datacarriersize=10000`, which keeps a 10,000-byte limit; remove
+the line to use the new default. Use `-datacarriersize=83` to keep the old limit, or `-datacarrier=0` to relay and mine
+no data carrier transactions. This changes relay and mining policy only, not which blocks are valid.
+
+#### Network time
+The time offset that the node applies to its own clock (`getnetworkinfo` "timeoffset", also shown by
+`ferrite-cli -getinfo`) is now taken only from outbound peers, the connections the node opens itself, as in Bitcoin Core
+23.0 and later (#23631). Inbound peers no longer change it and no longer count toward the warning to check the
+computer's date and time. Everything that uses the node's adjusted time, such as the time of new block templates,
+follows the same offset. `getpeerinfo` still shows each peer's own time offset. The help text of `-maxtimeadjustment`
+now says that only outbound peers influence the node's time (#24609).
+
+#### Network message sizes
+The node again limits incoming network messages to 4 MB, as Bitcoin Core does. The exception is a block or compact block
+message from a peer that has completed the version handshake: it may be up to 32 MB, because a block with MWEB data can
+be larger than 4 MB. The large messages that inbound peers are still sending also share a total of 128 MB; messages from
+outbound peers do not count toward it. A peer whose message exceeds one of these limits is disconnected. Relay of large
+MWEB blocks is unchanged.
+
+#### Built-in peer list
+The fixed seeds, the addresses a node falls back to when it knows no peer addresses a minute after starting, still held
+Litecoin's nodes. They now hold the project's nodes on mainnet (see `contrib/seeds/nodes_main.txt`). Testnet has no
+fixed seeds: a testnet node finds peers through the DNS seeds, `-addnode` or `-seednode`. The DNS seeds are unchanged.
+
 ### Wallet
 **Peg-outs to your own addresses** (from Litecoin Core): the amount of an MWEB transaction now counts a peg-out to one
 of the wallet's own addresses as received. `gettransaction` "amount" is now 0 for a peg-out from your MWEB coins to your
@@ -76,10 +183,13 @@ backup with File > Backup Wallet in ferrite-qt or with `backupwallet`: a copy of
 loaded can be damaged.
 
 ### Checkpoints
-Added checkpoints at heights 292,000, 450,000, 602,214 (2nd halving), 750,000, 903,321 (3rd halving) and 1,000,000;
-the last checkpoint of v3.2.0 was block 200,000. Once a node has a checkpoint block, it rejects any chain that forks
-from the known chain below that block's height.
-Assumed-valid block and minimum chain work updated to block 1,046,922 (v3.2.0: block 200,000).
+Added checkpoints at heights 292,000, 450,000, 602,214 (2nd halving), 750,000, 903,321 (3rd halving), 1,000,000 and
+1,089,000; the last checkpoint of v3.2.0 was block 200,000. Once a node has a checkpoint block, it rejects any chain that
+forks from the known chain below that block's height.
+Assumed-valid block and minimum chain work updated to block 1,089,000 (v3.2.0: block 200,000). To check these values on
+a synced node, run `ferrite-cli getblockhash 1089000`, which should print
+`849fc31014b955c1adcdc9c5757156996fd4318730c9d5bf13db65830353ae8a`, and `ferrite-cli getblockheader` with that hash,
+whose `chainwork` should be `0000000000000000000000000000000000000000000000006b03e4a31762f086`.
 
 ### Miscellaneous
 Version and copyright year increment
@@ -92,6 +202,21 @@ RPC: no command or argument changed. `getblockchaininfo` lists the new `mwebkern
 returns an error for MWEB-only transactions on nodes started with `-rpcserialversion=0` or `1`; `maxfeerate=0` in
 `sendrawtransaction` / `testmempoolaccept` now means "no limit" for MWEB transactions too; `dumpwallet` files gain a
 `# mweb view keys:` comment line; `gettransaction` amounts of peg-outs to the wallet change (see Wallet)
+RPC, since v3.3.0r1: every PSBT RPC (`decodepsbt`, `analyzepsbt`, `combinepsbt`, `finalizepsbt`, `joinpsbts`,
+`utxoupdatepsbt`, `walletprocesspsbt`) returns error -22
+"TX decode failed Input specifies output index that does not exist: iostream error" for a PSBT input that refers to an
+output its non-witness UTXO does not have.
+`signrawtransactionwithkey` and `signrawtransactionwithwallet` return the Taproot inputs described under Security
+Updates without their witness, with `complete` false and an `errors` entry; `combinerawtransaction` and the `sign`
+command of `ferrite-tx` return them without their witness and give no error. With `SINGLE`, an input that has no output
+of the same index is not signed and keeps its witness. For a block or transaction that holds one of the unusual MWEB
+kernels described there, the hex now includes the kernel's empty field and `size` grows by one byte per such field;
+hashes, kernel IDs, `strippedsize`, `vsize` and `weight` do not change
+Legacy wallets: `keypoolrefill`, `walletpassphrase` and every key-pool top-up also derive keys of inactive HD chains;
+these keys are not counted in `getwalletinfo` "keypoolsize"
+P2P: with `-debug=net` the node logs `send buffer full for <n>s, disconnecting peer=<id>` and
+`HEADER ERROR - LARGE MESSAGES TOTAL` when it disconnects a peer for these reasons, and `HEADER ERROR - SIZE` also for
+messages over 4 MB that may not be that large
 Mempool: MWEB transactions with too many inputs, too much weight, invalid output keys or empty peg-out kernels are no
 longer accepted or relayed. Peg-outs now pass the same standard-script and dust checks as outputs, and a transaction may
 carry only one OP_RETURN script among its outputs and peg-outs
