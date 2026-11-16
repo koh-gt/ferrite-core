@@ -244,6 +244,9 @@ bool ProduceSignature(const SigningProvider& provider, const BaseSignatureCreato
         result.clear();
     } else if (solved && whichType == TxoutType::WITNESS_UNKNOWN) {
         sigdata.witness = true;
+    } else if (!P2SH && whichType == TxoutType::WITNESS_V1_TAPROOT) {
+        // Native Taproot inputs are not signed here, but they are witness inputs: their witness is kept.
+        sigdata.witness = true;
     }
 
     if (!sigdata.witness) sigdata.scriptWitness.stack.clear();
