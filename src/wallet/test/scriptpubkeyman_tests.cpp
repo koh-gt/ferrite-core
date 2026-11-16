@@ -222,4 +222,72 @@ BOOST_AUTO_TEST_CASE(MalformedMWEBOutputKeys)
     BOOST_CHECK_EQUAL(stored_coin.amount, amount);
 }
 
+namespace {
+
+struct KeypoolTenSetup : public BasicTestingSetup {
+    KeypoolTenSetup() : BasicTestingSetup(CBaseChainParams::MAIN, {"-keypool=10"}) {}
+};
+
+//! The public key at m/0'/0'/<index>' of an HD seed
+CPubKey ExternalChainKey(const CKey& seed, uint32_t index)
+{
+    constexpr uint32_t hardened{0x80000000};
+    CExtKey master, account, external, child;
+    master.SetSeed(seed.begin(), seed.size());
+    master.Derive(account, hardened);
+    account.Derive(external, hardened);
+    external.Derive(child, index | hardened);
+    return child.key.GetPubKey();
+}
+
+} // namespace
+
+// Check how LegacyScriptPubKeyMan::MarkUnusedAddresses tops up an inactive HD
+// chain: from the derivation path string of a key that has no key origin, and
+// never with MWEB keys, which are only derived from the current seed.
+BOOST_FIXTURE_TEST_CASE(InactiveHDChainTopUp, KeypoolTenSetup)
+{
+    NodeContext node;
+    std::unique_ptr<interfaces::Chain> chain = interfaces::MakeChain(node);
+    CWallet wallet(chain.get(), "", CreateMockWalletDatabase());
+    wallet.SetMinVersion(WalletFeature::FEATURE_HD_SPLIT);
+    LegacyScriptPubKeyMan& keyman = *wallet.GetOrCreateLegacyScriptPubKeyMan();
+
+    CKey old_seed;
+    old_seed.MakeNewKey(true);
+    keyman.SetHDSeed(keyman.DeriveNewSeed(old_seed));
+    BOOST_REQUIRE(keyman.NewKeyPool());
+    const CHDChain old_chain = keyman.GetHDChain();
+    const mw::Keychain::Ptr old_mweb_keychain = keyman.GetMWEBKeychain();
+    BOOST_REQUIRE_EQUAL(old_chain.nExternalChainCounter, 10U);
+    BOOST_REQUIRE_EQUAL(old_chain.nMWEBIndexCounter, 12U);
+
+    // Move to a new seed, so that the old seed is an inactive HD chain
+    keyman.SetHDSeed(keyman.GenerateNewSeed());
+    BOOST_REQUIRE(keyman.NewKeyPool());
+    const mw::Keychain::Ptr new_mweb_keychain = keyman.GetMWEBKeychain();
+    BOOST_REQUIRE_EQUAL(keyman.GetHDChain().nMWEBIndexCounter, 12U);
+    const size_t num_keys = keyman.GetKeys().size();
+
+    // The last MWEB address of the old seed
+    keyman.MarkUnusedAddresses(DestinationAddr{old_mweb_keychain->GetStealthAddress(11)});
+    BOOST_CHECK_EQUAL(keyman.GetKeys().size(), num_keys);
+    BOOST_CHECK(!keyman.HaveKey(new_mweb_keychain->GetStealthAddress(12).B().GetID()));
+
+    // The last external key of the old seed, with metadata that has no key origin
+    const CPubKey last_key = ExternalChainKey(old_seed, 9);
+    BOOST_REQUIRE(keyman.HaveKey(last_key.GetID()));
+    BOOST_REQUIRE(!keyman.HaveKey(ExternalChainKey(old_seed, 10).GetID()));
+    CKeyMetadata meta(GetTime());
+    meta.nVersion = CKeyMetadata::VERSION_WITH_HDDATA;
+    meta.hdKeypath = "m/0'/0'/9'";
+    meta.hd_seed_id = old_chain.seed_id;
+    keyman.LoadKeyMetadata(last_key.GetID(), meta);
+    keyman.MarkUnusedAddresses(DestinationAddr{GetScriptForDestination(PKHash(last_key))});
+    BOOST_CHECK_EQUAL(keyman.GetKeys().size(), num_keys + 10);
+    for (uint32_t index = 10; index < 20; ++index) {
+        BOOST_CHECK(keyman.HaveKey(ExternalChainKey(old_seed, index).GetID()));
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
