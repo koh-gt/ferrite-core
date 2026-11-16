@@ -9,7 +9,11 @@
 
 #include <mweb/mweb_policy.h>
 #include <chainparams.h>
+#include <consensus/validation.h>
+#include <policy/policy.h>
+#include <policy/settings.h>
 #include <primitives/transaction.h>
+#include <script/standard.h>
 
 #include <test_framework/TestMWEB.h>
 
@@ -353,6 +357,44 @@ BOOST_AUTO_TEST_CASE(SupplyChangeOutOfRange_Test)
     );
 
     BOOST_REQUIRE(!kernel.GetSupplyChange().has_value());
+}
+
+BOOST_AUTO_TEST_CASE(PegOutDataCarrier_Test)
+{
+    // IsStandardTx() checks each peg-out script as it checks an output script,
+    // so -datacarriersize applies to OP_RETURN peg-outs too. The standard weight
+    // of a transaction with only MWEB data counts its peg-outs and nothing else.
+    const auto pegout_tx = [](const CScript& script) {
+        const Kernel kernel = Kernel::Create(BlindingFactor::Random(), boost::none, 1000, boost::none, {PegOutCoin(1000, script)}, boost::none);
+        CMutableTransaction transaction;
+        transaction.mweb_tx = MWEB::Tx{mw::Transaction::Create(BlindingFactor::Random(), BlindingFactor::Random(), {}, {}, {kernel})};
+        return CTransaction{std::move(transaction)};
+    };
+    std::string reason;
+
+    // An 84-byte OP_RETURN peg-out script is standard by default, but not with
+    // -datacarriersize=83
+    const CScript null_data_84 = CScript() << OP_RETURN << std::vector<uint8_t>(81);
+    BOOST_CHECK_EQUAL(null_data_84.size(), 84U);
+    BOOST_CHECK(IsStandardTx(pegout_tx(null_data_84), reason));
+    nMaxDatacarrierBytes = 83;
+    BOOST_CHECK(!IsStandardTx(pegout_tx(null_data_84), reason));
+    BOOST_CHECK_EQUAL(reason, "scriptpubkey");
+    nMaxDatacarrierBytes = MAX_OP_RETURN_RELAY;
+
+    // The largest OP_RETURN peg-out script within MAX_STANDARD_TX_WEIGHT is
+    // 99,987 bytes: the weight counts the peg-out as an output of an 8-byte
+    // amount, a 5-byte script length and the script, 100,000 bytes in all.
+    // One byte more is too large.
+    std::vector<uint8_t> data(99'987 - 6); // 6 bytes for OP_RETURN, OP_PUSHDATA4 and its 4-byte length
+    const CTransaction largest = pegout_tx(CScript() << OP_RETURN << data);
+    BOOST_CHECK_EQUAL(GetTransactionWeight(largest), MAX_STANDARD_TX_WEIGHT);
+    BOOST_CHECK(IsStandardTx(largest, reason));
+    BOOST_CHECK(MWEB::Policy::CheckWeight(largest, reason));
+    data.push_back(0);
+    reason.clear();
+    BOOST_CHECK(!IsStandardTx(pegout_tx(CScript() << OP_RETURN << data), reason));
+    BOOST_CHECK_EQUAL(reason, "tx-size");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -96,10 +96,13 @@ public:
 };
 
 /**
- * Default setting for nMaxDatacarrierBytes. 80 bytes of data, +1 for OP_RETURN,
- * +2 for the pushdata opcodes.
+ * Default setting for nMaxDatacarrierBytes, in bytes of the whole
+ * TxoutType::NULL_DATA scriptPubKey. As in Bitcoin Core, it equals
+ * MAX_STANDARD_TX_WEIGHT / WITNESS_SCALE_FACTOR (see policy/policy.h), so by
+ * default only the size of a standard transaction limits a data carrier
+ * output.
  */
-static const unsigned int MAX_OP_RETURN_RELAY = 83;
+static const unsigned int MAX_OP_RETURN_RELAY = 100000;
 
 /**
  * A data carrying output is an unspendable output containing data. The script
