@@ -332,7 +332,7 @@ public:
         bech32_hrp = "tfec";
         mweb_hrp = "tfecmweb";
 
-        vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_test), std::end(chainparams_seed_test));
+        // No fixed seeds (vFixedSeeds is cleared above): contrib/seeds/nodes_test.txt lists no nodes.
 
         fDefaultConsistencyChecks = false;
         fRequireStandard = false;

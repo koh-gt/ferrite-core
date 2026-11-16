@@ -923,4 +923,31 @@ BOOST_AUTO_TEST_CASE(cnode_large_messages)
     BOOST_CHECK_EQUAL(budget.GetTotal(), 0U);
 }
 
+//! Decode a fixed seed list the way the node reads it (ConvertSeeds in net.cpp).
+static std::vector<std::string> DecodeFixedSeeds(const std::vector<uint8_t>& seeds)
+{
+    std::vector<std::string> endpoints;
+    CDataStream s(seeds, SER_NETWORK, PROTOCOL_VERSION | ADDRV2_FORMAT);
+    while (!s.eof()) {
+        CService endpoint;
+        s >> endpoint;
+        endpoints.push_back(endpoint.ToString());
+    }
+    return endpoints;
+}
+
+BOOST_AUTO_TEST_CASE(fixed_seeds)
+{
+    // The lists in contrib/seeds/nodes_main.txt and nodes_test.txt
+    const std::vector<std::string> expected_main{
+        "118.189.201.104:9574",
+        "118.189.201.104:9588",
+        "118.189.201.104:9598",
+        "89.185.100.228:9574",
+    };
+    const std::vector<std::string> seeds_main{DecodeFixedSeeds(CreateChainParams(*m_node.args, CBaseChainParams::MAIN)->FixedSeeds())};
+    BOOST_CHECK_EQUAL_COLLECTIONS(seeds_main.begin(), seeds_main.end(), expected_main.begin(), expected_main.end());
+    BOOST_CHECK(CreateChainParams(*m_node.args, CBaseChainParams::TESTNET)->FixedSeeds().empty());
+}
+
 BOOST_AUTO_TEST_SUITE_END()
