@@ -78,12 +78,12 @@ def base58_to_byte(s):
 
 def keyhash_to_p2pkh(hash, main=False):
     assert len(hash) == 20
-    version = 0 if main else 111
+    version = 36 if main else 111
     return byte_to_base58(hash, version)
 
 def scripthash_to_p2sh(hash, main=False):
     assert len(hash) == 20
-    version = 5 if main else 58
+    version = 35 if main else 58
     return byte_to_base58(hash, version)
 
 def key_to_p2pkh(key, main=False):
@@ -157,3 +157,13 @@ class TestFrameworkScript(unittest.TestCase):
         self.assertEqual(ADDRESS_BCRT1_UNSPENDABLE, program_to_witness(0, bytes(32)))
         self.assertEqual(ADDRESS_BCRT1_UNSPENDABLE_DESCRIPTOR, descsum_create('addr({})'.format(ADDRESS_BCRT1_UNSPENDABLE)))
         self.assertEqual(ADDRESS_BCRT1_P2WSH_OP_TRUE, script_to_p2wsh(CScript([OP_TRUE])))
+
+    def test_address_encodings(self):
+        # The addresses ferrite-tx gives for the P2PKH, P2SH and P2WPKH scripts of this hash
+        h = bytes.fromhex('1f8ea1702a7bd4941bca0941b852c4bbfedb2e05')
+        self.assertEqual(keyhash_to_p2pkh(h, main=True), 'FY3aG1Hegd71ykLz49svzxRXK13kVtWE68')
+        self.assertEqual(scripthash_to_p2sh(h, main=True), 'F8hyGtzMySe9AKCu2jYcWq9jgVnojyR4Ef')
+        self.assertEqual(program_to_witness(0, h, main=True), 'fec1qr782zup2002fgx72p9qms5kyh0ldkts95mh59y')
+        self.assertEqual(keyhash_to_p2pkh(h), 'miPp79eFw9rjKFoUtcrqNMqXWqNVmnzfug')
+        self.assertEqual(scripthash_to_p2sh(h), 'QPUqvPqzJbJHyHQtbPCwfiQqA6iW9JXcx2')
+        self.assertEqual(program_to_witness(0, h), 'rfec1qr782zup2002fgx72p9qms5kyh0ldkts9x948xs')
