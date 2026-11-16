@@ -4,18 +4,18 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the signing RPCs on transactions that spend a Taproot output.
 
-The signing code cannot sign for a Taproot output, and it cannot check a
-Taproot signature, which commits to every output the transaction spends.
+The signing code cannot sign for a Taproot output, and it can check a
+Taproot signature only if it knows every output the transaction spends.
 The test funds a Taproot output with a key path and one script leaf, and
 builds a valid key-path spend and a valid script-path spend of it. It
 checks that signrawtransactionwithkey and signrawtransactionwithwallet
-return the witness unchanged and report the input as not complete, that
-they fail when the amount of the Taproot input is not given, that
-combinerawtransaction returns the input without a witness, that
-walletprocesspsbt and finalizepsbt add the witness UTXO to a Taproot
-input that comes with its previous transaction only, and that the node
-keeps running. Mempool and block validation have the spent outputs: the
-node accepts both witnesses and mines one.
+return the witness unchanged, that they report the input as complete
+when every spent output is known with its amount and as not complete
+when one is not, that they fail when the amount of the Taproot input is
+not given, that combinerawtransaction returns the input without a
+witness, that walletprocesspsbt and finalizepsbt add the witness UTXO to
+a Taproot input that comes with its previous transaction only, and that
+the node accepts what the signing RPCs return.
 """
 
 import base64
@@ -28,6 +28,7 @@ from test_framework.script import (
     CScript,
     LEAF_VERSION_TAPSCRIPT,
     OP_CHECKSIG,
+    OP_TRUE,
     SIGHASH_DEFAULT,
     TaprootSignatureHash,
     taproot_construct,
@@ -36,7 +37,8 @@ from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import assert_equal, assert_raises_rpc_error, find_vout_for_address
 from test_framework.wallet_util import bytes_to_wif
 
-# The error reported for a Taproot input whose signature was not checked.
+# The error reported for a Taproot input whose signature cannot be checked
+# because another spent output or amount is not known.
 NOT_CHECKED = {"key": "No error", "script": "unknown error"}
 
 
@@ -119,9 +121,24 @@ class SignRawTransactionTaprootTest(BitcoinTestFramework):
             self.log.info(f"The {path}-path spend is valid")
             assert_equal(node.testmempoolaccept([ToHex(tx)])[0]["allowed"], True)
 
-            self.log.info(f"signrawtransactionwithkey and signrawtransactionwithwallet keep the {path}-path witness")
-            self.check_result(node.signrawtransactionwithkey(ToHex(tx), [privkey], prevtxs), tx, {0: NOT_CHECKED[path]})
-            self.check_result(node.signrawtransactionwithwallet(ToHex(tx)), tx, {0: NOT_CHECKED[path]})
+            self.log.info(f"signrawtransactionwithkey and signrawtransactionwithwallet keep the {path}-path witness and check it")
+            self.check_result(node.signrawtransactionwithkey(ToHex(tx), [privkey], prevtxs), tx, {})
+            self.check_result(node.signrawtransactionwithwallet(ToHex(tx)), tx, {})
+
+        # A second input, whose output anyone can spend with an empty scriptSig.
+        other = COutPoint(0x0123456789abcdef, 0)
+        other_output = CTxOut(COIN, CScript([OP_TRUE]))
+        other_no_amount = {"txid": f"{other.hash:064x}", "vout": other.n, "scriptPubKey": other_output.scriptPubKey.hex()}
+        for path in ("key", "script"):
+            tx = self.spend([outpoint, other], [spent_output, other_output], Decimal("1.999"), 0, path)
+            self.log.info(f"The {path}-path signature is not checked when the output of another input is not known")
+            errors = {0: NOT_CHECKED[path], 1: "Input not found or already spent"}
+            self.check_result(node.signrawtransactionwithkey(ToHex(tx), [privkey], prevtxs), tx, errors)
+            self.check_result(node.signrawtransactionwithwallet(ToHex(tx)), tx, errors)
+
+            self.log.info(f"The {path}-path signature is not checked when another input is given without its amount")
+            self.check_result(node.signrawtransactionwithkey(ToHex(tx), [privkey], prevtxs + [other_no_amount]), tx, {0: NOT_CHECKED[path]})
+            self.check_result(node.signrawtransactionwithwallet(ToHex(tx), [other_no_amount]), tx, {0: NOT_CHECKED[path]})
 
         self.log.info("Without the amount of the Taproot input the signing RPCs fail")
         no_amount = [{key: value for key, value in prevtxs[0].items() if key != "amount"}]
@@ -150,17 +167,17 @@ class SignRawTransactionTaprootTest(BitcoinTestFramework):
             got = psbt_input["witness_utxo"]
             assert_equal({"amount": got["amount"], "scriptPubKey": got["scriptPubKey"]["hex"]}, witness_utxo)
 
-        self.log.info("With SIGHASH_SINGLE and no output for the Taproot input the witness is kept")
+        self.log.info("With SIGHASH_SINGLE and no output for the Taproot input the witness is kept and checked")
         coin = node.listunspent()[0]
         wallet_outpoint = COutPoint(int(coin["txid"], 16), coin["vout"])
         wallet_output = CTxOut(int(coin["amount"] * COIN), bytes.fromhex(coin["scriptPubKey"]))
         for path in ("key", "script"):
             tx = self.spend([wallet_outpoint, outpoint], [wallet_output, spent_output], coin["amount"] + Decimal("0.999"), 1, path)
             result = node.signrawtransactionwithwallet(ToHex(tx), [], "SINGLE")
-            assert_equal(result["complete"], False)
-            assert_equal(len(result["errors"]), 1)
-            assert_equal((result["errors"][0]["txid"], result["errors"][0]["vout"], result["errors"][0]["error"]), (txid, vout, NOT_CHECKED[path]))
+            assert_equal(result["complete"], True)
+            assert "errors" not in result
             assert_equal(node.decoderawtransaction(result["hex"])["vin"][1]["txinwitness"], witness_hex(tx, 1))
+            assert_equal(node.testmempoolaccept([result["hex"]])[0]["allowed"], True)
 
         self.log.info("The node accepts the key-path spend and mines it")
         spent_txid = node.sendrawtransaction(ToHex(spends["key"]))
