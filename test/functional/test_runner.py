@@ -163,6 +163,7 @@ BASE_SCRIPTS = [
     'interface_rpc.py',
     'rpc_psbt.py',
     'rpc_psbt.py --descriptors',
+    'rpc_psbt_prevout_index.py',
     'rpc_users.py',
     'rpc_whitelist.py',
     'feature_proxy.py',
