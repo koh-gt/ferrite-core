@@ -167,6 +167,7 @@ BASE_SCRIPTS = [
     'rpc_users.py',
     'rpc_whitelist.py',
     'feature_proxy.py',
+    'feature_torcontrol_line_count.py',
     'rpc_signrawtransaction.py',
     'rpc_signrawtransaction.py --descriptors',
     'rpc_signrawtransaction_taproot.py',
