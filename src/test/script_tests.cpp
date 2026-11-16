@@ -1579,6 +1579,29 @@ BOOST_AUTO_TEST_CASE(script_checker_missing_data)
     }
 }
 
+BOOST_AUTO_TEST_CASE(sign_witness_input_keeps_witness)
+{
+    // When ProduceSignature cannot sign an input, it keeps the input's
+    // witness if the input is marked as a witness input, and removes it
+    // otherwise.
+    const FillableSigningProvider keystore;
+    CMutableTransaction tx;
+    tx.vin.resize(1);
+    tx.vout.resize(1);
+    const MutableTransactionSignatureCreator creator(&tx, 0, 1, SIGHASH_ALL);
+    const std::vector<std::vector<unsigned char>> stack{{0x01, 0x02}, {0x03}};
+
+    // A P2WSH output whose witness script the signer does not know.
+    const CScript p2wsh = GetScriptForDestination(WitnessV0ScriptHash(CScript() << OP_TRUE));
+    for (const bool witness : {false, true}) {
+        SignatureData sigdata;
+        sigdata.witness = witness;
+        sigdata.scriptWitness.stack = stack;
+        BOOST_CHECK(!ProduceSignature(keystore, creator, p2wsh, sigdata));
+        BOOST_CHECK(sigdata.scriptWitness.stack == (witness ? stack : std::vector<std::vector<unsigned char>>{}));
+    }
+}
+
 #if defined(HAVE_CONSENSUS_LIB)
 
 /* Test simple (successful) usage of bitcoinconsensus_verify_script */
