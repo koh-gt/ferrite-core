@@ -1,6 +1,86 @@
 Release Process
 ====================
 
+## Ferrite Core releases: tag, build and package
+
+A Ferrite Core release is built from a tagged commit with `depends`, as [build-windows.md](build-windows.md) and
+[build-unix.md](build-unix.md) describe, and published as a GitHub release. Its release notes, in
+`doc/ferrite-release-notes/`, link to the files of that release by name. The Gitian steps further below come from
+Bitcoin Core; the repositories they name are not Ferrite Core's, and these steps do not make the files listed here.
+
+### 1. Tag the release with an annotated tag before building
+
+The programs take their version string from `src/obj/build.h`, which `share/genbuild.sh` writes during the build. The
+script looks for a tag with `git describe --abbrev=0`, which sees only annotated tags. When the commit being built
+carries an annotated tag and no tracked file is modified, the version string is the tag name, for example `v3.3.0`.
+Otherwise it is the version from `configure.ac` followed by the commit, for example `v3.3.0.0-aa20a59`. A lightweight
+tag is ignored: `git tag` without `-a` makes one, and so does GitHub when a release is created with a new tag.
+
+1. Check that `configure.ac` has the release's version, with `_CLIENT_VERSION_RC` 0 and `_CLIENT_VERSION_IS_RELEASE`
+   true, and that the release notes are final apart from the SHA-256 sums and the upload date.
+2. Tag the release commit and push the tag (use the release's own version):
+
+       git tag -a v3.3.0 -m "Ferrite Core v3.3.0"
+       git cat-file -t v3.3.0     # must print "tag"; "commit" means a lightweight tag
+       git describe --abbrev=0    # must print v3.3.0
+       git push origin v3.3.0
+
+   A pre-release tag such as `v3.3.0r1` needs `-a` as well, or its programs show the commit instead of the tag.
+3. When you create the GitHub release, choose this tag; do not let GitHub create a new one.
+
+### 2. Build on a clean checkout of the tag
+
+Build on a checkout of the tag in which no tracked file is changed; untracked files do not matter. `make` runs
+`share/genbuild.sh` every time, so a tree that was configured or built before the tag existed picks the tag up on the
+next `make`. Before packaging, check each build:
+
+    cat src/obj/build.h      # must be: #define BUILD_GIT_TAG "v3.3.0"
+    src/ferrited -version    # Linux build: "Ferrite Core version v3.3.0"
+
+If `build.h` holds `BUILD_GIT_COMMIT` instead, the tag is lightweight or not on the commit that was built, or a tracked
+file is modified (the commit then ends in `-dirty`). Fix that and run `make` again.
+
+- Windows: the depends build for `HOST=x86_64-w64-mingw32` in [build-windows.md](build-windows.md), up to and including
+  `make deploy`, which needs `nsis`.
+- Linux: the depends build for `HOST=x86_64-pc-linux-gnu` in [build-unix.md](build-unix.md).
+
+### 3. Package the files that the release notes list
+
+The release notes of a version link to five files of its GitHub release: the Windows installer, `ferrite-qt.exe`, the
+Windows server zip, the Linux `ferrite-qt` and the Linux server zip. Collect them in one directory next to the build
+trees; set `OUT` once and use it for both builds. `zip` comes from the package of the same name.
+
+    VERSION=3.3.0
+    OUT="$PWD/../ferrite-$VERSION-files"
+    mkdir -p "$OUT"
+
+Windows, in the Windows build tree: `make deploy` writes the installer `ferrite-$VERSION-win64-setup.exe` and puts
+stripped copies of `ferrited.exe`, `ferrite-qt.exe`, `ferrite-cli.exe`, `ferrite-tx.exe` and `ferrite-wallet.exe` in
+`release/`.
+
+    cp ferrite-$VERSION-win64-setup.exe release/ferrite-qt.exe "$OUT/"
+    (cd release && zip "$OUT/ferrite-win-$VERSION.zip" ferrited.exe ferrite-cli.exe ferrite-tx.exe ferrite-wallet.exe)
+
+Linux, in the Linux build tree (there is no `make deploy` for Linux, so strip copies by hand):
+
+    mkdir -p release-linux
+    cp src/ferrited src/ferrite-cli src/ferrite-tx src/ferrite-wallet src/qt/ferrite-qt release-linux/
+    strip release-linux/*
+    cp release-linux/ferrite-qt "$OUT/"
+    (cd release-linux && zip "$OUT/ferrite-unix-$VERSION.zip" ferrited ferrite-cli ferrite-tx ferrite-wallet)
+
+Then compute the sums:
+
+    (cd "$OUT" && sha256sum *)
+
+### 4. Publish
+
+Create the GitHub release from the tag (mark it as a pre-release for an `rN` version) and upload the five files under
+exactly these names, since the release notes link to `releases/download/v<version>/<file>`. In the release description,
+which is a copy of the release notes, put each SHA-256 sum in place of the `<SHA256>` next to its file and fill in the
+upload date. The sums cannot be part of the tagged commit, since they come from programs built from it; add them to
+the file in `doc/ferrite-release-notes/` in a later commit.
+
 ## Branch updates
 
 ### Before every release candidate
