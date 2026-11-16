@@ -6,16 +6,17 @@
 
 The signing code cannot sign for a Taproot output, and it can check a
 Taproot signature only if it knows every output the transaction spends.
-The test funds a Taproot output with a key path and one script leaf, and
-builds a valid key-path spend and a valid script-path spend of it. It
-checks that signrawtransactionwithkey and signrawtransactionwithwallet
-return the witness unchanged, that they report the input as complete
-when every spent output is known with its amount and as not complete
-when one is not, that they fail when the amount of the Taproot input is
-not given, that combinerawtransaction returns the input without a
-witness, that walletprocesspsbt and finalizepsbt add the witness UTXO to
-a Taproot input that comes with its previous transaction only, and that
-the node accepts what the signing RPCs return.
+The test funds a Taproot output with a key path and two script leaves,
+one of which needs no signature, and builds valid spends of it by key
+and by each leaf. It checks that signrawtransactionwithkey and
+signrawtransactionwithwallet return the witness unchanged, that they
+report the input as complete when every spent output is known with its
+amount and as not complete when one is not, that they fail when the
+amount of the Taproot input is not given, that combinerawtransaction
+keeps the first witness given for the input, that walletprocesspsbt and
+finalizepsbt add the witness UTXO to a Taproot input that comes with its
+previous transaction only, and that the node accepts what the signing
+RPCs return.
 """
 
 import base64
@@ -66,12 +67,14 @@ class SignRawTransactionTaprootTest(BitcoinTestFramework):
         self.skip_if_no_wallet()
 
     def taproot_witness(self, tx, spent_outputs, index, path):
-        """Return a valid witness for input index, spending the Taproot output by key or by script."""
+        """Return a valid witness for input index, spending the Taproot output by key, by script or by the leaf OP_TRUE."""
         if path == "key":
             sighash = TaprootSignatureHash(tx, spent_outputs, SIGHASH_DEFAULT, index)
             return [sign_schnorr(self.output_key, sighash)]
+        if path == "true":
+            return [self.true_script, self.control_blocks["true"]]
         sighash = TaprootSignatureHash(tx, spent_outputs, SIGHASH_DEFAULT, index, scriptpath=True, script=self.leaf_script)
-        return [sign_schnorr(self.leaf_key, sighash), self.leaf_script, self.control_block]
+        return [sign_schnorr(self.leaf_key, sighash), self.leaf_script, self.control_blocks["leaf"]]
 
     def spend(self, inputs, spent_outputs, value, taproot_index, path):
         """Build a transaction with the given inputs and one output, with a witness for the Taproot input."""
@@ -98,14 +101,15 @@ class SignRawTransactionTaprootTest(BitcoinTestFramework):
         node = self.nodes[0]
         node.generate(101)
 
-        self.log.info("Fund a Taproot output with a key path and one script leaf")
+        self.log.info("Fund a Taproot output with a key path and two script leaves")
         internal_key = generate_privkey()
         internal_pubkey, _ = compute_xonly_pubkey(internal_key)
         self.leaf_key = generate_privkey()
         self.leaf_script = CScript([compute_xonly_pubkey(self.leaf_key)[0], OP_CHECKSIG])
-        tap = taproot_construct(internal_pubkey, [("leaf", self.leaf_script)])
+        self.true_script = CScript([OP_TRUE])
+        tap = taproot_construct(internal_pubkey, [("leaf", self.leaf_script), ("true", self.true_script)])
         self.output_key = tweak_add_privkey(internal_key, tap.tweak)
-        self.control_block = bytes([LEAF_VERSION_TAPSCRIPT + tap.negflag]) + internal_pubkey + tap.leaves["leaf"].merklebranch
+        self.control_blocks = {name: bytes([LEAF_VERSION_TAPSCRIPT + tap.negflag]) + internal_pubkey + leaf.merklebranch for name, leaf in tap.leaves.items()}
         address = program_to_witness(1, tap.scriptPubKey[2:])
         txid = node.sendtoaddress(address, 1)
         vout = find_vout_for_address(node, txid, address)
@@ -116,7 +120,7 @@ class SignRawTransactionTaprootTest(BitcoinTestFramework):
         self.dest_script = bytes.fromhex(node.validateaddress(node.getnewaddress())["scriptPubKey"])
         privkey = bytes_to_wif(internal_key)
 
-        spends = {path: self.spend([outpoint], [spent_output], Decimal("0.999"), 0, path) for path in ("key", "script")}
+        spends = {path: self.spend([outpoint], [spent_output], Decimal("0.999"), 0, path) for path in ("key", "script", "true")}
         for path, tx in spends.items():
             self.log.info(f"The {path}-path spend is valid")
             assert_equal(node.testmempoolaccept([ToHex(tx)])[0]["allowed"], True)
@@ -147,12 +151,18 @@ class SignRawTransactionTaprootTest(BitcoinTestFramework):
             assert_raises_rpc_error(-3, missing_amount, node.signrawtransactionwithkey, ToHex(tx), [privkey], no_amount)
             assert_raises_rpc_error(-3, missing_amount, node.signrawtransactionwithwallet, ToHex(tx), no_amount)
 
-        self.log.info("combinerawtransaction returns the input without a witness")
-        combined = node.combinerawtransaction([ToHex(spends["key"]), ToHex(spends["script"])])
-        vin = node.decoderawtransaction(combined)["vin"]
-        assert_equal(len(vin), 1)
-        assert_equal((vin[0]["txid"], vin[0]["vout"]), (txid, vout))
-        assert "txinwitness" not in vin[0]
+        self.log.info("combinerawtransaction keeps the first witness given for the Taproot input")
+        variants = dict(spends)
+        variants["none"] = self.spend([outpoint], [spent_output], Decimal("0.999"), 0, "key")
+        variants["none"].wit.vtxinwit[0].scriptWitness.stack = []
+        # The witness for the leaf OP_TRUE is complete without the spent outputs, the key-path witness is not.
+        for order in (("key", "script"), ("script", "key"), ("none", "key"), ("key", "true"), ("true", "key")):
+            combined = node.combinerawtransaction([ToHex(variants[name]) for name in order])
+            first = order[1] if order[0] == "none" else order[0]
+            vin = node.decoderawtransaction(combined)["vin"]
+            assert_equal(len(vin), 1)
+            assert_equal((vin[0]["txid"], vin[0]["vout"]), (txid, vout))
+            assert_equal(vin[0]["txinwitness"], witness_hex(variants[first], 0))
 
         self.log.info("walletprocesspsbt and finalizepsbt add the witness UTXO of a Taproot input")
         witness_utxo = {"amount": Decimal("1"), "scriptPubKey": tap.scriptPubKey.hex()}

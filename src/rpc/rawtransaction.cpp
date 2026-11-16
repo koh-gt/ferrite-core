@@ -707,6 +707,18 @@ static RPCHelpMan combinerawtransaction()
         }
         ProduceSignature(DUMMY_SIGNING_PROVIDER, MutableTransactionSignatureCreator(&mergedTx, i, coin.out.nValue, 1), coin.out.scriptPubKey, sigdata);
 
+        // Native Taproot witnesses are not merged: keep the first one given for the input.
+        std::vector<std::vector<unsigned char>> solutions;
+        const TxoutType type = Solver(coin.out.scriptPubKey, solutions);
+        if (type == TxoutType::WITNESS_V1_TAPROOT) {
+            for (const CMutableTransaction& txv : txVariants) {
+                if (txv.vin.size() > i && !txv.vin[i].scriptWitness.IsNull()) {
+                    sigdata.scriptWitness = txv.vin[i].scriptWitness;
+                    break;
+                }
+            }
+        }
+
         UpdateInput(txin, sigdata);
     }
 
