@@ -10,14 +10,15 @@
 import enum
 import unittest
 
-from .script import hash256, hash160, sha256, CScript, OP_0
+from .descriptors import descsum_create
+from .script import hash256, hash160, sha256, CScript, OP_0, OP_TRUE
 from .segwit_addr import encode_segwit_address
 from .util import assert_equal, hex_str_to_bytes
 
-ADDRESS_BCRT1_UNSPENDABLE = 'rfec1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqe9kxtl'
-ADDRESS_BCRT1_UNSPENDABLE_DESCRIPTOR = 'addr(rfec1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqe9kxtl)#xm6azk0m'
+ADDRESS_BCRT1_UNSPENDABLE = 'rfec1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq8cmfpw'
+ADDRESS_BCRT1_UNSPENDABLE_DESCRIPTOR = 'addr(rfec1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq8cmfpw)#dkn9t2w8'
 # Coins sent to this address can be spent with a witness stack of just OP_TRUE
-ADDRESS_BCRT1_P2WSH_OP_TRUE = 'rfec1qft5p2uhsdcdc3l2ua4ap5qqfg4pjaqlp250x7us7a8qqhrxrxfsqc6h8ge'
+ADDRESS_BCRT1_P2WSH_OP_TRUE = 'rfec1qft5p2uhsdcdc3l2ua4ap5qqfg4pjaqlp250x7us7a8qqhrxrxfsqx86gzg'
 
 
 class AddressType(enum.Enum):
@@ -151,3 +152,8 @@ class TestFrameworkScript(unittest.TestCase):
         check_base58(bytes.fromhex('0041c1eaf111802559bad61b60d62b1f897c63928a'), 0)
         check_base58(bytes.fromhex('000041c1eaf111802559bad61b60d62b1f897c63928a'), 0)
         check_base58(bytes.fromhex('00000041c1eaf111802559bad61b60d62b1f897c63928a'), 0)
+
+    def test_regtest_address_constants(self):
+        self.assertEqual(ADDRESS_BCRT1_UNSPENDABLE, program_to_witness(0, bytes(32)))
+        self.assertEqual(ADDRESS_BCRT1_UNSPENDABLE_DESCRIPTOR, descsum_create('addr({})'.format(ADDRESS_BCRT1_UNSPENDABLE)))
+        self.assertEqual(ADDRESS_BCRT1_P2WSH_OP_TRUE, script_to_p2wsh(CScript([OP_TRUE])))
