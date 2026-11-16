@@ -39,7 +39,7 @@ from test_framework.wallet_util import bytes_to_wif
 
 # The error reported for a Taproot input whose signature cannot be checked
 # because another spent output or amount is not known.
-NOT_CHECKED = {"key": "No error", "script": "unknown error"}
+NOT_CHECKED = "unknown error"
 
 
 def witness_hex(tx, index):
@@ -132,13 +132,13 @@ class SignRawTransactionTaprootTest(BitcoinTestFramework):
         for path in ("key", "script"):
             tx = self.spend([outpoint, other], [spent_output, other_output], Decimal("1.999"), 0, path)
             self.log.info(f"The {path}-path signature is not checked when the output of another input is not known")
-            errors = {0: NOT_CHECKED[path], 1: "Input not found or already spent"}
+            errors = {0: NOT_CHECKED, 1: "Input not found or already spent"}
             self.check_result(node.signrawtransactionwithkey(ToHex(tx), [privkey], prevtxs), tx, errors)
             self.check_result(node.signrawtransactionwithwallet(ToHex(tx)), tx, errors)
 
             self.log.info(f"The {path}-path signature is not checked when another input is given without its amount")
-            self.check_result(node.signrawtransactionwithkey(ToHex(tx), [privkey], prevtxs + [other_no_amount]), tx, {0: NOT_CHECKED[path]})
-            self.check_result(node.signrawtransactionwithwallet(ToHex(tx), [other_no_amount]), tx, {0: NOT_CHECKED[path]})
+            self.check_result(node.signrawtransactionwithkey(ToHex(tx), [privkey], prevtxs + [other_no_amount]), tx, {0: NOT_CHECKED})
+            self.check_result(node.signrawtransactionwithwallet(ToHex(tx), [other_no_amount]), tx, {0: NOT_CHECKED})
 
         self.log.info("Without the amount of the Taproot input the signing RPCs fail")
         no_amount = [{key: value for key, value in prevtxs[0].items() if key != "amount"}]

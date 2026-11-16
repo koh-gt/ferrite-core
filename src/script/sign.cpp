@@ -534,6 +534,10 @@ bool SignTransaction(CMutableTransaction& mtx, const SigningProvider* keystore, 
             verified = VerifyScript(txin.scriptSig, prevPubKey, &txin.scriptWitness, STANDARD_SCRIPT_VERIFY_FLAGS, TransactionSignatureChecker(&txConst, i, amount, MissingDataBehavior::FAIL), &serror);
         }
         if (!verified) {
+            if (serror == SCRIPT_ERR_OK) {
+                // A signature that cannot be checked (a spent output is missing) fails without a script error.
+                serror = SCRIPT_ERR_UNKNOWN_ERROR;
+            }
             if (serror == SCRIPT_ERR_INVALID_STACK_OPERATION) {
                 // Unable to sign input and verification failed (possible attempt to partially sign).
                 input_errors[i] = "Unable to sign input, invalid stack size (possibly missing key)";
