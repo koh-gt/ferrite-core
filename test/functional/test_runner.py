@@ -190,6 +190,7 @@ BASE_SCRIPTS = [
     'p2p_nobloomfilter_messages.py',
     'p2p_filter.py',
     'rpc_setban.py',
+    'rpc_setban_concurrent.py',
     'p2p_blocksonly.py',
     'mining_prioritisetransaction.py',
     'p2p_invalid_locator.py',
