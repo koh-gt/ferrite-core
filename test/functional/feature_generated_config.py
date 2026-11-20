@@ -7,7 +7,8 @@
 The node first starts on a data directory that has no ferrite.conf, with the
 test framework's settings given on the command line. The test checks that the
 file the node writes holds only comments, blank lines, the [main] and [test]
-section headers and addnode lines, with no addnode line outside those sections;
+section headers and addnode lines, with no addnode line outside those sections,
+and that the addnode lines name only the project's own nodes;
 that the node starts again on that file, without warnings and without taking
 its addnode lines on regtest; and that the node leaves an existing ferrite.conf
 as it is. It also checks that a section name the node does not recognize gives
@@ -68,6 +69,20 @@ class GeneratedConfigTest(BitcoinTestFramework):
                 other_lines.append(line)
         assert_equal(other_lines, [])
         assert_equal(sorted(addnodes), ['main', 'test'])
+        # Only the project's own nodes are named.
+        assert_equal(addnodes['main'], [
+            'addnode=node1.ferritecoin.org',
+            'addnode=node2.ferritecoin.org',
+            'addnode=node3.ferritecoin.org',
+            'addnode=118.189.201.104:9574',
+            'addnode=118.189.201.104:9588',
+            'addnode=118.189.201.104:9598',
+        ])
+        assert_equal(addnodes['test'], [
+            'addnode=118.189.201.104:19574',
+            'addnode=118.189.201.104:19588',
+            'addnode=118.189.201.104:19598',
+        ])
         assert comments > 0
 
         self.log.info("Start again on the written file")

@@ -99,8 +99,9 @@ from the block files, which can take hours; a pruned node downloads the chain ag
 ### Changed defaults and settings
 #### New ferrite.conf in new data directories
 When Ferrite Core starts on a data directory that has no `ferrite.conf`, it still writes one, but the file now holds only
-comments and the `addnode` lines: the main network's under `[main]` and the test network's under `[test]`. Every other
-setting comes from the built-in defaults. Compared with the file that earlier versions wrote, a new install:
+comments and the `addnode` lines: the main network's under `[main]` and the test network's under `[test]`. The
+`addnode` lines name only the project's own nodes; the file that earlier versions wrote also named three nodes run by
+others, which can be removed from an existing file. Every other setting comes from the built-in defaults. Compared with the file that earlier versions wrote, a new install:
 * uses cookie authentication for RPC: no RPC user name or password is written, and `ferrite-cli` on the same computer
   logs in through the `.cookie` file, also during the first run;
 * runs ferrite-qt without an RPC server unless you add `server=1` (`ferrited` always runs one);
