@@ -12,20 +12,28 @@ Bitcoin Core; the repositories they name are not Ferrite Core's, and these steps
 
 The programs take their version string from `src/obj/build.h`, which `share/genbuild.sh` writes during the build. The
 script looks for a tag with `git describe --abbrev=0`, which sees only annotated tags. When the commit being built
-carries an annotated tag and no tracked file is modified, the version string is the tag name, for example `v3.3.0`.
-Otherwise it is the version from `configure.ac` followed by the commit, for example `v3.3.0.0-aa20a59`. A lightweight
+carries an annotated tag and no tracked file is modified, the version string is the tag name, for example `v3.3.1`.
+Otherwise it is the version from `configure.ac` followed by the commit, in the form `v3.3.1.0-<commit>`. A lightweight
 tag is ignored: `git tag` without `-a` makes one, and so does GitHub when a release is created with a new tag.
 
-1. Check that `configure.ac` has the release's version, with `_CLIENT_VERSION_RC` 0 and `_CLIENT_VERSION_IS_RELEASE`
-   true, and that the release notes are final apart from the SHA-256 sums and the upload date.
-2. Tag the release commit and push the tag (use the release's own version):
+A release is tagged `v<version>`, where `<version>` is the version in `configure.ac`, for example `v3.3.1`. A tag that
+ends in `rN`, for example `v3.3.1r1`, is a pre-release: it comes before the full release of the same number.
 
-       git tag -a v3.3.0 -m "Ferrite Core v3.3.0"
-       git cat-file -t v3.3.0     # must print "tag"; "commit" means a lightweight tag
-       git describe --abbrev=0    # must print v3.3.0
-       git push origin v3.3.0
+1. Check that `configure.ac` has the version being released, with `_CLIENT_VERSION_RC` 0 and
+   `_CLIENT_VERSION_IS_RELEASE` true, and that the release notes are final apart from the SHA-256 sums and the upload
+   date.
+2. Tag the release commit with an annotated tag and push the tag. Write the version being released in place of
+   `<version>`:
 
-   A pre-release tag such as `v3.3.0r1` needs `-a` as well, or its programs show the commit instead of the tag.
+       git tag -a v<version> -m "Ferrite Core v<version>"
+       git cat-file -t v<version>    # must print "tag"; "commit" means a lightweight tag
+       git describe --abbrev=0       # must print v<version>
+       git push origin v<version>
+
+   A pre-release tag (`v<version>rN`) needs `-a` as well, or its programs show the commit instead of the tag. When a
+   pre-release and the full release are made from the same commit, that commit carries both tags, and
+   `git describe --abbrev=0` prints the annotated one that was made last: make the full release's tag an annotated tag
+   too, or its programs show the pre-release's name.
 3. When you create the GitHub release, choose this tag; do not let GitHub create a new one.
 
 ### 2. Build on a clean checkout of the tag
@@ -34,8 +42,8 @@ Build on a checkout of the tag in which no tracked file is changed; untracked fi
 `share/genbuild.sh` every time, so a tree that was configured or built before the tag existed picks the tag up on the
 next `make`. Before packaging, check each build:
 
-    cat src/obj/build.h      # must be: #define BUILD_GIT_TAG "v3.3.0"
-    src/ferrited -version    # Linux build: "Ferrite Core version v3.3.0"
+    cat src/obj/build.h      # must be: #define BUILD_GIT_TAG "v<version>"
+    src/ferrited -version    # Linux build: "Ferrite Core version v<version>"
 
 If `build.h` holds `BUILD_GIT_COMMIT` instead, the tag is lightweight or not on the commit that was built, or a tracked
 file is modified (the commit then ends in `-dirty`). Fix that and run `make` again.
@@ -48,9 +56,9 @@ file is modified (the commit then ends in `-dirty`). Fix that and run `make` aga
 
 The release notes of a version link to five files of its GitHub release: the Windows installer, `ferrite-qt.exe`, the
 Windows server zip, the Linux `ferrite-qt` and the Linux server zip. Collect them in one directory next to the build
-trees; set `OUT` once and use it for both builds. `zip` comes from the package of the same name.
+trees; set `VERSION` and `OUT` once and use them for both builds. `zip` comes from the package of the same name.
 
-    VERSION=3.3.0
+    VERSION=3.3.1    # the version being released, as in configure.ac
     OUT="$PWD/../ferrite-$VERSION-files"
     mkdir -p "$OUT"
 
