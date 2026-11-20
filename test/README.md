@@ -24,6 +24,11 @@ Before tests can be run locally, Ferrite Core must be built.  See the [building 
 
 #### Dependencies
 
+Every functional test requires the Python module `blake3`. The test framework
+imports it in `test/functional/test_framework/messages.py`, so without it a
+test fails with `No module named 'blake3'` before it starts a node. To install
+it, run `pip3 install blake3`.
+
 The ZMQ functional test requires a python ZMQ library. To install it:
 
 - on Unix, run `sudo apt-get install python3-zmq`

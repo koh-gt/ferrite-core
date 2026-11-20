@@ -117,9 +117,18 @@ brew link berkeley-db@4 --force
     make # make -j4 if you have 4 threads, make -j8 for 8 threads
     ```
 
-3.  It is recommended to build and run the unit tests:
+3.  It is recommended to build and run the unit tests. They are only built when `--disable-tests` is left out of the
+    `./configure` line above. Do not run them with `make check`: it runs every test case, including the ones listed
+    in `test/ferrite_unit_test_exclusions.txt`, which are known to fail on Ferrite Core and one of which needs more
+    than 11 GB of memory. CI skips the listed cases and runs all the others. To run the unit tests the same way, use
+    these commands in bash (see also [src/test/README.md](../src/test/README.md)):
     ```shell
-    make check
+    args=()
+    while read -r t; do
+      case "$t" in ''|'#'*) continue ;; esac
+      args+=('--run_test=!'"$t")
+    done < test/ferrite_unit_test_exclusions.txt
+    src/test/test_ferrite --catch_system_errors=no --report_level=short "${args[@]}"
     ```
 
 4.  You can also create a  `.dmg` that contains the `.app` bundle (optional):
