@@ -1,0 +1,47 @@
+name: Depends sources
+
+# Keeps the depends source mirror (the depends-sources release, see "Source mirror" in
+# depends/README.md) filled: fetches every source file from its own host, uploads the
+# files the mirror lacks and reads every file back to check its SHA-256 hash.
+on:
+  workflow_dispatch:
+  push:
+    branches: [ferrite-main, 'fec-v*']
+    paths:
+      - 'depends/packages/**'
+      - 'depends/hosts/**'
+      - 'depends/Makefile'
+      - 'depends/funcs.mk'
+      - 'contrib/devtools/depends-sources.sh'
+      - '.github/workflows/depends-sources.yml'
+
+# One run at a time for each branch: a newer run for the same branch waits for the running
+# one (of several waiting runs GitHub keeps the newest), and a push to another branch never
+# cancels it. Runs for different branches may overlap: they upload the same files under the
+# same names.
+concurrency:
+  group: depends-sources-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    name: Fill and check the depends source mirror
+    # The mirror is a release of this repository and holds the sources of its release
+    # branches: forks and other copies skip the job, and so does a run that was started by
+    # hand for any other branch.
+    if: >-
+      github.repository == 'koh-gt/ferrite-core' &&
+      (github.ref == 'refs/heads/ferrite-main' || startsWith(github.ref, 'refs/heads/fec-v'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - name: Upload the missing files and check every file
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: contrib/devtools/depends-sources.sh --upload --verify "$RUNNER_TEMP/depends-sources"

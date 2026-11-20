@@ -165,11 +165,15 @@ error: depends prints `curl: (22) The requested URL returned error: 404` and goe
 next host. qrencode 3.4.4 is no longer on its own host (fukuchi.org answers 404), so it
 comes from the mirror or from `FALLBACK_DOWNLOAD_PATH` (bitcoincore.org).
 
-When a package is added or its version changes, run
-`contrib/devtools/depends-sources.sh <outdir>`. It fetches every source for the Linux,
-Windows and macOS builds from their own hosts (or from `FALLBACK_DOWNLOAD_PATH` where
-the own host fails, as for qrencode), and prints the command that uploads the files the
-mirror does not have yet.
+When a package is added or its version changes, the "Depends sources" workflow
+(`.github/workflows/depends-sources.yml`) fills the mirror on GitHub. It runs
+`contrib/devtools/depends-sources.sh --upload --verify`, which fetches every source for
+the Linux, Windows and macOS builds from their own hosts (or from `FALLBACK_DOWNLOAD_PATH`
+where the own host fails, as for qrencode), uploads the files the mirror does not have
+yet and reads every file back to check it against the hash that its recipe pins. A file
+that no host serves any more is only a warning there as long as the mirror has it. The
+script also runs on any machine with the GitHub CLI signed in; see
+[contrib/devtools/README.md](../contrib/devtools/README.md).
 
 To build on a machine without network access, run `make download` (or `download-win`,
 `download-linux`, `download-osx`) elsewhere and copy `sources/` (or the directory given

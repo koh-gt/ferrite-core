@@ -52,6 +52,14 @@ file is modified (the commit then ends in `-dirty`). Fix that and run `make` aga
   `make deploy`, which needs `nsis`.
 - Linux: the depends build for `HOST=x86_64-pc-linux-gnu` in [build-unix.md](build-unix.md).
 
+depends takes each source file from the project's mirror first (see "Source mirror" in [depends/README.md](../depends/README.md)).
+Before building, run the "Depends sources" workflow for the release branch from the Actions tab, or check that its
+latest run on that branch passed: the mirror then holds every source file of the release, and the build does not
+depend on the other download hosts. The first large push to a new branch may not start a run, and the Actions tab
+offers the workflow only once its file is on the default branch; if the branch has no run, fill the mirror with
+`contrib/devtools/depends-sources.sh --upload --verify`, which
+[contrib/devtools/README.md](../contrib/devtools/README.md) describes.
+
 ### 3. Package the files that the release notes list
 
 The release notes of a version link to five files of its GitHub release: the Windows installer, `ferrite-qt.exe`, the
