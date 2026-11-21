@@ -66,7 +66,7 @@ jobs:
             mweb_p2p_mutated_block_submitblock.py mweb_p2p_mutated_block_unlinked_dup.py \
             mweb_p2p_mutated_compactblock.py mweb_pegout_all.py mweb_pre_activation_hogex_marker.py \
             mweb_reorg.py mweb_wallet_basic.py mweb_weight.py mweb_wtxid_recentrejects.py \
-            feature_generated_config.py mempool_datacarrier.py \
+            feature_generated_config.py interface_http.py mempool_datacarrier.py \
             p2p_invalid_messages.py p2p_blockfilters.py p2p_node_network_limited.py p2p_large_messages.py \
             p2p_send_buffer_timeout.py p2p_timedata.py \
             rpc_misc.py rpc_psbt_prevout_index.py rpc_signrawtransaction_taproot.py \

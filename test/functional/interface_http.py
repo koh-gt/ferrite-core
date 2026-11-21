@@ -5,9 +5,12 @@
 """Test the RPC HTTP basics."""
 
 from test_framework.test_framework import BitcoinTestFramework
-from test_framework.util import assert_equal, str_to_b64str
+from test_framework.util import assert_equal, assert_greater_than, str_to_b64str
 
 import http.client
+import json
+import statistics
+import time
 import urllib.parse
 
 class HTTPBasicsTest (BitcoinTestFramework):
@@ -103,6 +106,27 @@ class HTTPBasicsTest (BitcoinTestFramework):
         conn.request('GET', '/' + ('x'*10000), '', headers)
         out1 = conn.getresponse()
         assert_equal(out1.status, http.client.BAD_REQUEST)
+
+        self.log.info("Check that a large reply on a kept connection is not delayed")
+        # The node writes a reply of this size in several parts. Without TCP_NODELAY on its socket,
+        # the kernel holds back the last part until the client acknowledges the first, and a
+        # client that keeps its connection delays that acknowledgement (by 40 ms or more on Linux).
+        conn = http.client.HTTPConnection(urlNode2.hostname, urlNode2.port)
+        conn.connect()
+        text = 'x' * 60000
+        request = json.dumps({"method": "echo", "params": [text]})
+        durations = []
+        for _ in range(13):
+            start = time.perf_counter()
+            conn.request('POST', '/', request, headers)
+            out1 = conn.getresponse().read()
+            durations.append(time.perf_counter() - start)
+            assert_equal(json.loads(out1)["result"], [text])
+            assert conn.sock is not None
+        conn.close()
+        self.log.debug("Reply times on a kept connection (ms): {}".format([round(d * 1000, 2) for d in durations]))
+        # The first calls only warm up the connection.
+        assert_greater_than(0.02, statistics.median(durations[3:]))
 
 
 if __name__ == '__main__':
