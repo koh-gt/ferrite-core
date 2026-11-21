@@ -24,6 +24,8 @@ struct InProcessTx {
     std::set<CInputCoin> selected_coins{};
     CAmount value_selected{0};
     bool bnb_used{false};
+    // Set once coin selection has chosen more MWEB coins than nodes relay as the inputs of one transaction.
+    bool mweb_input_limit_hit{false};
 
     FeeCalculation fee_calc{};
     CAmount fee_needed{0};
@@ -109,11 +111,21 @@ private:
         InProcessTx& new_tx,
         const CAmount& nTargetValue
     ) const;
+    // Selects coins and keeps the number of MWEB coins within MWEB::MAX_STANDARD_MWEB_TX_INPUTS.
     bool SelectCoins(
         InProcessTx& new_tx,
         const CAmount& nTargetValue,
         CoinSelectionParams& coin_selection_params
     ) const;
+    // Selects coins from the available coins of 'new_tx', however many that takes.
+    bool SelectAvailableCoins(
+        InProcessTx& new_tx,
+        const CAmount& nTargetValue,
+        CoinSelectionParams& coin_selection_params
+    ) const;
+    // Removes the MWEB coins from the available coins of 'new_tx', except the largest ones,
+    // as many as MWEB::MAX_STANDARD_MWEB_TX_INPUTS.
+    void KeepLargestMWEBCoins(InProcessTx& new_tx) const;
 
     // Reduce fee to only the needed amount if possible. This
     // prevents potential overpayment in fees if the coins
