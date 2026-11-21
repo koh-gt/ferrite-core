@@ -17,17 +17,25 @@ is disconnected. The refused transactions were checked in a block proposal below
 height first, and they are refused again in later blocks. Blocks whose P2MR spends follow the
 rules stay valid.
 
+The mempool and the wallet look at the next block: a valid P2MR spend is refused as a
+non-standard input, and the wallet refuses to pay a P2MR address, until the tip is the last
+block below the activation height. After a reorganisation to a chain on which the rules do not
+apply to the next block, the mempool keeps a P2MR spend and a payment to a P2MR address that it
+already had, drops a P2MR spend from the disconnected blocks, and gives valid blocks.
+
 The P2MR outputs and every spend of them are built here. Node 0 checks scripts without the
 script check threads, so that it names the script error of a refused block; node 1 checks them
 with a thread and gives the general reason.
 """
 
+from test_framework.address import program_to_witness
 from test_framework.blocktools import NORMAL_GBT_REQUEST_PARAMS, add_witness_commitment, create_block
 from test_framework.key import compute_xonly_pubkey, sign_schnorr
 from test_framework.messages import COIN, COutPoint, CTransaction, CTxIn, CTxInWitness, CTxOut, ToHex, sha256
 from test_framework.p2p import P2PDataStore
 from test_framework.script import (
     CScript,
+    OP_0,
     OP_CHECKSIG,
     OP_RETURN,
     OP_TRUE,
@@ -53,6 +61,8 @@ FEE = 10000
 
 # The key of the leaf that checks a signature. It is used by this test only.
 LEAF_KEY = sha256(b"feature_p2mr_activation.py leaf key")
+
+WALLET_REFUSES = "Witness version 2 outputs can be spent by anyone until the p2mr soft fork is active"
 
 
 class P2MRActivationTest(BitcoinTestFramework):
@@ -164,16 +174,20 @@ class P2MRActivationTest(BitcoinTestFramework):
 
     def run_test(self):
         node, other_pool = self.nodes
-        self.payout_script = bytes.fromhex(node.getaddressinfo(node.getnewaddress())['scriptPubKey'])
+        # The spends pay to a script outside the wallet, so that the wallet's coins are not spent by blocks that a
+        # reorganisation disconnects.
+        self.payout_script = bytes(CScript([OP_0, sha256(b"feature_p2mr_activation.py payout")]))
         key_script = CScript([compute_xonly_pubkey(LEAF_KEY)[0], OP_CHECKSIG])
         # A tree with two leaves at depth 1, and a tree whose only leaf is its root. The script of that leaf
         # would fail if it were run.
         self.tree = p2mr_construct([("true", CScript([OP_TRUE])), ("key", key_script)])
         self.single_leaf_tree = p2mr_construct([("only", CScript([OP_RETURN]))])
+        p2mr_address = program_to_witness(2, self.tree.merkle_root)
+        true_leaf = self.tree.leaves["true"]
 
         self.log.info("Pay to P2MR outputs, then stop two blocks before signalling starts")
         node.generate(20)
-        self.tree_utxos = self.fund_outputs([self.tree.scriptPubKey] * 20)
+        self.tree_utxos = self.fund_outputs([self.tree.scriptPubKey] * 24)
         self.single_leaf_utxos = self.fund_outputs([self.single_leaf_tree.scriptPubKey] * 4)
         node.generate(START_HEIGHT - 2 - node.getblockcount())
         self.sync_blocks()
@@ -254,6 +268,11 @@ class P2MRActivationTest(BitcoinTestFramework):
         self.sync_blocks()
         assert_equal(node.getblockcount(), ACTIVATION_HEIGHT - 2)
         assert early_spend.hash in other_pool.getblock(block_hash)['tx']
+        # The mempool and the wallet look at the next block, which is still below the activation height.
+        valid_spend = self.spend(self.tree_utxos.pop(), lambda tx, spent: [true_leaf.script, true_leaf.control_block])
+        for n in self.nodes:
+            assert_equal(n.testmempoolaccept([ToHex(valid_spend)])[0]['reject-reason'], 'bad-txns-nonstandard-inputs')
+        assert_raises_rpc_error(-4, WALLET_REFUSES, node.fundrawtransaction, node.createrawtransaction([], {p2mr_address: 1}))
         # The last block below the activation height: each spend as a block proposal on both nodes, then all of
         # them in one block.
         early_spends = self.spends_against_the_rules()
@@ -284,6 +303,9 @@ class P2MRActivationTest(BitcoinTestFramework):
         assert 'p2mr' in tmpl['rules']
         assert 'p2mr' not in tmpl['vbavailable']
         assert_equal(tmpl['version'] & (1 << DEPLOYMENT_BIT), 0)
+        for n in self.nodes:
+            assert_equal(n.testmempoolaccept([ToHex(valid_spend)])[0]['allowed'], True)
+        node.fundrawtransaction(node.createrawtransaction([], {p2mr_address: 1}))
 
         self.log.info("A block at the activation height that spends a P2MR output against the rules is refused")
         tip = node.getbestblockhash()
@@ -341,6 +363,38 @@ class P2MRActivationTest(BitcoinTestFramework):
             assert_equal(node.getbestblockhash(), tip)
         assert_equal(other_pool.getbestblockhash(), tip)
         assert_equal(node.getblockcount(), ACTIVATION_HEIGHT + 3)
+
+        self.log.info("After a reorganisation to a chain without the rules the mempool keeps its P2MR spends and drops those of the disconnected blocks")
+        mined_spend = self.spend(self.tree_utxos.pop(), lambda tx, spent: [true_leaf.script, true_leaf.control_block])
+        node.sendrawtransaction(ToHex(mined_spend))
+        block_hash = node.generate(1)[0]
+        assert_equal(node.getblock(block_hash)['tx'][1:], [mined_spend.hash])
+        self.sync_blocks()
+        tip_height = node.getblockcount()
+        self.disconnect_nodes(0, 1)
+        unmined_spend = self.spend(self.tree_utxos.pop(), self.key_leaf_witness)
+        node.sendrawtransaction(ToHex(unmined_spend))
+        # A payment to a P2MR address from a coin that the other chain has as well.
+        coin = next(u for u in node.listunspent() if node.getblockcount() + 1 - u['confirmations'] < START_HEIGHT + WINDOW)
+        payment = node.send(outputs={p2mr_address: 1}, options={"inputs": [{"txid": coin['txid'], "vout": coin['vout']}], "add_inputs": False})['txid']
+        kept = sorted([unmined_spend.hash, payment])
+        assert_equal(sorted(node.getrawmempool()), kept)
+        # The pool that does not signal builds a longer chain from the end of the first window, on which the
+        # deployment does not lock in, with blocks that hold no transactions.
+        other_pool.invalidateblock(other_pool.getblockhash(START_HEIGHT + WINDOW))
+        address = other_pool.getnewaddress()
+        while other_pool.getblockcount() <= tip_height:
+            other_pool.generateblock(address, [])
+        self.connect_nodes(0, 1)
+        self.sync_blocks()
+        assert_equal(self.deployment()['bip8']['status'], 'started')
+        assert_equal(sorted(node.getrawmempool()), kept)
+        for tx in [mined_spend, late_spends[0][1]]:
+            assert_equal(node.testmempoolaccept([ToHex(tx)])[0]['reject-reason'], 'bad-txns-nonstandard-inputs')
+        # Without the rules, a block with these transactions is valid.
+        block_hash = node.generate(1)[0]
+        assert_equal(sorted(node.getblock(block_hash)['tx'][1:]), kept)
+        self.sync_blocks()
 
 
 if __name__ == '__main__':
