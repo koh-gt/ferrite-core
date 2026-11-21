@@ -42,10 +42,92 @@ UniValue JSONRPCReplyObj(const UniValue& result, const UniValue& error, const Un
     return reply;
 }
 
+namespace {
+/** Append s to out escaped as UniValue::write() escapes the text of a string. */
+void AppendEscaped(std::string& out, const std::string& s)
+{
+    size_t begin = 0;
+    for (size_t i = 0; i < s.size(); ++i) {
+        const unsigned char c = s[i];
+        if (c >= 0x20 && c != '"' && c != '\\' && c != 0x7f) continue;
+        out.append(s, begin, i - begin);
+        begin = i + 1;
+        switch (c) {
+        case '"': out += "\\\""; break;
+        case '\\': out += "\\\\"; break;
+        case '\b': out += "\\b"; break;
+        case '\t': out += "\\t"; break;
+        case '\n': out += "\\n"; break;
+        case '\f': out += "\\f"; break;
+        case '\r': out += "\\r"; break;
+        default:
+            out += "\\u00";
+            out += "0123456789abcdef"[c >> 4];
+            out += "0123456789abcdef"[c & 0xf];
+        }
+    }
+    out.append(s, begin, std::string::npos);
+}
+
+/** Append v to out exactly as v.write() writes it, without the copies that write() makes. */
+void AppendJSON(std::string& out, const UniValue& v)
+{
+    switch (v.getType()) {
+    case UniValue::VNULL: out += "null"; break;
+    case UniValue::VBOOL: out += v.isTrue() ? "true" : "false"; break;
+    case UniValue::VNUM: out += v.getValStr(); break;
+    case UniValue::VSTR:
+        out += '"';
+        AppendEscaped(out, v.getValStr());
+        out += '"';
+        break;
+    case UniValue::VARR: {
+        const std::vector<UniValue>& values = v.getValues();
+        out += '[';
+        for (size_t i = 0; i < values.size(); ++i) {
+            if (i > 0) out += ',';
+            AppendJSON(out, values[i]);
+        }
+        out += ']';
+        break;
+    }
+    case UniValue::VOBJ: {
+        // As UniValue::writeObject(): values.at() and the separator taken from the number of values, so
+        // that an object which a failed parse left with a key but no value fails in the same way.
+        const std::vector<std::string>& keys = v.getKeys();
+        const std::vector<UniValue>& values = v.getValues();
+        out += '{';
+        for (size_t i = 0; i < keys.size(); ++i) {
+            out += '"';
+            AppendEscaped(out, keys[i]);
+            out += "\":";
+            AppendJSON(out, values.at(i));
+            if (i != values.size() - 1) out += ',';
+        }
+        out += '}';
+        break;
+    }
+    }
+}
+} // namespace
+
+void JSONRPCAppendReply(std::string& out, const UniValue& result, const UniValue& error, const UniValue& id)
+{
+    out += "{\"result\":";
+    AppendJSON(out, error.isNull() ? result : NullUniValue);
+    out += ",\"error\":";
+    AppendJSON(out, error);
+    out += ",\"id\":";
+    AppendJSON(out, id);
+    out += '}';
+}
+
 std::string JSONRPCReply(const UniValue& result, const UniValue& error, const UniValue& id)
 {
-    UniValue reply = JSONRPCReplyObj(result, error, id);
-    return reply.write() + "\n";
+    std::string reply;
+    JSONRPCAppendReply(reply, result, error, id);
+    reply += '\n';
+    return reply;
 }
 
 UniValue JSONRPCError(int code, const std::string& message)

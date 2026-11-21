@@ -16,6 +16,9 @@ class Ref;
 
 UniValue JSONRPCRequestObj(const std::string& strMethod, const UniValue& params, const UniValue& id);
 UniValue JSONRPCReplyObj(const UniValue& result, const UniValue& error, const UniValue& id);
+/** Append JSONRPCReplyObj(result, error, id).write() to out without building the reply object. */
+void JSONRPCAppendReply(std::string& out, const UniValue& result, const UniValue& error, const UniValue& id);
+/** JSONRPCReplyObj(result, error, id).write() and a newline, written without building the reply object. */
 std::string JSONRPCReply(const UniValue& result, const UniValue& error, const UniValue& id);
 UniValue JSONRPCError(int code, const std::string& message);
 

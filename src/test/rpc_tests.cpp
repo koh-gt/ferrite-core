@@ -3,15 +3,24 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <rpc/client.h>
+#include <rpc/request.h>
 #include <rpc/server.h>
 #include <rpc/util.h>
 
+#include <amount.h>
 #include <core_io.h>
 #include <interfaces/chain.h>
 #include <node/context.h>
+#include <random.h>
 #include <test/util/setup_common.h>
+#include <tinyformat.h>
 #include <util/ref.h>
 #include <util/time.h>
+
+#include <limits>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/test/unit_test.hpp>
@@ -419,6 +428,195 @@ BOOST_AUTO_TEST_CASE(rpc_getblockstats_calculate_percentiles_by_weight)
     for (int64_t i = 0; i < NUM_GETBLOCKSTATS_PERCENTILES; i++) {
         BOOST_CHECK_EQUAL(result4[i], 1);
     }
+}
+
+//! A reply written by building the reply object and writing it with UniValue::write().
+static std::string ReplyByObject(const UniValue& result, const UniValue& error, const UniValue& id)
+{
+    return JSONRPCReplyObj(result, error, id).write() + "\n";
+}
+
+static std::string RandomString(FastRandomContext& rng)
+{
+    // Mostly the bytes that are escaped, the bytes around them and bytes of 0x80 and above.
+    static const std::string special("\x00\x01\x08\t\n\x0b\x0c\r\x1f \"/\\\x7f\x80\xc3\xa9\xff", 18);
+    std::string s;
+    for (uint64_t n = rng.randrange(12); n > 0; --n) {
+        s += rng.randbool() ? special[rng.randrange(special.size())] : char(rng.randbits(8));
+    }
+    return s;
+}
+
+static UniValue RandomValue(FastRandomContext& rng, int depth)
+{
+    switch (rng.randrange(depth > 0 ? 8 : 6)) {
+    case 0: return UniValue{};
+    case 1: return UniValue{rng.randbool()};
+    case 2: return UniValue{int64_t(rng.rand64() >> rng.randrange(64))};
+    case 3: return UniValue{double(int64_t(rng.rand64())) / (1.0 + rng.rand32())};
+    case 4: {
+        UniValue num;
+        num.setNumStr(strprintf("%d.%010ue%d", int64_t(rng.rand64()), rng.rand32(), int(rng.randrange(600)) - 300));
+        return num;
+    }
+    case 5: return UniValue{RandomString(rng)};
+    case 6: {
+        UniValue arr(UniValue::VARR);
+        for (uint64_t n = rng.randrange(5); n > 0; --n) arr.push_back(RandomValue(rng, depth - 1));
+        return arr;
+    }
+    default: {
+        UniValue obj(UniValue::VOBJ);
+        for (uint64_t n = rng.randrange(5); n > 0; --n) {
+            // __pushKV keeps duplicate keys, which the writers must write as they are.
+            obj.__pushKV(rng.randbool() ? RandomString(rng) : "k", RandomValue(rng, depth - 1));
+        }
+        return obj;
+    }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(rpc_reply_write)
+{
+    std::vector<UniValue> values;
+    values.emplace_back();
+    values.emplace_back(true);
+    values.emplace_back(false);
+    values.emplace_back(UniValue::VBOOL, "x"); // written as false
+    for (const int64_t n : {int64_t{0}, int64_t{1}, int64_t{-1}, std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max()}) {
+        values.emplace_back(n);
+    }
+    values.emplace_back(std::numeric_limits<uint64_t>::max());
+    values.emplace_back(std::numeric_limits<int>::min());
+    for (const double d : {0.0, -0.0, 0.1, -1.5, 1.0 / 3, 1e300, -1e-300, 5e-324, 123456789012345678.0, 1e15, 1e16,
+                           std::numeric_limits<double>::infinity(), std::numeric_limits<double>::quiet_NaN()}) {
+        values.emplace_back(d); // the last two have no number text and are written as nothing
+    }
+    // ValueFromAmount() negates a negative amount, so the lowest amount it takes is min() + 1.
+    for (const CAmount amount : {CAmount{0}, CAmount{1}, CAmount{-1}, -COIN / 10, MAX_MONEY, std::numeric_limits<CAmount>::min() + 1}) {
+        values.push_back(ValueFromAmount(amount));
+    }
+    for (const char* num : {"1e5", "-0", "1E+5", "0.000", "-1.5e-7", "123456789012345678901234567890"}) {
+        UniValue value;
+        BOOST_CHECK(value.setNumStr(num));
+        values.push_back(value);
+    }
+    values.emplace_back(UniValue::VNUM, "not a number"); // written as it is
+    std::string all_bytes;
+    for (int c = 0; c < 256; ++c) {
+        values.emplace_back(std::string(1, char(c)));
+        values.emplace_back(std::string(1, char(c)) + "a" + std::string(2, char(c)));
+        all_bytes += char(c);
+    }
+    values.emplace_back(all_bytes);
+    values.emplace_back(std::string(all_bytes.rbegin(), all_bytes.rend()));
+    values.emplace_back("");
+    values.emplace_back("\"\\\"\\"); // escapes next to each other
+    values.emplace_back("caf\xc3\xa9 \xe2\x82\xac \xf0\x9f\x98\x80"); // UTF-8
+    values.emplace_back("\x80\xc3\xff\xfe"); // not UTF-8
+    values.emplace_back(std::string(1000000, 'f') + "\n" + std::string(1000000, '0')); // long, as a block's hex
+    values.emplace_back(UniValue::VARR);
+    values.emplace_back(UniValue::VOBJ);
+    UniValue keyed(UniValue::VOBJ);
+    for (int c = 0; c < 256; ++c) keyed.pushKV(std::string(1, char(c)), c);
+    keyed.pushKV("", all_bytes);
+    keyed.__pushKV("same", 1);
+    keyed.__pushKV("same", UniValue::VOBJ);
+    values.push_back(keyed);
+    UniValue array_with_keys(UniValue::VARR); // an array writes its values only
+    array_with_keys.__pushKV("key", "value");
+    array_with_keys.push_back(UniValue(UniValue::VOBJ));
+    values.push_back(array_with_keys);
+    UniValue failed_float(UniValue::VARR); // a failed setFloat() keeps the old values but is a number
+    failed_float.push_back(1);
+    failed_float.setFloat(std::numeric_limits<double>::quiet_NaN());
+    values.push_back(failed_float);
+    UniValue parsed;
+    BOOST_CHECK(parsed.read("{\"a\":[1,-2.5e-10,true,null,\"\\u0000\\ud83d\\ude00\\/\"],\"b\":{},\"c\":[[]],\"\":\"\"}"));
+    values.push_back(parsed);
+    UniValue nested(UniValue::VARR);
+    for (int i = 0; i < 200; ++i) {
+        UniValue outer(UniValue::VOBJ);
+        outer.pushKV("level", i);
+        outer.pushKV("inner", nested);
+        nested = UniValue(UniValue::VARR);
+        nested.push_back(outer);
+        nested.push_back(UniValue(UniValue::VARR));
+    }
+    values.push_back(nested);
+    FastRandomContext rng{/* fDeterministic */ true};
+    for (int i = 0; i < 1000; ++i) values.push_back(RandomValue(rng, 4));
+    UniValue all_values(UniValue::VARR);
+    UniValue all_keys(UniValue::VOBJ);
+    for (const UniValue& v : values) {
+        all_values.push_back(v);
+        all_keys.__pushKV(v.write(), v);
+    }
+    values.push_back(all_values);
+    values.push_back(all_keys);
+
+    const std::vector<UniValue> errors{NullUniValue, JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter"),
+                                       JSONRPCError(RPC_PARSE_ERROR, all_bytes), UniValue{false}, UniValue{0}, UniValue{""}, UniValue{UniValue::VOBJ}};
+    for (const UniValue& value : values) {
+        // The value as result, as error (the result is then written as null) and as id.
+        for (const UniValue& error : errors) {
+            BOOST_CHECK_EQUAL(JSONRPCReply(value, error, NullUniValue), ReplyByObject(value, error, NullUniValue));
+            BOOST_CHECK_EQUAL(JSONRPCReply(value, error, 1), ReplyByObject(value, error, 1));
+        }
+        BOOST_CHECK_EQUAL(JSONRPCReply(NullUniValue, value, "id"), ReplyByObject(NullUniValue, value, "id"));
+        BOOST_CHECK_EQUAL(JSONRPCReply(all_bytes, value, value), ReplyByObject(all_bytes, value, value));
+        BOOST_CHECK_EQUAL(JSONRPCReply(true, NullUniValue, value), ReplyByObject(true, NullUniValue, value));
+    }
+    BOOST_CHECK_EQUAL(JSONRPCReply(NullUniValue, NullUniValue, NullUniValue), "{\"result\":null,\"error\":null,\"id\":null}\n");
+
+    // JSONRPCAppendReply() appends to what is there.
+    std::string out{"[1,"};
+    JSONRPCAppendReply(out, all_values, NullUniValue, all_keys);
+    BOOST_CHECK_EQUAL(out, "[1," + JSONRPCReplyObj(all_values, NullUniValue, all_keys).write());
+
+    // An object left incomplete by a failed parse has a key without a value. Writing it fails in the same way.
+    UniValue incomplete;
+    BOOST_CHECK(!incomplete.read("[{\"a\":1,\"b\":"));
+    std::string by_object, by_writer;
+    try {
+        ReplyByObject(incomplete, NullUniValue, 1);
+    } catch (const std::out_of_range& e) {
+        by_object = e.what();
+    }
+    try {
+        JSONRPCReply(incomplete, NullUniValue, 1);
+    } catch (const std::out_of_range& e) {
+        by_writer = e.what();
+    }
+    BOOST_CHECK(!by_object.empty());
+    BOOST_CHECK_EQUAL(by_writer, by_object);
+}
+
+BOOST_AUTO_TEST_CASE(rpc_reply_batch)
+{
+    if (RPCIsInWarmup(nullptr)) SetRPCWarmupFinished();
+    util::Ref context{m_node};
+    JSONRPCRequest jreq(context);
+    UniValue batch;
+    BOOST_CHECK(batch.read("[{\"method\":\"echo\",\"params\":[\"\\u0000\\\"\\u00ff\",{\"k\":[]},-0.5],\"id\":1},"
+                           "{\"method\":\"getblockcount\",\"id\":\"\\n\"},{\"method\":\"getblockhash\",\"params\":[-1],\"id\":[]},"
+                           "{\"method\":\"getblockhash\",\"params\":[\"x\"],\"id\":{\"a\":null}},{\"method\":\"nosuchmethod\",\"id\":null},"
+                           "{\"method\":5,\"id\":2.5},{\"id\":true},[],1,{\"method\":\"echo\"},{\"method\":\"echo\",\"params\":3}]"));
+    // The batch reply as it was written before: an array of reply objects, written by UniValue::write().
+    UniValue replies(UniValue::VARR);
+    for (const UniValue& req : batch.getValues()) {
+        JSONRPCRequest one(jreq);
+        try {
+            one.parse(req);
+            replies.push_back(JSONRPCReplyObj(tableRPC.execute(one), NullUniValue, one.id));
+        } catch (const UniValue& error) {
+            replies.push_back(JSONRPCReplyObj(NullUniValue, error, one.id));
+        } catch (const std::exception& e) {
+            replies.push_back(JSONRPCReplyObj(NullUniValue, JSONRPCError(RPC_PARSE_ERROR, e.what()), one.id));
+        }
+    }
+    BOOST_CHECK_EQUAL(JSONRPCExecBatch(jreq, batch), replies.write() + "\n");
+    BOOST_CHECK_EQUAL(JSONRPCExecBatch(jreq, UniValue{UniValue::VARR}), "[]\n");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

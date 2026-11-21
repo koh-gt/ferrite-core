@@ -126,6 +126,7 @@ FUZZ_TARGETS = \
   test/fuzz/random \
   test/fuzz/rbf \
   test/fuzz/rolling_bloom_filter \
+  test/fuzz/rpc_reply \
   test/fuzz/script \
   test/fuzz/script_bitcoin_consensus \
   test/fuzz/script_descriptor_cache \
@@ -1104,6 +1105,12 @@ test_fuzz_rolling_bloom_filter_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 test_fuzz_rolling_bloom_filter_LDADD = $(FUZZ_SUITE_LD_COMMON)
 test_fuzz_rolling_bloom_filter_LDFLAGS = $(FUZZ_SUITE_LDFLAGS_COMMON)
 test_fuzz_rolling_bloom_filter_SOURCES = test/fuzz/rolling_bloom_filter.cpp
+
+test_fuzz_rpc_reply_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+test_fuzz_rpc_reply_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+test_fuzz_rpc_reply_LDADD = $(FUZZ_SUITE_LD_COMMON)
+test_fuzz_rpc_reply_LDFLAGS = $(FUZZ_SUITE_LDFLAGS_COMMON)
+test_fuzz_rpc_reply_SOURCES = test/fuzz/rpc_reply.cpp
 
 test_fuzz_script_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 test_fuzz_script_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
