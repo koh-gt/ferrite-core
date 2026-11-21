@@ -34,6 +34,7 @@ AssembledTx TxAssembler::CreateTransaction(
     const bool sign)
 {
     VerifyRecipients(recipients);
+    VerifyWitnessV2Destinations(recipients, coin_control);
 
     if (boost::get<StealthAddress>(&coin_control.destChange)) {
         throw CreateTxError(_("Custom MWEB change addresses not yet supported"));
@@ -242,6 +243,25 @@ void TxAssembler::VerifyRecipients(const std::vector<CRecipient>& recipients)
         if (nValue < 0 || recipient.nAmount < 0) {
             throw CreateTxError(_("Transaction amounts must not be negative"));
         }
+    }
+}
+
+// Witness version 2 outputs can be spent by anyone until the P2MR rules (BIP 360) apply, so the wallet does not create
+// them before then, neither for a recipient nor for a change address chosen by the caller.
+void TxAssembler::VerifyWitnessV2Destinations(const std::vector<CRecipient>& recipients, const CCoinControl& coin_control)
+{
+    bool witness_v2 = false;
+    for (const auto& recipient : recipients) {
+        int version;
+        std::vector<unsigned char> program;
+        if (!recipient.IsMWEB() && recipient.GetScript().IsWitnessProgram(version, program) && version == 2) witness_v2 = true;
+    }
+    if (const WitnessUnknown* change = boost::get<WitnessUnknown>(&coin_control.destChange)) {
+        if (change->version == 2) witness_v2 = true;
+    }
+    // Only a transaction that would create such an output asks the node for the deployment state.
+    if (witness_v2 && !m_wallet.chain().isP2MRActiveForNextBlock()) {
+        throw CreateTxError(_("Witness version 2 outputs can be spent by anyone until the p2mr soft fork is active"));
     }
 }
 

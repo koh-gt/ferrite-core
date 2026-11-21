@@ -219,6 +219,9 @@ public:
     //! Check if in IBD.
     virtual bool isInitialBlockDownload() = 0;
 
+    //! Check whether the P2MR rules (BIP 360) apply to the block after the current tip.
+    virtual bool isP2MRActiveForNextBlock() = 0;
+
     //! Check if shutdown requested.
     virtual bool shutdownRequested() = 0;
 
