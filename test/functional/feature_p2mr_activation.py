@@ -13,7 +13,9 @@ The test checks what getblockchaininfo and getblocktemplate show in each state o
 deployment, and that the rules apply to exactly the blocks from the activation height on: a
 block that spends a P2MR output against the rules is valid below that height and refused from
 it on, as a block proposal, through generateblock, through submitblock and from a peer, which
-is disconnected. Blocks whose P2MR spends follow the rules stay valid.
+is disconnected. The refused transactions were checked in a block proposal below the activation
+height first, and they are refused again in later blocks. Blocks whose P2MR spends follow the
+rules stay valid.
 
 The P2MR outputs and every spend of them are built here. Node 0 checks scripts without the
 script check threads, so that it names the script error of a refused block; node 1 checks them
@@ -259,6 +261,11 @@ class P2MRActivationTest(BitcoinTestFramework):
             block = self.block([tx])
             assert_equal(self.propose(block), None)
             assert_equal(self.propose(block, other_pool), None)
+        # The spends that are refused from the activation height on are first checked here, in a proposal that is
+        # not mined. Node 0 keeps the result of a script check it makes for a block proposal; under the rules that
+        # apply from the next block the same transactions must be checked again.
+        late_spends = self.spends_against_the_rules()
+        assert_equal(self.propose(self.block([tx for _, tx in late_spends])), None)
         block = self.block([tx for _, tx in early_spends])
         assert_equal(node.submitblock(block.serialize().hex()), None)
         self.sync_blocks()
@@ -280,7 +287,6 @@ class P2MRActivationTest(BitcoinTestFramework):
 
         self.log.info("A block at the activation height that spends a P2MR output against the rules is refused")
         tip = node.getbestblockhash()
-        late_spends = self.spends_against_the_rules()
         for error, tx in late_spends:
             reason = "non-mandatory-script-verify-flag ({})".format(error)
             # As a block proposal: node 0 names the script error, node 1 checks scripts in a thread.
@@ -323,6 +329,18 @@ class P2MRActivationTest(BitcoinTestFramework):
         assert_equal(node.getbestblockhash(), other_pool.getbestblockhash())
         assert_equal(node.getblockcount(), ACTIVATION_HEIGHT + 3)
         assert_equal(self.deployment()['bip8']['status'], 'active')
+
+        self.log.info("Blocks above the activation height that spend P2MR outputs against the rules are refused as well")
+        tip = node.getbestblockhash()
+        for error, tx in late_spends:
+            reason = "non-mandatory-script-verify-flag ({})".format(error)
+            block = self.block([tx])
+            assert_equal(self.propose(block), reason)
+            assert_equal(self.propose(block, other_pool), "block-validation-failed")
+            assert_equal(node.submitblock(block.serialize().hex()), reason)
+            assert_equal(node.getbestblockhash(), tip)
+        assert_equal(other_pool.getbestblockhash(), tip)
+        assert_equal(node.getblockcount(), ACTIVATION_HEIGHT + 3)
 
 
 if __name__ == '__main__':
