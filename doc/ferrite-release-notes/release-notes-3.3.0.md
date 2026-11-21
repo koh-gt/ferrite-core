@@ -109,7 +109,7 @@ back to an older version after running v3.3.0, shut v3.3.0 down and start the ol
 reorganisation ("Failed to disconnect block"). `-reindex` rebuilds the block index, the chain state and the undo files
 from the block files, which can take hours; a pruned node downloads the chain again.
 
-For more details see https://github.com/koh-gt/ferrite-core/pull/66 and `doc/ferrite-3.3.0-review.md`
+For more details see https://github.com/koh-gt/ferrite-core/pull/66.
 
 ### Building
 Windows and Linux builds with `depends` work again, the Qt wallet included: the Boost libraries are built again, the Qt
