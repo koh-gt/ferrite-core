@@ -176,6 +176,9 @@ JSON_TEST_FILES = \
   test/data/blockfilters.json \
   test/data/key_io_valid.json \
   test/data/key_io_invalid.json \
+  test/data/p2mr_construction.json \
+  test/data/p2mr_pqc_construction.json \
+  test/data/p2mr_spend.json \
   test/data/script_tests.json \
   test/data/sighash.json \
   test/data/tx_invalid.json \
@@ -251,6 +254,7 @@ BITCOIN_TESTS =\
   test/multisig_tests.cpp \
   test/net_tests.cpp \
   test/netbase_tests.cpp \
+  test/p2mr_tests.cpp \
   test/pmt_tests.cpp \
   test/policy_fee_tests.cpp \
   test/policyestimator_tests.cpp \
@@ -273,6 +277,7 @@ BITCOIN_TESTS =\
   test/sighash_tests.cpp \
   test/sigopcount_tests.cpp \
   test/skiplist_tests.cpp \
+  test/softfork_params_tests.cpp \
   test/streams_tests.cpp \
   test/sync_tests.cpp \
   test/system_tests.cpp \

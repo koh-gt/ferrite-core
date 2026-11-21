@@ -115,6 +115,7 @@ static bool SignStep(const SigningProvider& provider, const BaseSignatureCreator
     case TxoutType::NULL_DATA:
     case TxoutType::WITNESS_UNKNOWN:
     case TxoutType::WITNESS_V1_TAPROOT:
+    case TxoutType::WITNESS_V2_P2MR:
     case TxoutType::WITNESS_MWEB_PEGIN:
     case TxoutType::WITNESS_MWEB_HOGADDR:
         return false;
@@ -210,7 +211,6 @@ bool ProduceSignature(const SigningProvider& provider, const BaseSignatureCreato
     bool solved = SignStep(provider, creator, fromPubKey, result, whichType, SigVersion::BASE, sigdata);
     bool P2SH = false;
     CScript subscript;
-    sigdata.scriptWitness.stack.clear();
 
     if (solved && whichType == TxoutType::SCRIPTHASH)
     {
@@ -245,8 +245,12 @@ bool ProduceSignature(const SigningProvider& provider, const BaseSignatureCreato
         result.clear();
     } else if (solved && whichType == TxoutType::WITNESS_UNKNOWN) {
         sigdata.witness = true;
+    } else if (!P2SH && (whichType == TxoutType::WITNESS_V1_TAPROOT || whichType == TxoutType::WITNESS_V2_P2MR)) {
+        // Native Taproot and P2MR inputs are not signed here, but they are witness inputs: their witness is kept.
+        sigdata.witness = true;
     }
 
+    if (!sigdata.witness) sigdata.scriptWitness.stack.clear();
     if (P2SH) {
         result.push_back(std::vector<unsigned char>(subscript.begin(), subscript.end()));
     }
@@ -468,13 +472,13 @@ bool IsSegWitOutput(const SigningProvider& provider, const CScript& script)
 {
     std::vector<valtype> solutions;
     auto whichtype = Solver(script, solutions);
-    if (whichtype == TxoutType::WITNESS_V0_SCRIPTHASH || whichtype == TxoutType::WITNESS_V0_KEYHASH || whichtype == TxoutType::WITNESS_UNKNOWN) return true;
+    if (whichtype == TxoutType::WITNESS_V0_SCRIPTHASH || whichtype == TxoutType::WITNESS_V0_KEYHASH || whichtype == TxoutType::WITNESS_UNKNOWN || whichtype == TxoutType::WITNESS_V2_P2MR) return true;
     if (whichtype == TxoutType::SCRIPTHASH) {
         auto h160 = uint160(solutions[0]);
         CScript subscript;
         if (provider.GetCScript(CScriptID{h160}, subscript)) {
             whichtype = Solver(subscript, solutions);
-            if (whichtype == TxoutType::WITNESS_V0_SCRIPTHASH || whichtype == TxoutType::WITNESS_V0_KEYHASH || whichtype == TxoutType::WITNESS_UNKNOWN) return true;
+            if (whichtype == TxoutType::WITNESS_V0_SCRIPTHASH || whichtype == TxoutType::WITNESS_V0_KEYHASH || whichtype == TxoutType::WITNESS_UNKNOWN || whichtype == TxoutType::WITNESS_V2_P2MR) return true;
         }
     }
     return false;
@@ -487,6 +491,17 @@ bool SignTransaction(CMutableTransaction& mtx, const SigningProvider* keystore, 
     // Use CTransaction for the constant parts of the
     // transaction to avoid rehashing.
     const CTransaction txConst(mtx);
+    // Taproot and P2MR signatures commit to every spent output, so they can only be checked if all of them are known.
+    std::vector<CTxOut> spent_outputs;
+    for (const CTxIn& txin : mtx.vin) {
+        auto coin = coins.find(txin.prevout);
+        if (coin == coins.end() || coin->second.IsSpent() || coin->second.out.nValue == MAX_MONEY) break;
+        spent_outputs.emplace_back(coin->second.out.nValue, coin->second.out.scriptPubKey);
+    }
+    // Without all of them the checker gets no transaction data, so such a signature fails without a script error.
+    const bool have_all_spent_outputs = spent_outputs.size() == mtx.vin.size();
+    PrecomputedTransactionData txdata;
+    if (have_all_spent_outputs) txdata.Init(txConst, std::move(spent_outputs));
     // Sign what we can:
     for (unsigned int i = 0; i < mtx.vin.size(); i++) {
         CTxIn& txin = mtx.vin[i];
@@ -513,7 +528,17 @@ bool SignTransaction(CMutableTransaction& mtx, const SigningProvider* keystore, 
         }
 
         ScriptError serror = SCRIPT_ERR_OK;
-        if (!VerifyScript(txin.scriptSig, prevPubKey, &txin.scriptWitness, STANDARD_SCRIPT_VERIFY_FLAGS, TransactionSignatureChecker(&txConst, i, amount, MissingDataBehavior::FAIL), &serror)) {
+        bool verified;
+        if (have_all_spent_outputs) {
+            verified = VerifyScript(txin.scriptSig, prevPubKey, &txin.scriptWitness, STANDARD_SCRIPT_VERIFY_FLAGS, TransactionSignatureChecker(&txConst, i, amount, txdata, MissingDataBehavior::FAIL), &serror);
+        } else {
+            verified = VerifyScript(txin.scriptSig, prevPubKey, &txin.scriptWitness, STANDARD_SCRIPT_VERIFY_FLAGS, TransactionSignatureChecker(&txConst, i, amount, MissingDataBehavior::FAIL), &serror);
+        }
+        if (!verified) {
+            if (serror == SCRIPT_ERR_OK) {
+                // A signature that cannot be checked (a spent output is missing) fails without a script error.
+                serror = SCRIPT_ERR_UNKNOWN_ERROR;
+            }
             if (serror == SCRIPT_ERR_INVALID_STACK_OPERATION) {
                 // Unable to sign input and verification failed (possible attempt to partially sign).
                 input_errors[i] = "Unable to sign input, invalid stack size (possibly missing key)";

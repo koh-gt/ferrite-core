@@ -115,6 +115,12 @@ std::string ScriptErrorString(const ScriptError serror)
             return "Using OP_CODESEPARATOR in non-witness script";
         case SCRIPT_ERR_SIG_FINDANDDELETE:
             return "Signature is found in scriptCode";
+        case SCRIPT_ERR_P2MR_WITNESS_SIZE:
+            return "P2MR witness must contain a script and a control block";
+        case SCRIPT_ERR_P2MR_WRONG_CONTROL_SIZE:
+            return "Invalid P2MR control block size";
+        case SCRIPT_ERR_P2MR_CONTROL_PARITY:
+            return "P2MR control block must have its lowest bit set";
         case SCRIPT_ERR_UNKNOWN_ERROR:
         case SCRIPT_ERR_ERROR_COUNT:
         default: break;

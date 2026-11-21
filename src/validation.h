@@ -321,6 +321,12 @@ bool IsMWEBEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& param
 /** Check whether the canonical MWEB kernel feature rules (the mwebkernel deployment) have activated. */
 bool IsMWEBKernelRuleEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params);
 
+/** Check whether the P2MR rules (the p2mr deployment) apply to the block after pindexPrev. */
+bool IsP2MREnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params);
+
+/** Check whether the block time rules (the timewarp deployment) apply to the block after pindexPrev. */
+bool IsTimewarpEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params);
+
 /** Update uncommitted block structures (currently: only the witness reserved value). This is safe for submitted blocks. */
 void UpdateUncommittedBlockStructures(CBlock& block, const CBlockIndex* pindexPrev, const Consensus::Params& consensusParams);
 

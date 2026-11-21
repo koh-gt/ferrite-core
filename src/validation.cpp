@@ -732,7 +732,7 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
     // Check for non-standard pay-to-script-hash in inputs
     const auto& params = args.m_chainparams.GetConsensus();
     auto taproot_state = VersionBitsState(::ChainActive().Tip(), params, Consensus::DEPLOYMENT_TAPROOT, versionbitscache);
-    if (fRequireStandard && !AreInputsStandard(tx, m_view, taproot_state == ThresholdState::ACTIVE)) {
+    if (fRequireStandard && !AreInputsStandard(tx, m_view, taproot_state == ThresholdState::ACTIVE, IsP2MREnabled(::ChainActive().Tip(), params))) {
         return state.Invalid(TxValidationResult::TX_INPUTS_NOT_STANDARD, "bad-txns-nonstandard-inputs");
     }
 
@@ -1987,6 +1987,11 @@ static unsigned int GetBlockScriptFlags(const CBlockIndex* pindex, const Consens
     // Start enforcing Taproot using versionbits logic.
     if (VersionBitsState(pindex->pprev, consensusparams, Consensus::DEPLOYMENT_TAPROOT, versionbitscache) == ThresholdState::ACTIVE) {
         flags |= SCRIPT_VERIFY_TAPROOT;
+    }
+
+    // Start enforcing P2MR (BIP 360) using versionbits logic.
+    if (IsP2MREnabled(pindex->pprev, consensusparams)) {
+        flags |= SCRIPT_VERIFY_P2MR;
     }
 
     // Start enforcing BIP147 NULLDUMMY (activated simultaneously with segwit)
@@ -3610,6 +3615,18 @@ bool IsMWEBKernelRuleEnabled(const CBlockIndex* pindexPrev, const Consensus::Par
 {
     LOCK(cs_main);
     return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_MWEB_KERNEL, versionbitscache) == ThresholdState::ACTIVE);
+}
+
+bool IsP2MREnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params)
+{
+    LOCK(cs_main);
+    return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_P2MR, versionbitscache) == ThresholdState::ACTIVE);
+}
+
+bool IsTimewarpEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params)
+{
+    LOCK(cs_main);
+    return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_TIMEWARP, versionbitscache) == ThresholdState::ACTIVE);
 }
 
 void UpdateUncommittedBlockStructures(CBlock& block, const CBlockIndex* pindexPrev, const Consensus::Params& consensusParams)

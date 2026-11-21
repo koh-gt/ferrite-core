@@ -18,6 +18,9 @@ enum DeploymentPos
     DEPLOYMENT_TAPROOT, // Deployment of Schnorr/Taproot (BIPs 340-342)
     DEPLOYMENT_MWEB, // Deployment of MWEB (LIPs 0002-0004)
     DEPLOYMENT_MWEB_KERNEL, // Canonical MWEB kernel features (Litecoin b250b016a and a399fc4ca)
+    DEPLOYMENT_P2MR, // Deployment of Pay-to-Merkle-Root outputs (BIP 360)
+    DEPLOYMENT_COINBASE_MATURITY, // Coinbase outputs mature after 100 blocks
+    DEPLOYMENT_TIMEWARP, // Block time rules for the difficulty window
     // NOTE: Also add new deployments to VersionBitsDeploymentInfo in versionbits.cpp
     MAX_VERSION_BITS_DEPLOYMENTS
 };
