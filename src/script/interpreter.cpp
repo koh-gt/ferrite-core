@@ -1893,7 +1893,7 @@ static bool VerifyP2MRCommitment(const std::vector<unsigned char>& control, cons
 
 static bool VerifyWitnessProgram(const CScriptWitness& witness, int witversion, const std::vector<unsigned char>& program, unsigned int flags, const BaseSignatureChecker& checker, ScriptError* serror, bool is_p2sh)
 {
-    CScript exec_script; //!< Actually executed script (last stack item in P2WSH; implied P2PKH script in P2WPKH; leaf script in P2TR)
+    CScript exec_script; //!< Actually executed script (last stack item in P2WSH; implied P2PKH script in P2WPKH; leaf script in P2TR and P2MR)
     Span<const valtype> stack{witness.stack};
     ScriptExecutionData execdata;
 

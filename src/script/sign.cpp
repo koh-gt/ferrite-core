@@ -115,6 +115,7 @@ static bool SignStep(const SigningProvider& provider, const BaseSignatureCreator
     case TxoutType::NULL_DATA:
     case TxoutType::WITNESS_UNKNOWN:
     case TxoutType::WITNESS_V1_TAPROOT:
+    case TxoutType::WITNESS_V2_P2MR:
     case TxoutType::WITNESS_MWEB_PEGIN:
     case TxoutType::WITNESS_MWEB_HOGADDR:
         return false;
@@ -244,8 +245,8 @@ bool ProduceSignature(const SigningProvider& provider, const BaseSignatureCreato
         result.clear();
     } else if (solved && whichType == TxoutType::WITNESS_UNKNOWN) {
         sigdata.witness = true;
-    } else if (!P2SH && whichType == TxoutType::WITNESS_V1_TAPROOT) {
-        // Native Taproot inputs are not signed here, but they are witness inputs: their witness is kept.
+    } else if (!P2SH && (whichType == TxoutType::WITNESS_V1_TAPROOT || whichType == TxoutType::WITNESS_V2_P2MR)) {
+        // Native Taproot and P2MR inputs are not signed here, but they are witness inputs: their witness is kept.
         sigdata.witness = true;
     }
 
@@ -471,13 +472,13 @@ bool IsSegWitOutput(const SigningProvider& provider, const CScript& script)
 {
     std::vector<valtype> solutions;
     auto whichtype = Solver(script, solutions);
-    if (whichtype == TxoutType::WITNESS_V0_SCRIPTHASH || whichtype == TxoutType::WITNESS_V0_KEYHASH || whichtype == TxoutType::WITNESS_UNKNOWN) return true;
+    if (whichtype == TxoutType::WITNESS_V0_SCRIPTHASH || whichtype == TxoutType::WITNESS_V0_KEYHASH || whichtype == TxoutType::WITNESS_UNKNOWN || whichtype == TxoutType::WITNESS_V2_P2MR) return true;
     if (whichtype == TxoutType::SCRIPTHASH) {
         auto h160 = uint160(solutions[0]);
         CScript subscript;
         if (provider.GetCScript(CScriptID{h160}, subscript)) {
             whichtype = Solver(subscript, solutions);
-            if (whichtype == TxoutType::WITNESS_V0_SCRIPTHASH || whichtype == TxoutType::WITNESS_V0_KEYHASH || whichtype == TxoutType::WITNESS_UNKNOWN) return true;
+            if (whichtype == TxoutType::WITNESS_V0_SCRIPTHASH || whichtype == TxoutType::WITNESS_V0_KEYHASH || whichtype == TxoutType::WITNESS_UNKNOWN || whichtype == TxoutType::WITNESS_V2_P2MR) return true;
         }
     }
     return false;
@@ -490,7 +491,7 @@ bool SignTransaction(CMutableTransaction& mtx, const SigningProvider* keystore, 
     // Use CTransaction for the constant parts of the
     // transaction to avoid rehashing.
     const CTransaction txConst(mtx);
-    // Taproot signatures commit to every spent output, so they can only be checked if all of them are known.
+    // Taproot and P2MR signatures commit to every spent output, so they can only be checked if all of them are known.
     std::vector<CTxOut> spent_outputs;
     for (const CTxIn& txin : mtx.vin) {
         auto coin = coins.find(txin.prevout);

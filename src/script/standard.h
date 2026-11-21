@@ -134,6 +134,7 @@ enum class TxoutType {
     WITNESS_V0_SCRIPTHASH,
     WITNESS_V0_KEYHASH,
     WITNESS_V1_TAPROOT,
+    WITNESS_V2_P2MR, //!< Witness version 2 with a 32-byte program (P2MR, BIP 360)
     WITNESS_MWEB_PEGIN, //!< Hash of the peg-in kernel
     WITNESS_MWEB_HOGADDR, //!< HogAddr (first output of HogEx)
     WITNESS_UNKNOWN, //!< Only for Witness versions not already defined above
@@ -213,7 +214,7 @@ struct WitnessUnknown
  *  * ScriptHash: TxoutType::SCRIPTHASH destination (P2SH)
  *  * WitnessV0ScriptHash: TxoutType::WITNESS_V0_SCRIPTHASH destination (P2WSH)
  *  * WitnessV0KeyHash: TxoutType::WITNESS_V0_KEYHASH destination (P2WPKH)
- *  * WitnessUnknown: TxoutType::WITNESS_UNKNOWN/WITNESS_V1_TAPROOT destination (P2W???)
+ *  * WitnessUnknown: TxoutType::WITNESS_UNKNOWN/WITNESS_V1_TAPROOT/WITNESS_V2_P2MR destination (P2W???)
  *    (taproot outputs do not require their own type as long as no wallet support exists)
  *  * StealthAddress: MWEB destination
  *  A CTxDestination is the internal data type encoded in a bitcoin address

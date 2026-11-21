@@ -8,17 +8,22 @@
 
 #include <amount.h>
 #include <bech32.h>
+#include <chainparams.h>
 #include <coins.h>
 #include <consensus/validation.h>
 #include <core_io.h>
 #include <crypto/sha256.h>
 #include <hash.h>
+#include <key.h>
+#include <key_io.h>
 #include <policy/policy.h>
 #include <primitives/transaction.h>
 #include <pubkey.h>
 #include <script/interpreter.h>
 #include <script/script.h>
 #include <script/script_error.h>
+#include <script/sign.h>
+#include <script/signingprovider.h>
 #include <script/standard.h>
 #include <sync.h>
 #include <test/util/setup_common.h>
@@ -29,6 +34,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -378,6 +384,36 @@ valtype TapscriptSigMsg(const CMutableTransaction& tx, const std::vector<CTxOut>
     return msg;
 }
 
+/** A transaction whose input 0 spends a Taproot output (an internal key without a script tree) by its key path and
+ *  whose input 1 spends a P2MR output through the leaf <x-only key> OP_CHECKSIG of a tree with two leaves at depth 1,
+ *  and the outputs it spends. Both signatures are BIP 340 signatures with SIGHASH_DEFAULT and all-zero auxiliary
+ *  randomness, made with the functional test framework; the test checks them before it uses them. */
+const char* const TAPROOT_AND_P2MR_TX =
+    "0200000000010213c18766d55a8fc0135dd82709c48ba5403d873605de0c1929fe1b1e730ce3c70000000000fdffffff9a689ddfde7f62e0"
+    "96561b30c5fa64ec7ae0624219fc0ce3b028f6cbf58cf08a0100000000fdffffff01e022020000000000160014293d23f5822c5bbd501422"
+    "e791c333d1dc23d71901409f056cfbeca724390f8be0f2e04017f24d9caf7778ac2d830553cc2f5643622bc17843abc2598b7fe30f4f14d7"
+    "ba5f01415388fa699bae7b17b181fa078aece90340e90258efcb94e968ee8f2c37eb84b350322127f936dc3475846ab7df07a5d34f9c915a"
+    "ab26e60c380431ac7153977442fd2774bb74c9966fc3ca7457bba1b6f52220f38daa41ff3895b0a312e3db42444d23527862daa3d2634f9e"
+    "73760f274dad81ac21c1a85b2107f791b26a84e7586c28cec7cb61202ed3d01944d832500f363782d67500000000";
+const CAmount TAPROOT_AND_P2MR_AMOUNTS[] = {100000, 50000};
+const char* const TAPROOT_AND_P2MR_SCRIPTS[] = {
+    "5120a7b11c9380c24bb0bba1c6be7c6c3c99b72c5a0528929220508ddbc5853f8a0f",
+    "522084bcbd31d754525811394c9fe099aa3b1becdab55fb24aee63e240075d7a94b0",
+};
+
+CScript ScriptFromHex(const std::string& hex)
+{
+    const valtype bytes = ParseHex(hex);
+    return CScript(bytes.begin(), bytes.end());
+}
+
+std::string ErrorsString(const std::map<int, std::string>& errors)
+{
+    std::string ret;
+    for (const auto& error : errors) ret += strprintf("input %d: \"%s\"; ", error.first, error.second);
+    return ret;
+}
+
 /** One leaf of a tree in a BIP 360 construction vector. */
 struct VectorLeaf {
     int id;
@@ -404,6 +440,7 @@ uint256 ReadScriptTree(const UniValue& tree, size_t depth, std::vector<VectorLea
 /** What the leaf and control block pairs of one vector file are, counted to see that every kind is checked. */
 struct VectorCounts {
     size_t error_vectors = 0;
+    size_t error_vectors_with_script = 0;
     size_t spends = 0;
     size_t depth_zero = 0;
     size_t other_leaf_version = 0;
@@ -428,6 +465,13 @@ VectorCounts CheckConstructionVectors(const unsigned char* data, size_t size, co
             // These vectors are about building an output: there is no script tree and so nothing to spend.
             BOOST_CHECK_MESSAGE(!expected["error"].get_str().empty(), name + ": empty error");
             BOOST_CHECK_MESSAGE(tree.isNull() || (tree.isStr() && tree.get_str().empty()), name + ": error vector with a script tree");
+            if (expected.exists("scriptPubKey")) {
+                // A key given where P2MR has none still gives OP_2 <32 bytes>, which has the P2MR output type.
+                const valtype script_bytes = ParseHex(expected["scriptPubKey"].get_str());
+                std::vector<valtype> solutions;
+                BOOST_CHECK_MESSAGE(Solver(CScript(script_bytes.begin(), script_bytes.end()), solutions) == TxoutType::WITNESS_V2_P2MR, name + ": output type");
+                ++counts.error_vectors_with_script;
+            }
             ++counts.error_vectors;
             continue;
         }
@@ -447,6 +491,9 @@ VectorCounts CheckConstructionVectors(const unsigned char* data, size_t size, co
         BOOST_CHECK_MESSAGE(converted, name + ": address program has padding that is not zero");
         BOOST_CHECK_MESSAGE(address_program == program, name + ": address program differs from scriptPubKey");
         BOOST_CHECK_MESSAGE(HexStr(program) == vector["intermediary"]["merkleRoot"].get_str(), name + ": program is not the Merkle root");
+        std::vector<valtype> solutions;
+        BOOST_CHECK_MESSAGE(Solver(script_pubkey, solutions) == TxoutType::WITNESS_V2_P2MR, name + ": output type");
+        BOOST_CHECK_MESSAGE(solutions == std::vector<valtype>({valtype{2}, program}), name + ": solutions of the output");
 
         // The tree: leaf hashes and root.
         std::vector<VectorLeaf> leaves;
@@ -1082,10 +1129,11 @@ BOOST_AUTO_TEST_CASE(spend_vector)
 
 BOOST_AUTO_TEST_CASE(bip360_construction_vectors)
 {
-    // The test vectors of BIP 360: every output, leaf hash and root, and a spend of every leaf with its control
-    // block.
+    // The test vectors of BIP 360: every output with its output type, every leaf hash and root, and a spend of every
+    // leaf with its control block.
     const VectorCounts construction = CheckConstructionVectors(json_tests::p2mr_construction, sizeof(json_tests::p2mr_construction), "p2mr_construction.json");
     BOOST_CHECK_EQUAL(construction.error_vectors, 2U);
+    BOOST_CHECK_EQUAL(construction.error_vectors_with_script, 1U);
     BOOST_CHECK_EQUAL(construction.spends, 16U);
     BOOST_CHECK_EQUAL(construction.depth_zero, 1U);
     BOOST_CHECK_EQUAL(construction.other_leaf_version, 1U);
@@ -1094,11 +1142,214 @@ BOOST_AUTO_TEST_CASE(bip360_construction_vectors)
 
     const VectorCounts pqc = CheckConstructionVectors(json_tests::p2mr_pqc_construction, sizeof(json_tests::p2mr_pqc_construction), "p2mr_pqc_construction.json");
     BOOST_CHECK_EQUAL(pqc.error_vectors, 1U);
+    BOOST_CHECK_EQUAL(pqc.error_vectors_with_script, 0U);
     BOOST_CHECK_EQUAL(pqc.spends, 13U);
     BOOST_CHECK_EQUAL(pqc.depth_zero, 1U);
     BOOST_CHECK_EQUAL(pqc.other_leaf_version, 1U);
     BOOST_CHECK_EQUAL(pqc.op_success, 9U);
     BOOST_CHECK_EQUAL(pqc.executed, 2U);
+}
+
+BOOST_AUTO_TEST_CASE(type_and_policy)
+{
+    // OP_2 <32 bytes> has an output type of its own. Every other witness version 2 program, and every program of a
+    // later version, is still an unknown witness program.
+    const uint256 root = RootFromPath(LeafHash(LEAF_TAPSCRIPT, ScriptBytes(CScript() << OP_TRUE)), Siblings(1));
+    const CScript p2mr = P2MRScript(root);
+    std::vector<valtype> solutions;
+    BOOST_CHECK(Solver(p2mr, solutions) == TxoutType::WITNESS_V2_P2MR);
+    BOOST_CHECK(solutions == std::vector<valtype>({valtype{2}, ToByteVector(root)}));
+    BOOST_CHECK_EQUAL(GetTxnOutputType(TxoutType::WITNESS_V2_P2MR), "witness_v2_p2mr");
+    BOOST_CHECK_EQUAL(GetTxnOutputType(Solver(p2mr, solutions)), "witness_v2_p2mr");
+    for (const size_t size : {2, 20, 31, 33, 40}) {
+        BOOST_CHECK_MESSAGE(Solver(ProgramScript(OP_2, size, 0x5a), solutions) == TxoutType::WITNESS_UNKNOWN, strprintf("witness version 2, %u-byte program", size));
+    }
+    BOOST_CHECK(Solver(CScript() << OP_3 << ToByteVector(root), solutions) == TxoutType::WITNESS_UNKNOWN);
+    BOOST_CHECK(Solver(CScript() << OP_16 << ToByteVector(root), solutions) == TxoutType::WITNESS_UNKNOWN);
+    BOOST_CHECK(Solver(CScript() << OP_1 << ToByteVector(root), solutions) == TxoutType::WITNESS_V1_TAPROOT);
+    const CScript p2sh = GetScriptForDestination(ScriptHash(p2mr));
+    BOOST_CHECK(Solver(p2sh, solutions) == TxoutType::SCRIPTHASH);
+
+    // The destination is still a witness program of version 2, so the address is the same bech32m string.
+    CTxDestination dest;
+    BOOST_REQUIRE(ExtractDestination(p2mr, dest));
+    const WitnessUnknown* program = boost::get<WitnessUnknown>(&dest);
+    BOOST_REQUIRE(program != nullptr);
+    BOOST_CHECK_EQUAL(program->version, 2U);
+    BOOST_CHECK_EQUAL(program->length, 32U);
+    BOOST_CHECK(std::equal(root.begin(), root.end(), program->program));
+    BOOST_CHECK(GetScriptForDestination(dest) == p2mr);
+    valtype data{2};
+    ConvertBits<8, 5, true>([&](unsigned char c) { data.push_back(c); }, root.begin(), root.end());
+    const std::string address = EncodeDestination(dest);
+    BOOST_CHECK_EQUAL(address, bech32::Encode(bech32::Encoding::BECH32M, Params().Bech32HRP(), data));
+    BOOST_CHECK_EQUAL(address.substr(0, Params().Bech32HRP().size() + 2), Params().Bech32HRP() + "1z");
+    BOOST_CHECK(GetScriptForDestination(DecodeDestination(address)) == p2mr);
+    TxoutType type;
+    std::vector<CTxDestination> addresses;
+    int required;
+    BOOST_CHECK(ExtractDestinations(p2mr, type, addresses, required));
+    BOOST_CHECK(type == TxoutType::WITNESS_V2_P2MR);
+    BOOST_CHECK(addresses == std::vector<CTxDestination>{dest});
+    BOOST_CHECK_EQUAL(required, 1);
+
+    // It is a segwit output, as it was as an unknown witness program, also nested in P2SH. A native Taproot output
+    // is not.
+    FillableSigningProvider provider;
+    BOOST_CHECK(IsSegWitOutput(provider, p2mr));
+    BOOST_CHECK(!IsSegWitOutput(provider, p2sh));
+    BOOST_CHECK(provider.AddCScript(p2mr));
+    BOOST_CHECK(IsSegWitOutput(provider, p2sh));
+    BOOST_CHECK(IsSegWitOutput(provider, ProgramScript(OP_2, 20, 0x5a)));
+    BOOST_CHECK(!IsSegWitOutput(provider, CScript() << OP_1 << ToByteVector(root)));
+
+    // A spend of it is a standard input only when the P2MR rules apply to the next block, whatever the state of
+    // Taproot. Spends of other witness version 2 programs and of later versions stay non-standard.
+    CCoinsView no_coins;
+    CCoinsViewCache coins(&no_coins);
+    // A transaction whose inputs spend outputs with these scripts, each added to the view under an outpoint of its own.
+    const auto spending = [&](const std::vector<CScript>& spent_scripts) {
+        CMutableTransaction tx;
+        for (const CScript& script : spent_scripts) {
+            const COutPoint prevout(Sha256(ScriptBytes(script)), 0);
+            if (!coins.HaveCoin(prevout)) coins.AddCoin(prevout, Coin(CTxOut(10000, script), 1, false, false), false);
+            tx.vin.emplace_back(prevout);
+        }
+        tx.vout.emplace_back(1000, ProgramScript(OP_0, 20, 0x77));
+        return CTransaction(tx);
+    };
+    const CScript taproot = CScript() << OP_1 << ToByteVector(root);
+    const CTransaction spends_p2mr = spending({p2mr});
+    BOOST_CHECK(!AreInputsStandard(spends_p2mr, coins, /* taproot_active */ true, /* p2mr_active */ false));
+    BOOST_CHECK(!AreInputsStandard(spends_p2mr, coins, /* taproot_active */ false, /* p2mr_active */ false));
+    BOOST_CHECK(AreInputsStandard(spends_p2mr, coins, /* taproot_active */ true, /* p2mr_active */ true));
+    BOOST_CHECK(AreInputsStandard(spends_p2mr, coins, /* taproot_active */ false, /* p2mr_active */ true));
+    const CTransaction spends_both = spending({taproot, p2mr});
+    BOOST_CHECK(AreInputsStandard(spends_both, coins, /* taproot_active */ true, /* p2mr_active */ true));
+    BOOST_CHECK(!AreInputsStandard(spends_both, coins, /* taproot_active */ false, /* p2mr_active */ true));
+    BOOST_CHECK(!AreInputsStandard(spends_both, coins, /* taproot_active */ true, /* p2mr_active */ false));
+    for (const CScript& other : {ProgramScript(OP_2, 31, 0x5a), ProgramScript(OP_2, 33, 0x5a), CScript() << OP_3 << ToByteVector(root)}) {
+        BOOST_CHECK_MESSAGE(!AreInputsStandard(spending({other}), coins, /* taproot_active */ true, /* p2mr_active */ true), "spend of " + HexStr(other));
+        BOOST_CHECK_MESSAGE(!AreInputsStandard(spending({other, p2mr}), coins, /* taproot_active */ true, /* p2mr_active */ true), "spend of " + HexStr(other) + " and of P2MR");
+    }
+}
+
+BOOST_AUTO_TEST_CASE(signing)
+{
+    // The signing code cannot sign for Taproot and P2MR outputs. It keeps the witnesses of inputs that spend them,
+    // and it can check their signatures only if it knows every output the transaction spends.
+    CMutableTransaction signed_tx;
+    BOOST_REQUIRE(DecodeHexTx(signed_tx, TAPROOT_AND_P2MR_TX, /* try_no_witness */ false, /* try_witness */ true));
+    BOOST_REQUIRE_EQUAL(signed_tx.vin.size(), 2U);
+    std::vector<CTxOut> spent_outputs;
+    for (size_t i = 0; i < 2; ++i) spent_outputs.emplace_back(TAPROOT_AND_P2MR_AMOUNTS[i], ScriptFromHex(TAPROOT_AND_P2MR_SCRIPTS[i]));
+    int version;
+    valtype program;
+    BOOST_REQUIRE(spent_outputs[0].scriptPubKey.IsWitnessProgram(version, program) && version == 1 && program.size() == 32);
+    BOOST_REQUIRE(spent_outputs[1].scriptPubKey.IsWitnessProgram(version, program) && version == 2 && program.size() == 32);
+    BOOST_REQUIRE_EQUAL(signed_tx.vin[0].scriptWitness.stack.size(), 1U);
+    BOOST_REQUIRE_EQUAL(signed_tx.vin[1].scriptWitness.stack.size(), 3U);
+    BOOST_REQUIRE_EQUAL(signed_tx.vin[1].scriptWitness.stack[1].back(), OP_CHECKSIG);
+    // Both signatures are valid, and they are really checked.
+    for (unsigned int i = 0; i < 2; ++i) {
+        CheckError(VerifyInput(signed_tx, spent_outputs, i, CONSENSUS_FLAGS), SCRIPT_ERR_OK, strprintf("input %u (block flags)", i));
+        CheckError(VerifyInput(signed_tx, spent_outputs, i, POLICY_FLAGS), SCRIPT_ERR_OK, strprintf("input %u (relay flags)", i));
+        CMutableTransaction changed = signed_tx;
+        changed.vin[i].scriptWitness.stack[0][10] ^= 0x01;
+        CheckError(VerifyInput(changed, spent_outputs, i, POLICY_FLAGS), SCRIPT_ERR_SCHNORR_SIG, strprintf("input %u with a changed signature", i));
+    }
+
+    std::map<COutPoint, Coin> coins;
+    for (size_t i = 0; i < 2; ++i) coins.emplace(signed_tx.vin[i].prevout, Coin(spent_outputs[i], 1, false, false));
+    FillableSigningProvider keystore;
+    CKey key;
+    key.MakeNewKey(true);
+    BOOST_REQUIRE(keystore.AddKey(key));
+    const CScript p2pkh = GetScriptForDestination(PKHash(key.GetPubKey()));
+    const CScript p2wpkh = GetScriptForDestination(WitnessV0KeyHash(key.GetPubKey()));
+    const auto witnesses = [](const CMutableTransaction& tx) {
+        std::vector<std::vector<valtype>> stacks;
+        for (const CTxIn& txin : tx.vin) stacks.push_back(txin.scriptWitness.stack);
+        return stacks;
+    };
+    const std::vector<std::vector<valtype>> given_witnesses = witnesses(signed_tx);
+
+    // With every spent output known, the witnesses come back unchanged and the transaction is complete.
+    {
+        CMutableTransaction tx = signed_tx;
+        std::map<int, std::string> errors;
+        BOOST_CHECK(SignTransaction(tx, &keystore, coins, SIGHASH_ALL, errors));
+        BOOST_CHECK_MESSAGE(errors.empty(), "errors: " + ErrorsString(errors));
+        BOOST_CHECK(witnesses(tx) == given_witnesses);
+        BOOST_CHECK(tx.vin[0].scriptSig.empty() && tx.vin[1].scriptSig.empty());
+    }
+    // With a third input whose coin is not known, the signatures cannot be checked: both inputs keep their
+    // witnesses and report "unknown error".
+    {
+        CMutableTransaction tx = signed_tx;
+        tx.vin.emplace_back(COutPoint(uint256S("33"), 0));
+        std::map<int, std::string> errors;
+        BOOST_CHECK(!SignTransaction(tx, &keystore, coins, SIGHASH_ALL, errors));
+        const std::map<int, std::string> expected{{0, "unknown error"}, {1, "unknown error"}, {2, "Input not found or already spent"}};
+        BOOST_CHECK_MESSAGE(errors == expected, "errors: " + ErrorsString(errors));
+        const std::vector<std::vector<valtype>> got = witnesses(tx);
+        BOOST_CHECK(std::vector<std::vector<valtype>>(got.begin(), got.begin() + 2) == given_witnesses);
+    }
+    // The same when the third input's amount is not known, which the signing RPCs give as MAX_MONEY. That input
+    // spends a P2PKH output, whose signature does not commit to amounts: it is signed and complete.
+    {
+        CMutableTransaction tx = signed_tx;
+        tx.vin.emplace_back(COutPoint(uint256S("33"), 0));
+        std::map<COutPoint, Coin> coins_without_amount = coins;
+        coins_without_amount.emplace(tx.vin[2].prevout, Coin(CTxOut(MAX_MONEY, p2pkh), 1, false, false));
+        std::map<int, std::string> errors;
+        BOOST_CHECK(!SignTransaction(tx, &keystore, coins_without_amount, SIGHASH_ALL, errors));
+        const std::map<int, std::string> expected{{0, "unknown error"}, {1, "unknown error"}};
+        BOOST_CHECK_MESSAGE(errors == expected, "errors: " + ErrorsString(errors));
+        const std::vector<std::vector<valtype>> got = witnesses(tx);
+        BOOST_CHECK(std::vector<std::vector<valtype>>(got.begin(), got.begin() + 2) == given_witnesses);
+        BOOST_CHECK(!tx.vin[2].scriptSig.empty() && tx.vin[2].scriptWitness.IsNull());
+    }
+
+    // ProduceSignature marks both inputs as witness inputs and keeps their witnesses, though it cannot complete them
+    // without the spent outputs.
+    for (unsigned int i = 0; i < 2; ++i) {
+        SignatureData sigdata = DataFromTransaction(signed_tx, i, spent_outputs[i]);
+        BOOST_CHECK(!sigdata.complete);
+        BOOST_CHECK(!ProduceSignature(keystore, MutableTransactionSignatureCreator(&signed_tx, i, spent_outputs[i].nValue, SIGHASH_ALL), spent_outputs[i].scriptPubKey, sigdata));
+        BOOST_CHECK(sigdata.witness);
+        BOOST_CHECK(sigdata.scriptWitness.stack == given_witnesses[i]);
+        BOOST_CHECK(sigdata.scriptSig.empty());
+    }
+
+    // P2PKH and P2WPKH inputs are signed as before: a P2PKH input gets a scriptSig and loses a witness it was given,
+    // a P2WPKH input gets a witness of a signature and the key.
+    {
+        CMutableTransaction tx;
+        tx.vin.emplace_back(COutPoint(uint256S("44"), 0));
+        tx.vin.emplace_back(COutPoint(uint256S("44"), 1));
+        tx.vin[0].scriptWitness.stack = {valtype{0x01}};
+        tx.vout.emplace_back(19000, ProgramScript(OP_0, 20, 0x77));
+        const std::vector<CTxOut> spent{CTxOut(10000, p2pkh), CTxOut(10000, p2wpkh)};
+        std::map<COutPoint, Coin> legacy_coins;
+        for (size_t i = 0; i < 2; ++i) legacy_coins.emplace(tx.vin[i].prevout, Coin(spent[i], 1, false, false));
+        std::map<int, std::string> errors;
+        BOOST_CHECK(SignTransaction(tx, &keystore, legacy_coins, SIGHASH_ALL, errors));
+        BOOST_CHECK(errors.empty());
+        BOOST_CHECK(tx.vin[0].scriptWitness.IsNull());
+        std::vector<valtype> pushes;
+        CScript::const_iterator pc = tx.vin[0].scriptSig.begin();
+        opcodetype opcode;
+        valtype push;
+        while (tx.vin[0].scriptSig.GetOp(pc, opcode, push)) pushes.push_back(push);
+        BOOST_CHECK(pushes.size() == 2 && pushes[1] == ToByteVector(key.GetPubKey()));
+        BOOST_CHECK(tx.vin[1].scriptSig.empty());
+        BOOST_CHECK_EQUAL(tx.vin[1].scriptWitness.stack.size(), 2U);
+        BOOST_CHECK(tx.vin[1].scriptWitness.stack.back() == ToByteVector(key.GetPubKey()));
+        for (unsigned int i = 0; i < 2; ++i) {
+            CheckError(VerifyInput(tx, spent, i, CONSENSUS_FLAGS), SCRIPT_ERR_OK, strprintf("signed legacy input %u", i));
+        }
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -1606,17 +1606,21 @@ BOOST_AUTO_TEST_CASE(sign_witness_input_keeps_witness)
 
     // The signer cannot sign for a native Taproot output, but an input that
     // spends one is a witness input, so its witness is kept. A Taproot
-    // program nested in P2SH is not a Taproot output.
+    // program nested in P2SH is not a Taproot output. The same holds for a
+    // P2MR output (BIP 360), witness version 2 with a 32-byte program.
     const CScript taproot = CScript() << OP_1 << std::vector<unsigned char>(32, 0x02);
-    FillableSigningProvider p2sh_keystore;
-    BOOST_CHECK(p2sh_keystore.AddCScript(taproot));
-    const CScript p2sh = GetScriptForDestination(ScriptHash(taproot));
-    for (const bool native : {true, false}) {
-        SignatureData sigdata;
-        sigdata.scriptWitness.stack = stack;
-        BOOST_CHECK(!ProduceSignature(p2sh_keystore, creator, native ? taproot : p2sh, sigdata));
-        BOOST_CHECK_EQUAL(sigdata.witness, native);
-        BOOST_CHECK(sigdata.scriptWitness.stack == (native ? stack : std::vector<std::vector<unsigned char>>{}));
+    const CScript p2mr = CScript() << OP_2 << std::vector<unsigned char>(32, 0x02);
+    for (const CScript& program : {taproot, p2mr}) {
+        FillableSigningProvider p2sh_keystore;
+        BOOST_CHECK(p2sh_keystore.AddCScript(program));
+        const CScript p2sh = GetScriptForDestination(ScriptHash(program));
+        for (const bool native : {true, false}) {
+            SignatureData sigdata;
+            sigdata.scriptWitness.stack = stack;
+            BOOST_CHECK(!ProduceSignature(p2sh_keystore, creator, native ? program : p2sh, sigdata));
+            BOOST_CHECK_EQUAL(sigdata.witness, native);
+            BOOST_CHECK(sigdata.scriptWitness.stack == (native ? stack : std::vector<std::vector<unsigned char>>{}));
+        }
     }
 }
 
