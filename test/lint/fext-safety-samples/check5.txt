@@ -1,0 +1,2 @@
+Known-bad sample of check 5 of test/lint/lint-fext-safety.sh: running a command.
+int status = system("true");

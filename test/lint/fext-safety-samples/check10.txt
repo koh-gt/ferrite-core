@@ -1,0 +1,2 @@
+Known-bad sample of check 10 of test/lint/lint-fext-safety.sh: a regular expression library.
+#include <regex>

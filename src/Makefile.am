@@ -225,6 +225,12 @@ BITCOIN_CORE_H = \
   node/ui_interface.h \
   node/utxo_snapshot.h \
   noui.h \
+  opreturn/coverage.h \
+  opreturn/format.h \
+  opreturn/log.h \
+  opreturn/names.h \
+  opreturn/options.h \
+  opreturn/script.h \
   optional.h \
   outputtype.h \
   policy/feerate.h \
@@ -370,6 +376,11 @@ libbitcoin_server_a_SOURCES = \
   node/transaction.cpp \
   node/ui_interface.cpp \
   noui.cpp \
+  opreturn/coverage.cpp \
+  opreturn/format.cpp \
+  opreturn/log.cpp \
+  opreturn/options.cpp \
+  opreturn/script.cpp \
   policy/fees.cpp \
   policy/rbf.cpp \
   policy/settings.cpp \

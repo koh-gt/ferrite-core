@@ -1,0 +1,2 @@
+Known-bad sample of check 11 of test/lint/lint-fext-safety.sh: a wallet header.
+#include <interfaces/wallet.h>
