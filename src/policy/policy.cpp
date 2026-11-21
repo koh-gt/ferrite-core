@@ -287,6 +287,27 @@ bool IsWitnessStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
                 return false;
             }
         }
+
+        // Check policy limits for P2MR spends (BIP 360), as for Taproot script path spends:
+        // - No annexes
+        // - MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE limit for stack item size in tapscript leaves
+        if (witnessversion == 2 && witnessprogram.size() == WITNESS_V2_P2MR_SIZE && !p2sh) {
+            auto stack = MakeSpan(tx.vin[i].scriptWitness.stack);
+            if (stack.size() >= 2 && !stack.back().empty() && stack.back()[0] == ANNEX_TAG) {
+                // Annexes are nonstandard as long as no semantics are defined for them.
+                return false;
+            }
+            // Fewer than 2 elements is already invalid by consensus rules
+            if (stack.size() < 2) return false;
+            const auto& control_block = SpanPopBack(stack);
+            SpanPopBack(stack); // Ignore script
+            if (control_block.empty()) return false; // Empty control block is invalid
+            if ((control_block[0] & TAPROOT_LEAF_MASK) == TAPROOT_LEAF_TAPSCRIPT) {
+                for (const auto& item : stack) {
+                    if (item.size() > MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE) return false;
+                }
+            }
+        }
     }
     return true;
 }

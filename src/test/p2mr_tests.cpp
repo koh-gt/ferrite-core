@@ -1232,6 +1232,48 @@ BOOST_AUTO_TEST_CASE(type_and_policy)
         BOOST_CHECK_MESSAGE(!AreInputsStandard(spending({other}), coins, /* taproot_active */ true, /* p2mr_active */ true), "spend of " + HexStr(other));
         BOOST_CHECK_MESSAGE(!AreInputsStandard(spending({other, p2mr}), coins, /* taproot_active */ true, /* p2mr_active */ true), "spend of " + HexStr(other) + " and of P2MR");
     }
+
+    // The witness of a spend is standard within the limits of a Taproot script path spend: no annex, and in a leaf
+    // with leaf version 0xc0 no element of the initial stack larger than 80 bytes, at any depth. A leaf with another
+    // leaf version has no size limit here; the script flags of relay refuse it.
+    const auto witness_standard = [&](const CScript& spent_script, const std::vector<valtype>& witness, const CScript& script_sig = CScript()) {
+        CMutableTransaction tx(spending({spent_script}));
+        tx.vin[0].scriptSig = script_sig;
+        tx.vin[0].scriptWitness.stack = witness;
+        return IsWitnessStandard(CTransaction(tx), coins);
+    };
+    const valtype op_true = ScriptBytes(CScript() << OP_TRUE);
+    const valtype control = ControlBlock(LEAF_TAPSCRIPT, Siblings(1));
+    const valtype control_other_version = ControlBlock(0xc2, Siblings(1));
+    const valtype item_80(80, 0x01), item_81(81, 0x01);
+    BOOST_CHECK(witness_standard(p2mr, {op_true, control}));
+    BOOST_CHECK(witness_standard(p2mr, {item_80, item_80, op_true, control}));
+    BOOST_CHECK(!witness_standard(p2mr, {item_81, op_true, control}));
+    BOOST_CHECK(!witness_standard(p2mr, {item_80, item_81, op_true, control}));
+    BOOST_CHECK(witness_standard(p2mr, {item_81, op_true, control_other_version}));
+    BOOST_CHECK(witness_standard(p2mr, {op_true, valtype(1000, 0x51), control}));
+    // At depth zero the leaf is not run, but the limit is the same.
+    BOOST_CHECK(witness_standard(p2mr, {item_80, op_true, valtype{0xc1}}));
+    BOOST_CHECK(!witness_standard(p2mr, {item_81, op_true, valtype{0xc1}}));
+    BOOST_CHECK(witness_standard(p2mr, {item_81, op_true, valtype{0xc3}}));
+    // An annex, with or without other elements.
+    BOOST_CHECK(!witness_standard(p2mr, {op_true, control, valtype{0x50}}));
+    BOOST_CHECK(!witness_standard(p2mr, {op_true, control, valtype{0x50, 0x01}}));
+    BOOST_CHECK(!witness_standard(p2mr, {op_true, control_other_version, valtype{0x50}}));
+    BOOST_CHECK(!witness_standard(p2mr, {op_true, valtype{0x50}}));
+    BOOST_CHECK(witness_standard(p2mr, {op_true, control, valtype{0x51}}));
+    // Witnesses that are invalid by consensus: fewer than two elements, an empty control block.
+    BOOST_CHECK(!witness_standard(p2mr, {op_true}));
+    BOOST_CHECK(!witness_standard(p2mr, {valtype{0x50}}));
+    BOOST_CHECK(!witness_standard(p2mr, {valtype{}}));
+    BOOST_CHECK(!witness_standard(p2mr, {op_true, valtype{}}));
+    BOOST_CHECK(!witness_standard(p2mr, {item_81, op_true, valtype{}}));
+    // An input without a witness is not looked at here.
+    BOOST_CHECK(witness_standard(p2mr, {}));
+    // Other witness version 2 programs and OP_2 <32 bytes> nested in P2SH are not P2MR outputs: these limits do not
+    // apply to them (the script flags of relay refuse their spends).
+    BOOST_CHECK(witness_standard(ProgramScript(OP_2, 31, 0x5a), {item_81, op_true, control, valtype{0x50}}));
+    BOOST_CHECK(witness_standard(p2sh, {item_81, op_true, control, valtype{0x50}}, CScript() << ScriptBytes(p2mr)));
 }
 
 BOOST_AUTO_TEST_CASE(signing)
