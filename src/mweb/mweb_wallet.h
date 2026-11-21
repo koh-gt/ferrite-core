@@ -62,6 +62,9 @@ struct WalletTxInfo
     // so we create an empty Transaction and store the spent hash here.
     boost::optional<mw::Hash> spent_input;
 
+    // The hash that the wallet keeps the entry under: the output ID of the received coin or of the spent
+    // input. Where the wallet already keeps the receipt of a coin under its output ID, the entry for the
+    // spend of that coin has a hash of its own instead (see SpendWithOwnHash()).
     mutable uint256 hash;
 
     WalletTxInfo()
@@ -70,6 +73,12 @@ struct WalletTxInfo
         : received_coin(std::move(received)), spent_input(boost::none), hash(received_coin->output_id.vec()) {}
     WalletTxInfo(mw::Hash spent)
         : received_coin(boost::none), spent_input(std::move(spent)), hash(spent_input->vec()) {}
+
+    // The entry for the spend of the output 'spent' under a hash that no output ID or transaction ID has.
+    // The wallet file keeps such an entry in a record of its own type (see WalletBatch::WriteTx()).
+    static WalletTxInfo SpendWithOwnHash(const mw::Hash& spent);
+
+    bool HasOwnSpendHash() const { return spent_input && hash != uint256(spent_input->vec()); }
 
     SERIALIZE_METHODS(WalletTxInfo, obj)
     {

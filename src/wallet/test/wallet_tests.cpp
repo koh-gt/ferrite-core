@@ -836,4 +836,65 @@ BOOST_FIXTURE_TEST_CASE(ZapSelectTx, TestChain100Setup)
     TestUnloadWallet(std::move(wallet));
 }
 
+// The record of an MWEB spend with a hash of its own, stored under another key (here the key of a transaction
+// record), is refused when the wallet is loaded, and the transaction record under that key is kept.
+// removeprunedfunds of that key then finds the key once for each record and erases both.
+BOOST_AUTO_TEST_CASE(MWEBSpendRecordUnderOtherKey)
+{
+    CWallet wallet(m_chain.get(), "", CreateMockWalletDatabase());
+
+    CMutableTransaction mtx;
+    mtx.vin.emplace_back(COutPoint(uint256::ONE, 0));
+    mtx.vout.emplace_back(COIN, CScript() << OP_TRUE);
+    CWalletTx tx_entry(&wallet, MakeTransactionRef(mtx));
+    tx_entry.nOrderPos = 0;
+    const uint256 key = tx_entry.GetHash();
+
+    const mw::Hash spent_id{std::vector<uint8_t>(32, 0x5a)};
+    CWalletTx spend_entry(&wallet, MakeTransactionRef(), MWEB::WalletTxInfo::SpendWithOwnHash(spent_id));
+    spend_entry.nOrderPos = 1;
+    const uint256 own_hash = spend_entry.GetHash();
+    BOOST_REQUIRE(own_hash != key);
+
+    BOOST_REQUIRE(WalletBatch(wallet.GetDatabase()).WriteTx(tx_entry));
+    BOOST_REQUIRE(wallet.GetDatabase().MakeBatch()->Write(std::make_pair(std::string("mweb_spend"), key), spend_entry));
+
+    bool first_run;
+    BOOST_CHECK(wallet.LoadWallet(first_run) == DBErrors::NONCRITICAL_ERROR);
+    {
+        LOCK(wallet.cs_wallet);
+        BOOST_CHECK_EQUAL(wallet.mapWallet.count(key), 1U);
+        BOOST_CHECK_EQUAL(wallet.mapWallet.count(own_hash), 0U);
+        BOOST_CHECK(!wallet.IsSpent(spent_id));
+    }
+    {
+        std::unique_ptr<DatabaseBatch> batch = wallet.GetDatabase().MakeBatch();
+        BOOST_CHECK(batch->Exists(std::make_pair(std::string("tx"), key)));
+        BOOST_CHECK(batch->Exists(std::make_pair(std::string("mweb_spend"), key)));
+        BOOST_CHECK(!batch->Exists(std::make_pair(std::string("mweb_spend"), own_hash)));
+    }
+
+    {
+        LOCK(wallet.cs_wallet);
+        std::vector<uint256> hashes_in{key}, hashes_out;
+        BOOST_CHECK(wallet.ZapSelectTx(hashes_in, hashes_out) == DBErrors::LOAD_OK);
+        BOOST_CHECK_EQUAL(hashes_out.size(), 2U);
+        BOOST_CHECK_EQUAL(wallet.mapWallet.count(key), 0U);
+    }
+    std::unique_ptr<DatabaseBatch> batch = wallet.GetDatabase().MakeBatch();
+    BOOST_CHECK(!batch->Exists(std::make_pair(std::string("tx"), key)));
+    BOOST_CHECK(!batch->Exists(std::make_pair(std::string("mweb_spend"), key)));
+}
+
+// The hash of a spend entry with a hash of its own is the key of its record in the wallet file, and the wallet
+// computes it again when it loads the record, so it must never change.
+BOOST_AUTO_TEST_CASE(MWEBSpendOwnHashValue)
+{
+    const mw::Hash spent_id{std::vector<uint8_t>(32, 0x5a)};
+    const MWEB::WalletTxInfo spend = MWEB::WalletTxInfo::SpendWithOwnHash(spent_id);
+    BOOST_CHECK(spend.HasOwnSpendHash());
+    BOOST_CHECK_EQUAL(spend.hash, uint256S("9f3fa711160d173166247c10d32b43d92b88429374eb6285553bd8ddeea6b5ec"));
+    BOOST_CHECK(!MWEB::WalletTxInfo(spent_id).HasOwnSpendHash());
+}
+
 BOOST_AUTO_TEST_SUITE_END()

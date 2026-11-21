@@ -40,6 +40,7 @@ const std::string KEYMETA{"keymeta"};
 const std::string KEY{"key"};
 const std::string MASTER_KEY{"mkey"};
 const std::string MINVERSION{"minversion"};
+const std::string MWEB_SPEND{"mweb_spend"};
 const std::string NAME{"name"};
 const std::string OLD_KEY{"wkey"};
 const std::string ORDERPOSNEXT{"orderposnext"};
@@ -89,12 +90,19 @@ bool WalletBatch::ErasePurpose(const std::string& strAddress)
 
 bool WalletBatch::WriteTx(const CWalletTx& wtx)
 {
+    // The entry for the spend of an MWEB coin whose receipt the wallet keeps under the coin's output ID has a
+    // hash of its own, and a record type that older versions do not know and skip. They would read a "tx" record
+    // of it as an entry under the output ID, where they keep the receipt, and drop one of the two from the file.
+    if (wtx.IsPartialMWEB() && wtx.mweb_wtx_info->HasOwnSpendHash()) {
+        return WriteIC(std::make_pair(DBKeys::MWEB_SPEND, wtx.GetHash()), wtx);
+    }
     return WriteIC(std::make_pair(DBKeys::TX, wtx.GetHash()), wtx);
 }
 
 bool WalletBatch::EraseTx(uint256 hash)
 {
-    return EraseIC(std::make_pair(DBKeys::TX, hash));
+    // The record of the entry with this hash, of either type.
+    return EraseIC(std::make_pair(DBKeys::TX, hash)) && EraseIC(std::make_pair(DBKeys::MWEB_SPEND, hash));
 }
 
 bool WalletBatch::WriteKeyMetadata(const CKeyMetadata& meta, const CPubKey& pubkey, const bool overwrite)
@@ -302,7 +310,7 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
             std::string strAddress;
             ssKey >> strAddress;
             ssValue >> pwallet->m_address_book[DecodeDestination(strAddress)].purpose;
-        } else if (strType == DBKeys::TX) {
+        } else if (strType == DBKeys::TX || strType == DBKeys::MWEB_SPEND) {
             uint256 hash;
             ssKey >> hash;
             // LoadToWallet call below creates a new CWalletTx that fill_wtx
@@ -310,6 +318,18 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
             auto fill_wtx = [&](CWalletTx& wtx, bool new_tx) {
                 assert(new_tx);
                 ssValue >> wtx;
+                if (strType == DBKeys::MWEB_SPEND) {
+                    // The entry for the spend of an MWEB coin under a hash of its own (see WriteTx). There is no
+                    // older form of it to upgrade, so a record under any other key is refused like a bad record:
+                    // the upgrade below would erase the record under that key, which belongs to another entry.
+                    if (!wtx.IsPartialMWEB() || !wtx.mweb_wtx_info->spent_input) {
+                        return false;
+                    }
+                    wtx.mweb_wtx_info = MWEB::WalletTxInfo::SpendWithOwnHash(*wtx.mweb_wtx_info->spent_input);
+                    if (wtx.GetHash() != hash) {
+                        return false;
+                    }
+                }
                 if (wtx.GetHash() != hash) {
 					// We previously calculated hash for mweb_wtx_info in an impractical way.
 					// We changed to just using the output ID as hash, so need to upgrade any existing txs.
@@ -773,7 +793,7 @@ DBErrors WalletBatch::LoadWallet(CWallet* pwallet)
                 } else {
                     // Leave other errors alone, if we try to fix them we might make things worse.
                     fNoncriticalErrors = true; // ... but do warn the user there is something wrong.
-                    if (strType == DBKeys::TX)
+                    if (strType == DBKeys::TX || strType == DBKeys::MWEB_SPEND)
                         // Rescan if there is a bad transaction record:
                         gArgs.SoftSetBoolArg("-rescan", true);
                 }
@@ -847,8 +867,9 @@ DBErrors WalletBatch::LoadWallet(CWallet* pwallet)
     for (const uint256& hash : wss.vWalletUpgrade)
         WriteTx(pwallet->mapWallet.at(hash));
 
+    // Only "tx" records move to another hash (see ReadKeyValue): erase the "tx" record that was read, nothing else.
     for (const uint256& hash : wss.vWalletRemove) {
-        EraseTx(hash);
+        EraseIC(std::make_pair(DBKeys::TX, hash));
     }
 
     // Rewrite encrypted wallets of versions 0.4.0 and 0.5.0rc:
@@ -921,7 +942,7 @@ DBErrors WalletBatch::FindWalletTx(std::vector<uint256>& vTxHash, std::list<CWal
 
             std::string strType;
             ssKey >> strType;
-            if (strType == DBKeys::TX) {
+            if (strType == DBKeys::TX || strType == DBKeys::MWEB_SPEND) {
                 uint256 hash;
                 ssKey >> hash;
                 vTxHash.push_back(hash);
