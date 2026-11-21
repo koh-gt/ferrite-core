@@ -6,6 +6,9 @@
 #include <chainparams.h>
 #include <chainparamsbase.h>
 #include <consensus/params.h>
+#include <policy/policy.h>
+#include <script/interpreter.h>
+#include <script/standard.h>
 #include <sync.h>
 #include <test/util/setup_common.h>
 #include <tinyformat.h>
@@ -243,6 +246,21 @@ BOOST_AUTO_TEST_CASE(predicates)
         BOOST_CHECK_MESSAGE(!IsTimewarpEnabled(&chain[430], consensus), context + ": timewarp active for block 431");
         BOOST_CHECK_MESSAGE(IsTimewarpEnabled(&chain[431], consensus) == c.timewarp, context + ": timewarp state for block 432");
     }
+}
+
+BOOST_AUTO_TEST_CASE(constants)
+{
+    // P2MR (BIP 360). The script flag has a bit of its own. It is one of the flags transactions are relayed with,
+    // whether or not blocks enforce the rules yet, so the mempool never holds a spend that breaks them. It is not
+    // one of the mandatory flags.
+    BOOST_CHECK_EQUAL(static_cast<unsigned int>(SCRIPT_VERIFY_P2MR), 1U << 21);
+    BOOST_CHECK(STANDARD_SCRIPT_VERIFY_FLAGS & SCRIPT_VERIFY_P2MR);
+    BOOST_CHECK(STANDARD_NOT_MANDATORY_VERIFY_FLAGS & SCRIPT_VERIFY_P2MR);
+    BOOST_CHECK(!(MANDATORY_SCRIPT_VERIFY_FLAGS & SCRIPT_VERIFY_P2MR));
+    // A program of 32 bytes, and a control block of one byte and up to 128 nodes of 32 bytes.
+    BOOST_CHECK_EQUAL(WITNESS_V2_P2MR_SIZE, 32U);
+    BOOST_CHECK_EQUAL(P2MR_CONTROL_BASE_SIZE, 1U);
+    BOOST_CHECK_EQUAL(P2MR_CONTROL_MAX_SIZE, 4097U);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

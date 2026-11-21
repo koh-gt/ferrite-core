@@ -58,6 +58,7 @@ static std::map<std::string, unsigned int> mapFlagNames = {
     {std::string("WITNESS_PUBKEYTYPE"), (unsigned int)SCRIPT_VERIFY_WITNESS_PUBKEYTYPE},
     {std::string("CONST_SCRIPTCODE"), (unsigned int)SCRIPT_VERIFY_CONST_SCRIPTCODE},
     {std::string("TAPROOT"), (unsigned int)SCRIPT_VERIFY_TAPROOT},
+    {std::string("P2MR"), (unsigned int)SCRIPT_VERIFY_P2MR},
 };
 
 unsigned int ParseScriptFlags(std::string strFlags)

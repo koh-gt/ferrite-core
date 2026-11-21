@@ -1870,6 +1870,27 @@ static bool VerifyTaprootCommitment(const std::vector<unsigned char>& control, c
     return q.CheckPayToContract(p, k, control[0] & 1);
 }
 
+/** Compute the Merkle root of a P2MR script tree from a leaf script and its control block (BIP 360), and
+ *  compare it with the witness program. control must have a valid P2MR size; tapleaf_hash is set either way. */
+static bool VerifyP2MRCommitment(const std::vector<unsigned char>& control, const std::vector<unsigned char>& program, const CScript& script, uint256& tapleaf_hash)
+{
+    assert(program.size() == WITNESS_V2_P2MR_SIZE);
+    const int path_len = (control.size() - P2MR_CONTROL_BASE_SIZE) / TAPROOT_CONTROL_NODE_SIZE;
+    tapleaf_hash = (CHashWriter(HASHER_TAPLEAF) << uint8_t(control[0] & TAPROOT_LEAF_MASK) << script).GetSHA256();
+    uint256 k = tapleaf_hash;
+    for (int i = 0; i < path_len; ++i) {
+        CHashWriter ss_branch{HASHER_TAPBRANCH};
+        Span<const unsigned char> node(control.data() + P2MR_CONTROL_BASE_SIZE + TAPROOT_CONTROL_NODE_SIZE * i, TAPROOT_CONTROL_NODE_SIZE);
+        if (std::lexicographical_compare(k.begin(), k.end(), node.begin(), node.end())) {
+            ss_branch << k << node;
+        } else {
+            ss_branch << node << k;
+        }
+        k = ss_branch.GetSHA256();
+    }
+    return std::equal(k.begin(), k.end(), program.begin());
+}
+
 static bool VerifyWitnessProgram(const CScriptWitness& witness, int witversion, const std::vector<unsigned char>& program, unsigned int flags, const BaseSignatureChecker& checker, ScriptError* serror, bool is_p2sh)
 {
     CScript exec_script; //!< Actually executed script (last stack item in P2WSH; implied P2PKH script in P2WPKH; leaf script in P2TR)
@@ -1942,6 +1963,48 @@ static bool VerifyWitnessProgram(const CScriptWitness& witness, int witversion, 
             }
             return set_success(serror);
         }
+    } else if (witversion == 2 && program.size() == WITNESS_V2_P2MR_SIZE && !is_p2sh) {
+        // BIP360 P2MR: 32-byte non-P2SH witness v2 program (the Merkle root of a script tree; there is no key path)
+        if (!(flags & SCRIPT_VERIFY_P2MR)) return set_success(serror);
+        if (stack.size() == 0) return set_error(serror, SCRIPT_ERR_WITNESS_PROGRAM_WITNESS_EMPTY);
+        if (stack.size() == 1) return set_error(serror, SCRIPT_ERR_P2MR_WITNESS_SIZE);
+        if (!stack.back().empty() && stack.back()[0] == ANNEX_TAG) {
+            // With exactly two elements the last one cannot be an annex: a script and a control block are needed.
+            if (stack.size() == 2) return set_error(serror, SCRIPT_ERR_P2MR_WITNESS_SIZE);
+            // Drop annex (this is non-standard; see IsWitnessStandard)
+            const valtype& annex = SpanPopBack(stack);
+            execdata.m_annex_hash = (CHashWriter(SER_GETHASH, 0) << annex).GetSHA256();
+            execdata.m_annex_present = true;
+        } else {
+            execdata.m_annex_present = false;
+        }
+        execdata.m_annex_init = true;
+        const valtype& control = SpanPopBack(stack);
+        const valtype& script_bytes = SpanPopBack(stack);
+        exec_script = CScript(script_bytes.begin(), script_bytes.end());
+        if (control.size() < P2MR_CONTROL_BASE_SIZE || control.size() > P2MR_CONTROL_MAX_SIZE || ((control.size() - P2MR_CONTROL_BASE_SIZE) % TAPROOT_CONTROL_NODE_SIZE) != 0) {
+            return set_error(serror, SCRIPT_ERR_P2MR_WRONG_CONTROL_SIZE);
+        }
+        // There is no key path, so the lowest bit of the control byte is always 1.
+        if ((control[0] & 1) != 1) return set_error(serror, SCRIPT_ERR_P2MR_CONTROL_PARITY);
+        if (!VerifyP2MRCommitment(control, program, exec_script, execdata.m_tapleaf_hash)) {
+            return set_error(serror, SCRIPT_ERR_WITNESS_PROGRAM_MISMATCH);
+        }
+        execdata.m_tapleaf_hash_init = true;
+        const bool is_tapscript = (control[0] & TAPROOT_LEAF_MASK) == TAPROOT_LEAF_TAPSCRIPT;
+        // Other leaf versions are reserved for upgrades: valid by consensus, discouraged by policy at every depth.
+        if (!is_tapscript && (flags & SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_TAPROOT_VERSION)) {
+            return set_error(serror, SCRIPT_ERR_DISCOURAGE_UPGRADABLE_TAPROOT_VERSION);
+        }
+        // A leaf at depth zero is not executed once its hash matches the program (BIP 360).
+        if (control.size() == P2MR_CONTROL_BASE_SIZE) return set_success(serror);
+        if (is_tapscript) {
+            // Tapscript (leaf version 0xc0), executed exactly as in a Taproot script path spend
+            execdata.m_validation_weight_left = ::GetSerializeSize(witness.stack, PROTOCOL_VERSION) + VALIDATION_WEIGHT_OFFSET;
+            execdata.m_validation_weight_left_init = true;
+            return ExecuteWitnessScript(stack, exec_script, flags, SigVersion::TAPSCRIPT, checker, execdata, serror);
+        }
+        return set_success(serror);
     } else {
         if (flags & SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_WITNESS_PROGRAM) {
             return set_error(serror, SCRIPT_ERR_DISCOURAGE_UPGRADABLE_WITNESS_PROGRAM);
