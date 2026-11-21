@@ -7,6 +7,7 @@
 
 #include <netaddress.h>
 #include <node/ui_interface.h>
+#include <sync.h>
 #include <util/system.h>
 #include <util/time.h>
 #include <util/translation.h>
@@ -41,16 +42,23 @@ BanMan::~BanMan()
 
 void BanMan::DumpBanlist()
 {
-    SweepBanned(); // clean unused entries (if bantime has expired)
-
-    if (!BannedSetIsDirty()) return;
-
-    int64_t n_start = GetTimeMillis();
+    static Mutex dump_mutex;
+    LOCK(dump_mutex);
 
     banmap_t banmap;
-    GetBanned(banmap);
-    if (m_ban_db.Write(banmap)) {
+    {
+        LOCK(m_cs_banned);
+        SweepBanned(); // clean unused entries (if bantime has expired)
+        if (!BannedSetIsDirty()) return;
+        banmap = m_banned;
+        // The copy holds every change made so far. A change made from now on
+        // sets the flag again and is written by the next call.
         SetBannedSetDirty(false);
+    }
+
+    int64_t n_start = GetTimeMillis();
+    if (!m_ban_db.Write(banmap)) {
+        SetBannedSetDirty(true);
     }
 
     LogPrint(BCLog::NET, "Flushed %d banned node ips/subnets to banlist.dat  %dms\n",
