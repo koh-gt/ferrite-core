@@ -128,9 +128,13 @@ public:
 
         // The best chain should have at least this much work.
 
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000006aefe2248ff21e3f");
-        // A total of 7 705 626 134 115 917 375 hashes (7.706 EH) of work as of block 1 046 922.
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000006b03e4a31762f086");
+        // A total of 7 711 258 376 111 583 366 hashes (7.711 EH) of work as of block 1 089 000.
 
+        // consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000006b03e4a31762f086");
+        // A total of 7 711 258 376 111 583 366 hashes (7.711 EH) of work as of block 1 089 000.
+        // consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000006aefe2248ff21e3f");
+        // A total of 7 705 626 134 115 917 375 hashes (7.706 EH) of work as of block 1 046 922.
         // consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000064294d02b1db55a8"); 
         // A total of 7 217 384 551 807 145 384 hashes (7.217 EH) of work as of block 292 000.    
         // consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000023343814f3f8d19a"); 
@@ -151,9 +155,10 @@ public:
         // A total of       187 976 044 125 601 hashes (188.0 TH) of work as of block  10 000.
         
         // By default assume that the signatures in ancestors of this block are valid.
-        consensus.defaultAssumeValid = uint256S("0x189f2e593168534ec9fe3b393d2543ff7804ce74a6fe5018f9267fa89f9e652d");
-        // Block 1046922
+        consensus.defaultAssumeValid = uint256S("0x849fc31014b955c1adcdc9c5757156996fd4318730c9d5bf13db65830353ae8a");
+        // Block 1089000
         
+        // consensus.defaultAssumeValid = uint256S("0x849fc31014b955c1adcdc9c5757156996fd4318730c9d5bf13db65830353ae8a");  // Block 1089000
         // consensus.defaultAssumeValid = uint256S("0x189f2e593168534ec9fe3b393d2543ff7804ce74a6fe5018f9267fa89f9e652d");  // Block 1046922
         // consensus.defaultAssumeValid = uint256S("0xb42d405513ca11a37bda4420f99577861258a593627401c6143026799e63d1e3");  // Block 292000
         // consensus.defaultAssumeValid = uint256S("0xf2ac05fbd6974e9292ca462368a15bbb1818a442c2f5e72a4035165f3ae9ea01");  // Block 200000
@@ -235,6 +240,7 @@ public:
                 {   750000, uint256S("0x5b6bc3044a65a0a6625275b0bf0eaa4f080de0dc1b9431cc82ca1f434a0905f5")},  // added 20261015
                 {   903321, uint256S("0xb0ef59c7fc0e42672d2b660cee3f00dbb84ca90e80a4ddf0aaad3f4f2ddd6115")},  // added 20261015, 3rd halving (12.5 FEC)
                 {  1000000, uint256S("0xc75f4a8694eb7ef8b398bef7510feb37495e9c6994ae3be0594190295b3cc247")},  // added 20261015
+                {  1089000, uint256S("0x849fc31014b955c1adcdc9c5757156996fd4318730c9d5bf13db65830353ae8a")},  // added 20261116
             }
         };
 
@@ -332,7 +338,7 @@ public:
         bech32_hrp = "tfec";
         mweb_hrp = "tfecmweb";
 
-        vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_test), std::end(chainparams_seed_test));
+        // No fixed seeds (vFixedSeeds is cleared above): contrib/seeds/nodes_test.txt lists no nodes.
 
         fDefaultConsistencyChecks = false;
         fRequireStandard = false;

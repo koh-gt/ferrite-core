@@ -2860,7 +2860,11 @@ void PeerManager::ProcessMessage(CNode& pfrom, const std::string& msg_type, CDat
 
         int64_t nTimeOffset = nTime - GetTime();
         pfrom.nTimeOffset = nTimeOffset;
-        AddTimeData(pfrom.addr, nTimeOffset);
+        if (!pfrom.IsInboundConn()) {
+            // Don't use timedata samples from inbound peers to make it
+            // harder for others to tamper with our adjusted time.
+            AddTimeData(pfrom.addr, nTimeOffset);
+        }
 
         // If the peer is old enough to have the old alert system, send it the final alert.
         if (greatest_common_version <= 70012) {

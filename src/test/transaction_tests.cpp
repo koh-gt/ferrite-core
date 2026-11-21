@@ -173,7 +173,7 @@ BOOST_AUTO_TEST_CASE(tx_valid)
                 unsigned int verify_flags = ParseScriptFlags(test[2].get_str());
                 const CScriptWitness *witness = &tx.vin[i].scriptWitness;
                 BOOST_CHECK_MESSAGE(VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout],
-                                                 witness, verify_flags, TransactionSignatureChecker(&tx, i, amount, txdata), &err),
+                                                 witness, verify_flags, TransactionSignatureChecker(&tx, i, amount, txdata, MissingDataBehavior::ASSERT_FAIL), &err),
                                     strTest);
                 BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
             }
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
                 }
                 const CScriptWitness *witness = &tx.vin[i].scriptWitness;
                 fValid = VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout],
-                                      witness, verify_flags, TransactionSignatureChecker(&tx, i, amount, txdata), &err);
+                                      witness, verify_flags, TransactionSignatureChecker(&tx, i, amount, txdata, MissingDataBehavior::ASSERT_FAIL), &err);
             }
             BOOST_CHECK_MESSAGE(!fValid, strTest);
             BOOST_CHECK_MESSAGE(err != SCRIPT_ERR_OK, ScriptErrorString(err));
@@ -350,7 +350,7 @@ static void CheckWithFlag(const CTransactionRef& output, const CMutableTransacti
 {
     ScriptError error;
     CTransaction inputi(input);
-    bool ret = VerifyScript(inputi.vin[0].scriptSig, output->vout[0].scriptPubKey, &inputi.vin[0].scriptWitness, flags, TransactionSignatureChecker(&inputi, 0, output->vout[0].nValue), &error);
+    bool ret = VerifyScript(inputi.vin[0].scriptSig, output->vout[0].scriptPubKey, &inputi.vin[0].scriptWitness, flags, TransactionSignatureChecker(&inputi, 0, output->vout[0].nValue, MissingDataBehavior::ASSERT_FAIL), &error);
     assert(ret == success);
 }
 
@@ -725,17 +725,42 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
     BOOST_CHECK(!IsStandardTx(CTransaction(t), reason));
     BOOST_CHECK_EQUAL(reason, "scriptpubkey");
 
-    // MAX_OP_RETURN_RELAY-byte TxoutType::NULL_DATA (standard)
-    t.vout[0].scriptPubKey = CScript() << OP_RETURN << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef3804678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38");
-    BOOST_CHECK_EQUAL(MAX_OP_RETURN_RELAY, t.vout[0].scriptPubKey.size());
+    // 83-byte and 84-byte TxoutType::NULL_DATA (standard)
+    const CScript null_data_83 = CScript() << OP_RETURN << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef3804678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38");
+    const CScript null_data_84 = CScript() << OP_RETURN << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef3804678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef3800");
+    BOOST_CHECK_EQUAL(83U, null_data_83.size());
+    BOOST_CHECK_EQUAL(84U, null_data_84.size());
+    t.vout[0].scriptPubKey = null_data_83;
+    BOOST_CHECK(IsStandardTx(CTransaction(t), reason));
+    t.vout[0].scriptPubKey = null_data_84;
     BOOST_CHECK(IsStandardTx(CTransaction(t), reason));
 
-    // MAX_OP_RETURN_RELAY+1-byte TxoutType::NULL_DATA (non-standard)
-    t.vout[0].scriptPubKey = CScript() << OP_RETURN << ParseHex("04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef3804678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef3800");
-    BOOST_CHECK_EQUAL(MAX_OP_RETURN_RELAY + 1, t.vout[0].scriptPubKey.size());
+    // With -datacarriersize=83, the 84-byte one is non-standard
+    nMaxDatacarrierBytes = 83;
+    t.vout[0].scriptPubKey = null_data_83;
+    BOOST_CHECK(IsStandardTx(CTransaction(t), reason));
+    t.vout[0].scriptPubKey = null_data_84;
     reason.clear();
     BOOST_CHECK(!IsStandardTx(CTransaction(t), reason));
     BOOST_CHECK_EQUAL(reason, "scriptpubkey");
+    nMaxDatacarrierBytes = MAX_OP_RETURN_RELAY;
+
+    // MAX_OP_RETURN_RELAY-byte TxoutType::NULL_DATA script (standard), one
+    // byte more (non-standard). A transaction holding either one is over
+    // MAX_STANDARD_TX_WEIGHT, so the scripts are checked on their own.
+    std::vector<unsigned char> data(MAX_OP_RETURN_RELAY - 6); // 6 bytes for OP_RETURN, OP_PUSHDATA4 and its 4-byte length
+    TxoutType which_type;
+    BOOST_CHECK_EQUAL(MAX_OP_RETURN_RELAY, (CScript() << OP_RETURN << data).size());
+    BOOST_CHECK(IsStandard(CScript() << OP_RETURN << data, which_type));
+    BOOST_CHECK(which_type == TxoutType::NULL_DATA);
+    t.vout[0].scriptPubKey = CScript() << OP_RETURN << data;
+    reason.clear();
+    BOOST_CHECK(!IsStandardTx(CTransaction(t), reason));
+    BOOST_CHECK_EQUAL(reason, "tx-size");
+    data.push_back(0);
+    BOOST_CHECK_EQUAL(MAX_OP_RETURN_RELAY + 1, (CScript() << OP_RETURN << data).size());
+    BOOST_CHECK(!IsStandard(CScript() << OP_RETURN << data, which_type));
+    BOOST_CHECK(which_type == TxoutType::NULL_DATA);
 
     // Data payload can be encoded in any way...
     t.vout[0].scriptPubKey = CScript() << OP_RETURN << ParseHex("");

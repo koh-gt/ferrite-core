@@ -55,8 +55,8 @@ static_assert(MINIUPNPC_API_VERSION >= 10, "miniUPnPc API version >= 10 assumed"
 static constexpr size_t MAX_BLOCK_RELAY_ONLY_ANCHORS = 2;
 static_assert (MAX_BLOCK_RELAY_ONLY_ANCHORS <= static_cast<size_t>(MAX_BLOCK_RELAY_ONLY_CONNECTIONS), "MAX_BLOCK_RELAY_ONLY_ANCHORS must not exceed MAX_BLOCK_RELAY_ONLY_CONNECTIONS.");
 static_assert(
-    MAX_PROTOCOL_MESSAGE_LENGTH > MAX_BLOCK_SERIALIZED_SIZE_WITH_MWEB,
-    "MAX_PROTOCOL_MESSAGE_LENGTH must exceed MAX_BLOCK_SERIALIZED_SIZE_WITH_MWEB.");
+    MAX_BLOCK_MESSAGE_LENGTH > MAX_BLOCK_SERIALIZED_SIZE_WITH_MWEB,
+    "MAX_BLOCK_MESSAGE_LENGTH must exceed MAX_BLOCK_SERIALIZED_SIZE_WITH_MWEB.");
 /** Anchor IP address database file name */
 const char* const ANCHORS_DATABASE_FILENAME = "anchors.dat";
 
@@ -694,6 +694,27 @@ bool CNode::ReceiveMsgBytes(const char *pch, unsigned int nBytes, bool& complete
     return true;
 }
 
+bool LargeMessageBudget::Reserve(uint64_t length)
+{
+    LOCK(m_mutex);
+    if (length > m_limit - m_total) return false;
+    m_total += length;
+    return true;
+}
+
+void LargeMessageBudget::Release(uint64_t length)
+{
+    LOCK(m_mutex);
+    assert(length <= m_total);
+    m_total -= length;
+}
+
+uint64_t LargeMessageBudget::GetTotal() const
+{
+    LOCK(m_mutex);
+    return m_total;
+}
+
 int V1TransportDeserializer::readHeader(const char *pch, unsigned int nBytes)
 {
     // copy data to temporary parsing buffer
@@ -722,10 +743,23 @@ int V1TransportDeserializer::readHeader(const char *pch, unsigned int nBytes)
         return -1;
     }
 
-    // reject messages larger than MAX_SIZE or MAX_PROTOCOL_MESSAGE_LENGTH
-    if (hdr.nMessageSize > MAX_SIZE || hdr.nMessageSize > MAX_PROTOCOL_MESSAGE_LENGTH) {
+    // reject messages larger than MAX_SIZE or MAX_PROTOCOL_MESSAGE_LENGTH, except that, once the version
+    // handshake is complete, block and compact block messages may be up to MAX_BLOCK_MESSAGE_LENGTH
+    const std::string command{hdr.GetCommand()};
+    const bool block_message{command == NetMsgType::BLOCK || command == NetMsgType::CMPCTBLOCK};
+    const unsigned int max_length{block_message && m_handshake_complete ? MAX_BLOCK_MESSAGE_LENGTH : MAX_PROTOCOL_MESSAGE_LENGTH};
+    if (hdr.nMessageSize > MAX_SIZE || hdr.nMessageSize > max_length) {
         LogPrint(BCLog::NET, "HEADER ERROR - SIZE (%s, %u bytes), peer=%d\n", hdr.GetCommand(), hdr.nMessageSize, m_node_id);
         return -1;
+    }
+
+    // count a message over MAX_PROTOCOL_MESSAGE_LENGTH against the budget for this peer's large messages
+    if (m_large_message_budget && hdr.nMessageSize > MAX_PROTOCOL_MESSAGE_LENGTH) {
+        if (!m_large_message_budget->Reserve(hdr.nMessageSize)) {
+            LogPrint(BCLog::NET, "HEADER ERROR - LARGE MESSAGES TOTAL (%s, %u bytes), peer=%d\n", hdr.GetCommand(), hdr.nMessageSize, m_node_id);
+            return -1;
+        }
+        m_large_message_length = hdr.nMessageSize;
     }
 
     // switch state to reading message data
@@ -832,7 +866,11 @@ size_t CConnman::SocketSendData(CNode *pnode) const EXCLUSIVE_LOCKS_REQUIRED(pno
             if (pnode->nSendOffset == data.size()) {
                 pnode->nSendOffset = 0;
                 pnode->nSendSize -= data.size();
-                pnode->fPauseSend = pnode->nSendSize > nSendBufferMaxSize;
+                const bool pause_send{pnode->nSendSize > nSendBufferMaxSize};
+                if (pause_send && !pnode->fPauseSend) {
+                    pnode->m_pause_send_since = GetTime<std::chrono::seconds>();
+                }
+                pnode->fPauseSend = pause_send;
                 it++;
             } else {
                 // could not send full message; stop sending more
@@ -1145,7 +1183,7 @@ void CConnman::AcceptConnection(const ListenSocket& hListenSocket) {
     }
 
     const bool inbound_onion = std::find(m_onion_binds.begin(), m_onion_binds.end(), addr_bind) != m_onion_binds.end();
-    CNode* pnode = new CNode(id, nodeServices, GetBestHeight(), hSocket, addr, CalculateKeyedNetGroup(addr), nonce, addr_bind, "", ConnectionType::INBOUND, inbound_onion);
+    CNode* pnode = new CNode(id, nodeServices, GetBestHeight(), hSocket, addr, CalculateKeyedNetGroup(addr), nonce, addr_bind, "", ConnectionType::INBOUND, inbound_onion, &m_inbound_large_messages);
     pnode->AddRef();
     pnode->m_permissionFlags = permissionFlags;
     // If this flag is present, the user probably expect that RPC and QT report it as whitelisted (backward compatibility)
@@ -1293,6 +1331,11 @@ void CConnman::InactivityCheck(CNode *pnode)
             LogPrintf("socket receive timeout: %is\n", nTime - pnode->nLastRecv);
             pnode->fDisconnect = true;
         }
+        else if (pnode->fPauseSend && pnode->m_pause_send_since.load() + std::chrono::seconds{TIMEOUT_INTERVAL} < GetTime<std::chrono::seconds>())
+        {
+            LogPrint(BCLog::NET, "send buffer full for %is, disconnecting peer=%d\n", count_seconds(GetTime<std::chrono::seconds>() - pnode->m_pause_send_since.load()), pnode->GetId());
+            pnode->fDisconnect = true;
+        }
         else if (pnode->nPingNonceSent && pnode->m_ping_start.load() + std::chrono::seconds{TIMEOUT_INTERVAL} < GetTime<std::chrono::microseconds>())
         {
             LogPrintf("ping timeout: %fs\n", 0.000001 * count_microseconds(GetTime<std::chrono::microseconds>() - pnode->m_ping_start.load()));
@@ -1398,7 +1441,11 @@ void CConnman::SocketEvents(std::set<SOCKET> &recv_set, std::set<SOCKET> &send_s
 void CConnman::SocketEvents(std::set<SOCKET> &recv_set, std::set<SOCKET> &send_set, std::set<SOCKET> &error_set)
 {
     std::set<SOCKET> recv_select_set, send_select_set, error_select_set;
-    if (!GenerateSelectSet(recv_select_set, send_select_set, error_select_set)) {
+    // Exceptional conditions are only watched on sockets that are also
+    // watched for reading (see below). With no socket to watch for reading or
+    // sending, sleep instead: select() fails on Windows when given no socket.
+    if (!GenerateSelectSet(recv_select_set, send_select_set, error_select_set) ||
+        (recv_select_set.empty() && send_select_set.empty())) {
         interruptNet.sleep_for(std::chrono::milliseconds(SELECT_TIMEOUT_MILLISECONDS));
         return;
     }
@@ -1428,9 +1475,14 @@ void CConnman::SocketEvents(std::set<SOCKET> &recv_set, std::set<SOCKET> &send_s
         hSocketMax = std::max(hSocketMax, hSocket);
     }
 
+    // Watch a socket for exceptional conditions only while also waiting to
+    // read from it. SocketHandler() reads from every socket reported here,
+    // which must not happen while receiving from that peer is paused or
+    // while its send buffer is being drained first.
     for (SOCKET hSocket : error_select_set) {
-        FD_SET(hSocket, &fdsetError);
-        hSocketMax = std::max(hSocketMax, hSocket);
+        if (recv_select_set.count(hSocket)) {
+            FD_SET(hSocket, &fdsetError);
+        }
     }
 
     int nSelect = select(hSocketMax + 1, &fdsetRecv, &fdsetSend, &fdsetError, &timeout);
@@ -2992,7 +3044,7 @@ int CConnman::GetBestHeight() const
 
 unsigned int CConnman::GetReceiveFloodSize() const { return nReceiveFloodSize; }
 
-CNode::CNode(NodeId idIn, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn, SOCKET hSocketIn, const CAddress& addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const CAddress& addrBindIn, const std::string& addrNameIn, ConnectionType conn_type_in, bool inbound_onion)
+CNode::CNode(NodeId idIn, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn, SOCKET hSocketIn, const CAddress& addrIn, uint64_t nKeyedNetGroupIn, uint64_t nLocalHostNonceIn, const CAddress& addrBindIn, const std::string& addrNameIn, ConnectionType conn_type_in, bool inbound_onion, LargeMessageBudget* large_message_budget)
     : nTimeConnected(GetSystemTimeInSeconds()),
     addr(addrIn),
     addrBind(addrBindIn),
@@ -3028,7 +3080,7 @@ CNode::CNode(NodeId idIn, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn
         LogPrint(BCLog::NET, "Added connection peer=%d\n", id);
     }
 
-    m_deserializer = MakeUnique<V1TransportDeserializer>(V1TransportDeserializer(Params(), GetId(), SER_NETWORK, INIT_PROTO_VERSION));
+    m_deserializer = MakeUnique<V1TransportDeserializer>(Params(), GetId(), SER_NETWORK, INIT_PROTO_VERSION, fSuccessfullyConnected, large_message_budget);
     m_serializer = MakeUnique<V1TransportSerializer>(V1TransportSerializer());
 }
 
@@ -3061,8 +3113,10 @@ void CConnman::PushMessage(CNode* pnode, CSerializedNetMsg&& msg)
         pnode->mapSendBytesPerMsgCmd[msg.m_type] += nTotalSize;
         pnode->nSendSize += nTotalSize;
 
-        if (pnode->nSendSize > nSendBufferMaxSize)
+        if (pnode->nSendSize > nSendBufferMaxSize && !pnode->fPauseSend) {
+            pnode->m_pause_send_since = GetTime<std::chrono::seconds>();
             pnode->fPauseSend = true;
+        }
         pnode->vSendMsg.push_back(std::move(serializedHeader));
         if (nMessageSize)
             pnode->vSendMsg.push_back(std::move(msg.data));

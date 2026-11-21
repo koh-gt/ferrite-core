@@ -17,6 +17,27 @@ and tests weren't explicitly disabled.
 
 After configuring, they can be run with `make check`.
 
+On Ferrite Core, `make check` does not pass yet. It runs every test case,
+including the ones listed in
+[/test/ferrite_unit_test_exclusions.txt](/test/ferrite_unit_test_exclusions.txt).
+Those still fail, because they hard-code Bitcoin or Litecoin data or parameters
+that Ferrite changed, and one of them needs more than 11 GB of memory. CI
+(`.github/workflows/ci.yml`) skips the listed cases and runs all the others. To
+run the unit tests the same way, use these commands in bash, in the top
+directory of the source tree:
+
+```bash
+args=()
+while read -r t; do
+  case "$t" in ''|'#'*) continue ;; esac
+  args+=('--run_test=!'"$t")
+done < test/ferrite_unit_test_exclusions.txt
+src/test/test_ferrite --catch_system_errors=no --report_level=short "${args[@]}"
+```
+
+The `!` stands in single quotes so that the lines can also be pasted into an
+interactive shell, where `!$` inside double quotes would be replaced.
+
 To run the unit tests manually, launch `src/test/test_ferrite`. To recompile
 after a test file was modified, run `make` and then run the test again. If you
 modify a non-test file, use `make -C src/test` to recompile only what's needed

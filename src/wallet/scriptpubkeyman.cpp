@@ -24,16 +24,6 @@ static KeyPurpose GetPurpose(const OutputType type, const bool internal)
     return internal ? KeyPurpose::INTERNAL : KeyPurpose::EXTERNAL;
 }
 
-static const char* GetPurposeDesc(const KeyPurpose purpose)
-{
-    switch (purpose) {
-    case KeyPurpose::EXTERNAL: return "external";
-    case KeyPurpose::INTERNAL: return "internal";
-    case KeyPurpose::MWEB: return "mweb";
-    }
-    assert(false);
-}
-
 static uint32_t* GetChainCounter(CHDChain& chain, const KeyPurpose purpose)
 {
     switch (purpose) {
@@ -343,11 +333,9 @@ bool LegacyScriptPubKeyMan::GetReservedDestination(const OutputType type, bool i
     return true;
 }
 
-bool LegacyScriptPubKeyMan::TopUpInactiveHDChain(const CKeyID seed_id, int64_t index, const KeyPurpose purpose)
+bool LegacyScriptPubKeyMan::TopUpInactiveHDChain(const CKeyID seed_id, int64_t index, bool internal)
 {
     LOCK(cs_KeyStore);
-
-    if (m_storage.IsLocked()) return false;
 
     auto it = m_inactive_hd_chains.find(seed_id);
     if (it == m_inactive_hd_chains.end()) {
@@ -356,24 +344,14 @@ bool LegacyScriptPubKeyMan::TopUpInactiveHDChain(const CKeyID seed_id, int64_t i
 
     CHDChain& chain = it->second;
 
-    // Top up key pool
-    int64_t target_size = std::max(gArgs.GetArg("-keypool", DEFAULT_KEYPOOL_SIZE), (int64_t) 1);
-
-    // "size" of the keypools. Not really the size, actually the difference between index and the chain counter
-    // Since chain counter is 1 based and index is 0 based, one of them needs to be offset by 1.
-    int64_t kp_size = ((int64_t)*GetChainCounter(chain, purpose)) - (index + 1);
-
-    // make sure the keypool fits the user-selected target (-keypool)
-    int64_t missing = std::max(target_size - kp_size, (int64_t) 0);
-
-    if (missing > 0) {
-        WalletBatch batch(m_storage.GetDatabase());
-        for (int64_t i = missing; i > 0; --i) {
-            GenerateNewKey(batch, chain, purpose);
-        }
-
-        WalletLogPrintf("inactive seed with id %s added %d %s keys\n", HexStr(seed_id), missing, GetPurposeDesc(purpose));
+    if (internal) {
+        chain.m_next_internal_index = std::max(chain.m_next_internal_index, index + 1);
+    } else {
+        chain.m_next_external_index = std::max(chain.m_next_external_index, index + 1);
     }
+
+    TopUpChain(chain, 0);
+
     return true;
 }
 
@@ -394,21 +372,31 @@ void LegacyScriptPubKeyMan::MarkUnusedAddresses(const DestinationAddr& script)
 
         // Find the key's metadata and check if it's seed id (if it has one) is inactive, i.e. it is not the current m_hd_chain seed id.
         // If so, TopUp the inactive hd chain
+        // MWEB keys are only derived from the MWEB keychain of the current seed, so an inactive chain's MWEB keys are not topped up.
         auto it = mapKeyMetadata.find(keyid);
         if (it != mapKeyMetadata.end()){
             CKeyMetadata meta = it->second;
-            if (!meta.hd_seed_id.IsNull() && meta.hd_seed_id != m_hd_chain.seed_id) {
-                KeyPurpose purpose = KeyPurpose::EXTERNAL;
-                if (!!meta.mweb_index) {
-                    purpose = KeyPurpose::MWEB;
-                } else if ((meta.key_origin.path[1] & ~BIP32_HARDENED_KEY_LIMIT) != 0) {
-                    purpose = KeyPurpose::INTERNAL;
+            if (!meta.hd_seed_id.IsNull() && meta.hd_seed_id != m_hd_chain.seed_id && !meta.mweb_index) {
+                std::vector<uint32_t> path;
+                if (meta.has_key_origin) {
+                    path = meta.key_origin.path;
+                } else if (!ParseHDKeypath(meta.hdKeypath, path)) {
+                    WalletLogPrintf("%s: Adding inactive seed keys failed, invalid hdKeypath: %s\n",
+                                    __func__,
+                                    meta.hdKeypath);
                 }
+                if (path.size() != 3) {
+                    WalletLogPrintf("%s: Adding inactive seed keys failed, invalid path size: %d, has_key_origin: %s\n",
+                                    __func__,
+                                    path.size(),
+                                    meta.has_key_origin);
+                } else {
+                    bool internal = (path[1] & ~BIP32_HARDENED_KEY_LIMIT) != 0;
+                    int64_t index = path[2] & ~BIP32_HARDENED_KEY_LIMIT;
 
-                int64_t index = !!meta.mweb_index ? *meta.mweb_index : (meta.key_origin.path[2] & ~BIP32_HARDENED_KEY_LIMIT);
-
-                if (!TopUpInactiveHDChain(meta.hd_seed_id, index, purpose)) {
-                    WalletLogPrintf("%s: Adding inactive seed keys failed\n", __func__);
+                    if (!TopUpInactiveHDChain(meta.hd_seed_id, index, internal)) {
+                        WalletLogPrintf("%s: Adding inactive seed keys failed\n", __func__);
+                    }
                 }
             }
         }
@@ -1313,46 +1301,79 @@ bool LegacyScriptPubKeyMan::TopUp(unsigned int kpSize)
     {
         LOCK(cs_KeyStore);
 
-        if (m_storage.IsLocked()) return false;
-
-        // Top up key pool
-        unsigned int nTargetSize;
-        if (kpSize > 0)
-            nTargetSize = kpSize;
-        else
-            nTargetSize = std::max(gArgs.GetArg("-keypool", DEFAULT_KEYPOOL_SIZE), (int64_t) 0);
-
-        // count amount of available keys (internal, external)
-        // make sure the keypool of external and internal keys fits the user selected target (-keypool)
-        int64_t missingExternal = std::max(std::max((int64_t) nTargetSize, (int64_t) 1) - (int64_t)setExternalKeyPool.size(), (int64_t) 0);
-        int64_t missingInternal = std::max(std::max((int64_t) nTargetSize, (int64_t) 1) - (int64_t)setInternalKeyPool.size(), (int64_t) 0);
-        int64_t missingMWEB = std::max(std::max((int64_t) nTargetSize, (int64_t) 1) - (int64_t)set_mweb_keypool.size(), (int64_t) 0);
-
-        if (!IsHDEnabled() || !m_storage.CanSupportFeature(FEATURE_HD_SPLIT)) {
-            // don't create extra internal keys
-            missingInternal = 0;
+        if (!TopUpChain(m_hd_chain, kpSize)) {
+            return false;
         }
-        if (m_mwebKeychain == nullptr) {
-            missingMWEB = 0;
-        }
-        WalletBatch batch(m_storage.GetDatabase());
-        for (int64_t i = missingInternal + missingExternal + missingMWEB; i--;)
-        {
-            KeyPurpose purpose = KeyPurpose::EXTERNAL;
-            if (i < missingInternal) {
-                purpose = KeyPurpose::INTERNAL;
-            } else if (i < (missingInternal + missingMWEB)) {
-                purpose = KeyPurpose::MWEB;
+        for (auto& chain_pair : m_inactive_hd_chains) {
+            if (!TopUpChain(chain_pair.second, kpSize)) {
+                return false;
             }
-
-            CPubKey pubkey(GenerateNewKey(batch, m_hd_chain, purpose));
-            AddKeypoolPubkeyWithDB(pubkey, purpose, batch);
-        }
-        if (missingInternal + missingExternal + missingMWEB > 0) {
-            WalletLogPrintf("keypool added %d keys (%d internal, %d MWEB), size=%u (%u internal, %u MWEB)\n", missingInternal + missingExternal + missingMWEB, missingInternal, missingMWEB, setInternalKeyPool.size() + setExternalKeyPool.size() + set_pre_split_keypool.size() + set_mweb_keypool.size(), setInternalKeyPool.size(), set_mweb_keypool.size());
         }
     }
     NotifyCanGetAddressesChanged();
+    return true;
+}
+
+bool LegacyScriptPubKeyMan::TopUpChain(CHDChain& chain, unsigned int kpSize)
+{
+    LOCK(cs_KeyStore);
+
+    if (m_storage.IsLocked()) return false;
+
+    // Top up key pool
+    unsigned int nTargetSize;
+    if (kpSize > 0) {
+        nTargetSize = kpSize;
+    } else {
+        nTargetSize = std::max(gArgs.GetArg("-keypool", DEFAULT_KEYPOOL_SIZE), int64_t{0});
+    }
+    int64_t target = std::max((int64_t) nTargetSize, int64_t{1});
+
+    // count amount of available keys (internal, external)
+    // make sure the keypool of external and internal keys fits the user selected target (-keypool)
+    int64_t missingExternal;
+    int64_t missingInternal;
+    int64_t missingMWEB;
+    if (chain == m_hd_chain) {
+        missingExternal = std::max(target - (int64_t)setExternalKeyPool.size(), int64_t{0});
+        missingInternal = std::max(target - (int64_t)setInternalKeyPool.size(), int64_t{0});
+        missingMWEB = std::max(target - (int64_t)set_mweb_keypool.size(), int64_t{0});
+    } else {
+        missingExternal = std::max(target - (chain.nExternalChainCounter - chain.m_next_external_index), int64_t{0});
+        missingInternal = std::max(target - (chain.nInternalChainCounter - chain.m_next_internal_index), int64_t{0});
+        // MWEB keys are only derived from the MWEB keychain of the current seed
+        missingMWEB = 0;
+    }
+
+    if (!IsHDEnabled() || !m_storage.CanSupportFeature(FEATURE_HD_SPLIT)) {
+        // don't create extra internal keys
+        missingInternal = 0;
+    }
+    if (m_mwebKeychain == nullptr) {
+        missingMWEB = 0;
+    }
+    WalletBatch batch(m_storage.GetDatabase());
+    for (int64_t i = missingInternal + missingExternal + missingMWEB; i--;)
+    {
+        KeyPurpose purpose = KeyPurpose::EXTERNAL;
+        if (i < missingInternal) {
+            purpose = KeyPurpose::INTERNAL;
+        } else if (i < (missingInternal + missingMWEB)) {
+            purpose = KeyPurpose::MWEB;
+        }
+
+        CPubKey pubkey(GenerateNewKey(batch, chain, purpose));
+        if (chain == m_hd_chain) {
+            AddKeypoolPubkeyWithDB(pubkey, purpose, batch);
+        }
+    }
+    if (missingInternal + missingExternal + missingMWEB > 0) {
+        if (chain == m_hd_chain) {
+            WalletLogPrintf("keypool added %d keys (%d internal, %d MWEB), size=%u (%u internal, %u MWEB)\n", missingInternal + missingExternal + missingMWEB, missingInternal, missingMWEB, setInternalKeyPool.size() + setExternalKeyPool.size() + set_pre_split_keypool.size() + set_mweb_keypool.size(), setInternalKeyPool.size(), set_mweb_keypool.size());
+        } else {
+            WalletLogPrintf("inactive seed with id %s added %d external keys, %d internal keys\n", HexStr(chain.seed_id), missingExternal, missingInternal);
+        }
+    }
     return true;
 }
 

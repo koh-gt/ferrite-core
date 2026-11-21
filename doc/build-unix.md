@@ -320,7 +320,19 @@ This example lists the steps necessary to setup and build a command line only, n
     cd ferrite-core/
     ./autogen.sh
     ./configure --disable-wallet --without-gui --without-miniupnpc
-    make check
+    make
+
+`make` also builds the unit tests. Do not run them with `make check`: it runs every test case, including the ones
+listed in `test/ferrite_unit_test_exclusions.txt`, which are known to fail on Ferrite Core and one of which needs more
+than 11 GB of memory. CI skips the listed cases and runs all the others. To run the unit tests the same way, use these
+commands in bash (see also [src/test/README.md](../src/test/README.md)):
+
+    args=()
+    while read -r t; do
+      case "$t" in ''|'#'*) continue ;; esac
+      args+=('--run_test=!'"$t")
+    done < test/ferrite_unit_test_exclusions.txt
+    src/test/test_ferrite --catch_system_errors=no --report_level=short "${args[@]}"
 
 Note:
 Enabling wallet support requires either compiling against a Berkeley DB newer than 4.8 (package `db`) using `--with-incompatible-bdb`,

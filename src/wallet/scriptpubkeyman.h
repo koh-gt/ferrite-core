@@ -364,11 +364,13 @@ private:
      *
      * @param seed_id the CKeyID for the HD seed.
      * @param index the index to start generating keys from
-     * @param purpose whether the external, internal, or mweb chain should be used.
+     * @param internal whether the internal chain should be used. true for internal chain, false for external chain.
      *
      * @return true if seed was found and keys were derived. false if unable to derive seeds
      */
-    bool TopUpInactiveHDChain(const CKeyID seed_id, int64_t index, const KeyPurpose purpose);
+    bool TopUpInactiveHDChain(const CKeyID seed_id, int64_t index, bool internal);
+
+    bool TopUpChain(CHDChain& chain, unsigned int size);
 
 public:
     using ScriptPubKeyMan::ScriptPubKeyMan;

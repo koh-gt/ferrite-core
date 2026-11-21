@@ -169,6 +169,31 @@ BOOST_AUTO_TEST_CASE(ChainParams_MAIN_sanity)
     sanity_check_chainparams(*m_node.args, CBaseChainParams::MAIN);
 }
 
+BOOST_AUTO_TEST_CASE(ChainParams_MAIN_last_checkpoint)
+{
+    // The header of mainnet block 1,089,000, rebuilt from its fields. It must
+    // hash to the last checkpoint and to the assumed-valid block, and its
+    // scrypt hash must meet its own nBits. When either of them moves, put the
+    // header of the new block here.
+    const auto chainParams = CreateChainParams(*m_node.args, CBaseChainParams::MAIN);
+    const Consensus::Params& consensus = chainParams->GetConsensus();
+
+    CBlockHeader header;
+    header.nVersion = 0x20000000;
+    header.hashPrevBlock = uint256S("0xc3c10b9686cf046ab9e682f90ada29ac2f888b2aae94b9488ff99d5765815c7a");
+    header.hashMerkleRoot = uint256S("0x5972546e684c4c344537c49d11377e281771bbdd21ecbbfd64dd39b00b932b68");
+    header.nTime = 1794305624;
+    header.nBits = 0x1c1f140d;
+    header.nNonce = 4226711646;
+
+    const MapCheckpoints& checkpoints = chainParams->Checkpoints().mapCheckpoints;
+    BOOST_REQUIRE(!checkpoints.empty());
+    BOOST_CHECK_EQUAL(checkpoints.rbegin()->first, 1089000);
+    BOOST_CHECK_EQUAL(checkpoints.rbegin()->second, header.GetHash());
+    BOOST_CHECK_EQUAL(consensus.defaultAssumeValid, header.GetHash());
+    BOOST_CHECK(CheckProofOfWork(header.GetPoWHash(), header.nBits, consensus));
+}
+
 BOOST_AUTO_TEST_CASE(ChainParams_REGTEST_sanity)
 {
     sanity_check_chainparams(*m_node.args, CBaseChainParams::REGTEST);

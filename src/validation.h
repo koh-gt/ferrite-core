@@ -422,6 +422,8 @@ public:
      * Pruned nodes may have entries where B is missing data.
      */
     std::multimap<CBlockIndex*, CBlockIndex*> m_blocks_unlinked;
+    /** Add the pair pindex->pprev -> pindex to m_blocks_unlinked unless it is already there. */
+    void AddUnlinkedBlock(CBlockIndex* pindex) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 
     /**
      * Load the blocktree off disk and into memory. Populate certain metadata

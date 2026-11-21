@@ -459,7 +459,7 @@ void SetupServerArgs(NodeContext& node)
     argsman.AddArg("-maxconnections=<n>", strprintf("Maintain at most <n> connections to peers (default: %u)", DEFAULT_MAX_PEER_CONNECTIONS), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
     argsman.AddArg("-maxreceivebuffer=<n>", strprintf("Maximum per-connection receive buffer, <n>*1000 bytes (default: %u)", DEFAULT_MAXRECEIVEBUFFER), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
     argsman.AddArg("-maxsendbuffer=<n>", strprintf("Maximum per-connection send buffer, <n>*1000 bytes (default: %u)", DEFAULT_MAXSENDBUFFER), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
-    argsman.AddArg("-maxtimeadjustment", strprintf("Maximum allowed median peer time offset adjustment. Local perspective of time may be influenced by peers forward or backward by this amount. (default: %u seconds)", DEFAULT_MAX_TIME_ADJUSTMENT), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
+    argsman.AddArg("-maxtimeadjustment", strprintf("Maximum allowed median peer time offset adjustment. Local perspective of time may be influenced by outbound peers forward or backward by this amount (default: %u seconds).", DEFAULT_MAX_TIME_ADJUSTMENT), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
     argsman.AddArg("-maxuploadtarget=<n>", strprintf("Tries to keep outbound traffic under the given target (in MiB per 24h). Limit does not apply to peers with 'download' permission. 0 = no limit (default: %d)", DEFAULT_MAX_UPLOAD_TARGET), ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
     argsman.AddArg("-onion=<ip:port>", "Use separate SOCKS5 proxy to reach peers via Tor onion services, set -noonion to disable (default: -proxy)", ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
     argsman.AddArg("-onlynet=<net>", "Make outgoing connections only through network <net> (ipv4, ipv6 or onion). Incoming connections are not affected by this option. This option can be specified multiple times to allow multiple networks.", ArgsManager::ALLOW_ANY, OptionsCategory::CONNECTION);
@@ -559,7 +559,11 @@ void SetupServerArgs(NodeContext& node)
     argsman.AddArg("-dustrelayfee=<amt>", strprintf("Fee rate (in %s/kB) used to define dust, the value of an output such that it will cost more than its value in fees at this fee rate to spend it. (default: %s)", CURRENCY_UNIT, FormatMoney(DUST_RELAY_TX_FEE)), ArgsManager::ALLOW_ANY | ArgsManager::DEBUG_ONLY, OptionsCategory::NODE_RELAY);
     argsman.AddArg("-bytespersigop", strprintf("Equivalent bytes per sigop in transactions for relay and mining (default: %u)", DEFAULT_BYTES_PER_SIGOP), ArgsManager::ALLOW_ANY, OptionsCategory::NODE_RELAY);
     argsman.AddArg("-datacarrier", strprintf("Relay and mine data carrier transactions (default: %u)", DEFAULT_ACCEPT_DATACARRIER), ArgsManager::ALLOW_ANY, OptionsCategory::NODE_RELAY);
-    argsman.AddArg("-datacarriersize", strprintf("Maximum size of data in data carrier transactions we relay and mine (default: %u)", MAX_OP_RETURN_RELAY), ArgsManager::ALLOW_ANY, OptionsCategory::NODE_RELAY);
+    argsman.AddArg("-datacarriersize",
+                   strprintf("Relay and mine transactions whose data-carrying raw scriptPubKey "
+                             "is of this size or less (default: %u)",
+                             MAX_OP_RETURN_RELAY),
+                   ArgsManager::ALLOW_ANY, OptionsCategory::NODE_RELAY);
     argsman.AddArg("-minrelaytxfee=<amt>", strprintf("Fees (in %s/kB) smaller than this are considered zero fee for relaying, mining and transaction creation (default: %s)",
         CURRENCY_UNIT, FormatMoney(DEFAULT_MIN_RELAY_TX_FEE)), ArgsManager::ALLOW_ANY, OptionsCategory::NODE_RELAY);
     argsman.AddArg("-whitelistforcerelay", strprintf("Add 'forcerelay' permission to whitelisted inbound peers with default permissions. This will relay transactions even if the transactions were already in the mempool. (default: %d)", DEFAULT_WHITELISTFORCERELAY), ArgsManager::ALLOW_ANY, OptionsCategory::NODE_RELAY);
@@ -1037,7 +1041,7 @@ bool AppInitParameterInteraction(const ArgsManager& args)
     // Warn if unrecognized section name are present in the config file.
     bilingual_str warnings;
     for (const auto& section : args.GetUnrecognizedSections()) {
-        warnings += strprintf(_("[%s] is not recognized.\n"), section.m_file, section.m_line, section.m_name);
+        warnings += strprintf(Untranslated("%s:%i ") + _("Section [%s] is not recognized.") + Untranslated("\n"), section.m_file, section.m_line, section.m_name);
     }
 
     if (!warnings.empty()) {
@@ -1367,67 +1371,44 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
 
         FILE* configFile = fopen(GetConfigFile(gArgs.GetArg("-conf", BITCOIN_CONF_FILENAME)).string().c_str(), "a");
         if (configFile != NULL) {
-            std::string strHeader = "# Ferrite Core configuration file v3.2.1 10kb:\n"
-                                    "\n"            
-                                    "# Node settings (default: Full Node with no pruning):\n"
-                                    "prune=0\n"
-                                    "daemon=1\n"
-                                    "server=1\n"
-                                    "blockfilterindex=basic\n"
-                                    "txindex=1\n"
-                                    "listen=1\n"
-                                    "upnp=1\n"
+            std::string strHeader = "# Ferrite Core configuration file (ferrite.conf)\n"
+                                    "#\n"
+                                    "# Ferrite Core wrote this file into a new data directory. It sets no\n"
+                                    "# options, so the node runs with its built-in defaults; the only lines\n"
+                                    "# it adds are the addnode lines below, which name nodes to connect to.\n"
+                                    "#\n"
+                                    "# To change an option, add a line name=value, where name is a\n"
+                                    "# command-line option without its leading dash, for example:\n"
+                                    "#   server=1     let ferrite-qt accept RPC commands (ferrited always does)\n"
+                                    "#   prune=550    keep only about 550 MiB of recent blocks\n"
+                                    "#   txindex=1    keep an index of all transactions (not with prune)\n"
+                                    "# Run ferrited -help to list the options and their defaults. An option\n"
+                                    "# set here overrides the same setting in ferrite-qt's options. Lines\n"
+                                    "# that start with # are comments. Changes apply from the next start.\n"
+                                    "#\n"
+                                    "# Options above the [main] line apply to every network, so add your\n"
+                                    "# options here. Options below [main] apply only to the main network and\n"
+                                    "# options below [test] only to the test network. Lines for addnode,\n"
+                                    "# connect, port, bind, rpcport, rpcbind, wallet and walletdir belong in\n"
+                                    "# one of these sections. To run the test network, start with -testnet\n"
+                                    "# or add testnet=1 here; a main-network node and a test-network node can\n"
+                                    "# run at the same time.\n"
+                                    "#\n"
+                                    "# On the same computer, ferrite-cli logs in to the node through the\n"
+                                    "# cookie file in the data directory and needs no rpcuser or rpcpassword.\n"
                                     "\n"
-                                    "# RPC settings (default: Local network only)\n"
-                                    "rpcuser=user\n"
-                                    "rpcpassword=password\n"
-                                    "rpcallowip=127.0.0.1\n"
-                                    "rpcthreads=32\n"
-                                    "\n"
-                                    "# Relay and fee settings (default: 1 atom/vB)\n"
-                                    "mintxfee=0.00001\n"
-                                    "maxtxfee=1000\n"
-                                    "maxfeerate=1000\n"
-                                    "minrelaytxfee=0.00001\n"
-                                    "maxconnections=500\n"
-				    "datacarriersize=10000\n"
-                                    "\n"
-                                    "# Depreciated RPCs for compatibility\n"
-                                    "deprecatedrpc=accounts\n"
-                                    "deprecatedrpc=generate\n"
-                                    "\n"
-                                    "# Nodes:\n"
+                                    "[main]\n"
                                     "addnode=node1.ferritecoin.org\n"
                                     "addnode=node2.ferritecoin.org\n"
-                                    "addnode=node3.ferritecoin.org\n"  
-	                                "addnode=133.177.197.167:9574\n"
-                                    "addnode=38.242.145.73:21004 # xeggex.com \n"
+                                    "addnode=node3.ferritecoin.org\n"
                                     "addnode=118.189.201.104:9574\n"
                                     "addnode=118.189.201.104:9588\n"
                                     "addnode=118.189.201.104:9598\n"
-                                    "addnode=78.220.84.58:9574\n"
-                                    "\n"
-                                    "\n"
-                                    "# Testnet parameters: \n"
-                                    "# Change testnet=0 to testnet=1 and launch ferrite core \n"
-                                    "# to launch ferrite in testnet mode. \n"
-                                    "# You can run both mainnet and testnet nodes simultaneously \n"
-                                    "# Default: testnet = 0 (Testnet disabled)\n"
-                                    "testnet = 0\n"
                                     "\n"
                                     "[test]\n"
-                                    "daemon=1\n"
-                                    "server=1\n"
-                                    "txindex=1\n"
-                                    "mintxfee=0.00001\n"
-                                    "minrelaytxfee=0.00001\n"
-                                    "port=19574\n"
                                     "addnode=118.189.201.104:19574\n"
                                     "addnode=118.189.201.104:19588\n"
-                                    "addnode=118.189.201.104:19598\n"
-                                    "deprecatedrpc=accounts\n"
-                                    "deprecatedrpc=generate\n"
-                                    "\n";
+                                    "addnode=118.189.201.104:19598\n";
 
             fwrite(strHeader.c_str(), std::strlen(strHeader.c_str()), 1, configFile);
             fclose(configFile);

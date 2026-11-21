@@ -2815,8 +2815,7 @@ CBlockIndex* CChainState::FindMostWorkChain() {
                         // If we're missing data, then add back to m_blocks_unlinked,
                         // so that if the block arrives in the future we can try adding
                         // to setBlockIndexCandidates again.
-                        m_blockman.m_blocks_unlinked.insert(
-                            std::make_pair(pindexFailed->pprev, pindexFailed));
+                        m_blockman.AddUnlinkedBlock(pindexFailed);
                     }
                     setBlockIndexCandidates.erase(pindexFailed);
                     pindexFailed = pindexFailed->pprev;
@@ -3370,6 +3369,20 @@ CBlockIndex* BlockManager::AddToBlockIndex(const CBlockHeader& block)
     return pindexNew;
 }
 
+void BlockManager::AddUnlinkedBlock(CBlockIndex* pindex)
+{
+    AssertLockHeld(cs_main);
+    // Avoid duplicate entries in m_blocks_unlinked. If the same entry is
+    // processed twice in ReceivedBlockTransactions(), it may be re-added to
+    // setBlockIndexCandidates with a modified nSequenceId, breaking ordering
+    // guarantees and leading to undefined behavior.
+    auto range = m_blocks_unlinked.equal_range(pindex->pprev);
+    for (auto it = range.first; it != range.second; ++it) {
+        if (it->second == pindex) return;
+    }
+    m_blocks_unlinked.emplace(pindex->pprev, pindex);
+}
+
 /** Mark a block as having its data received and checked (up to BLOCK_VALID_TRANSACTIONS). */
 void CChainState::ReceivedBlockTransactions(const CBlock& block, CBlockIndex* pindexNew, const FlatFilePos& pos, const Consensus::Params& consensusParams)
 {
@@ -3413,7 +3426,7 @@ void CChainState::ReceivedBlockTransactions(const CBlock& block, CBlockIndex* pi
         }
     } else {
         if (pindexNew->pprev && pindexNew->pprev->IsValid(BLOCK_VALID_TREE)) {
-            m_blockman.m_blocks_unlinked.insert(std::make_pair(pindexNew->pprev, pindexNew));
+            m_blockman.AddUnlinkedBlock(pindexNew);
         }
     }
 }
@@ -4314,7 +4327,7 @@ bool BlockManager::LoadBlockIndex(
                     pindex->nChainTx = pindex->pprev->nChainTx + pindex->nTx;
                 } else {
                     pindex->nChainTx = 0;
-                    m_blocks_unlinked.insert(std::make_pair(pindex->pprev, pindex));
+                    AddUnlinkedBlock(pindex);
                 }
             } else {
                 pindex->nChainTx = pindex->nTx;
@@ -5104,13 +5117,12 @@ void CChainState::CheckBlockIndex(const Consensus::Params& consensusParams)
         // Check whether this block is in m_blocks_unlinked.
         std::pair<std::multimap<CBlockIndex*,CBlockIndex*>::iterator,std::multimap<CBlockIndex*,CBlockIndex*>::iterator> rangeUnlinked = m_blockman.m_blocks_unlinked.equal_range(pindex->pprev);
         bool foundInUnlinked = false;
-        while (rangeUnlinked.first != rangeUnlinked.second) {
-            assert(rangeUnlinked.first->first == pindex->pprev);
-            if (rangeUnlinked.first->second == pindex) {
+        for (auto it = rangeUnlinked.first; it != rangeUnlinked.second; ++it) {
+            assert(it->first == pindex->pprev);
+            if (it->second == pindex) {
+                assert(!foundInUnlinked); // No duplicates in m_blocks_unlinked
                 foundInUnlinked = true;
-                break;
             }
-            rangeUnlinked.first++;
         }
         if (pindex->pprev && (pindex->nStatus & BLOCK_HAVE_DATA) && pindexFirstNeverProcessed != nullptr && pindexFirstInvalid == nullptr) {
             // If this block has block data available, some parent was never received, and has no invalid parents, it must be in m_blocks_unlinked.

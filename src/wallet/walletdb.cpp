@@ -529,9 +529,9 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
                     chain.nMWEBIndexCounter = std::max(chain.nMWEBIndexCounter, *keyMeta.mweb_index);
                 } else if (internal) {
                     chain.nVersion = std::max(chain.nVersion, CHDChain::VERSION_HD_CHAIN_SPLIT);
-                    chain.nInternalChainCounter = std::max(chain.nInternalChainCounter, index);
+                    chain.nInternalChainCounter = std::max(chain.nInternalChainCounter, index + 1);
                 } else {
-                    chain.nExternalChainCounter = std::max(chain.nExternalChainCounter, index);
+                    chain.nExternalChainCounter = std::max(chain.nExternalChainCounter, index + 1);
                 }
             }
         } else if (strType == DBKeys::WATCHMETA) {

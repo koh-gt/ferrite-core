@@ -25,6 +25,10 @@ The output will be two data structures with the peers in binary format:
    }
 
 These should be pasted into `src/chainparamsseeds.h`.
+
+A file with no entries gives no array, only a comment, because a
+zero-length array is not valid C++. That network's chain parameters must
+then not refer to the array.
 '''
 
 from base64 import b32decode
@@ -136,7 +140,7 @@ def bip155_serialize(spec):
     return r
 
 def process_nodes(g, f, structname):
-    g.write('static const uint8_t %s[] = {\n' % structname)
+    entries = []
     for line in f:
         comment = line.find('#')
         if comment != -1:
@@ -150,7 +154,13 @@ def process_nodes(g, f, structname):
             continue
         blob = bip155_serialize(spec)
         hoststr = ','.join(('0x%02x' % b) for b in blob)
-        g.write(f'    {hoststr},\n')
+        entries.append(f'    {hoststr},\n')
+    if not entries:
+        # A zero-length array is not valid C++, so an empty list gets no array.
+        g.write('// %s is not defined: its node list is empty.\n' % structname)
+        return
+    g.write('static const uint8_t %s[] = {\n' % structname)
+    g.writelines(entries)
     g.write('};\n')
 
 def main():

@@ -164,10 +164,35 @@ public:
     //
     // Serialization/Deserialization
     //
-    IMPL_SERIALIZED(Kernel);
+    // The kernel ID and the kernel MMR leaf are computed over these bytes, which leave out an empty
+    // peg-out list or empty extra data even when its feature bit is set. Changing them would change
+    // which blocks are valid.
+    std::vector<uint8_t> Serialized() const noexcept final
+    {
+        std::vector<uint8_t> serialized;
+        CVectorWriter stream(SER_NETWORK, PROTOCOL_VERSION, serialized, 0);
+        SerializeFields(stream, false);
+        return serialized;
+    }
+    static Kernel Deserialize(const std::vector<uint8_t>& serialized)
+    {
+        Kernel obj;
+        VectorReader stream(SER_NETWORK, PROTOCOL_VERSION, serialized, 0);
+        stream >> obj;
+        return obj;
+    }
 
+    // Blocks and transactions, on disk and on the network, also carry an empty peg-out list or
+    // empty extra data whose feature bit is set, because Unserialize reads every field whose
+    // feature bit is set.
     template <typename Stream>
     void Serialize(Stream& s) const
+    {
+        SerializeFields(s, true);
+    }
+
+    template <typename Stream>
+    void SerializeFields(Stream& s, const bool write_empty_flagged_fields) const
     {
         s << m_features;
 
@@ -179,7 +204,7 @@ public:
             ::WriteVarInt<Stream, VarIntMode::NONNEGATIVE_SIGNED, CAmount>(s, m_pegin.value());
         }
 
-        if (!m_pegouts.empty()) {
+        if (!m_pegouts.empty() || (write_empty_flagged_fields && (m_features & PEGOUT_FEATURE_BIT))) {
             s << m_pegouts;
         }
 
@@ -191,7 +216,7 @@ public:
             s << m_stealthExcess.value();
         }
 
-        if (!m_extraData.empty()) {
+        if (!m_extraData.empty() || (write_empty_flagged_fields && (m_features & EXTRA_DATA_FEATURE_BIT))) {
             s << m_extraData;
         }
 
