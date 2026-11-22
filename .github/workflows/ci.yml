@@ -73,11 +73,14 @@ jobs:
             "wallet_import_rescan.py --legacy-wallet" wallet_inactive_hdchains.py
 
   gui:
-    name: Linux GUI build and tests (ferrite-qt)
+    name: Linux GUI build and tests (ferrite-qt, ferrite-qt-fext)
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The isolation lint below reads the history back to the commit the OP_RETURN record starts from.
+          fetch-depth: 0
 
       - name: Install dependencies
         run: |
@@ -101,10 +104,108 @@ jobs:
         run: |
           src/ferrited -version | head -n1
           test -x src/qt/ferrite-qt
+          test -x src/qt/ferrite-qt-fext
 
       - name: GUI tests
-        # test_ferrite-qt needs no display: it picks Qt's minimal platform itself. It takes seconds; the limit ends
-        # a run that waits on a modal error box (for example when the node of AppTests cannot bind its port), which
-        # does not stop on SIGTERM.
-        run: src/qt/test/test_ferrite-qt
+        # Neither needs a display: each program picks Qt's minimal platform itself. Both take seconds; the limit
+        # ends a run that waits on a modal error box (for example when the node of AppTests cannot bind its port),
+        # which does not stop on SIGTERM.
+        run: |
+          src/qt/test/test_ferrite-qt
+          src/qt/test/test_ferrite-qt-fext
+        timeout-minutes: 10
+
+      - name: Symbols of the programs
+        run: contrib/devtools/fext-symbol-check.sh
+
+      - name: Help of the two GUI programs
+        # ferrite-qt-fext prints the help of ferrite-qt, with its own name in the usage line.
+        env:
+          QT_QPA_PLATFORM: minimal
+        run: |
+          src/qt/ferrite-qt -help > ferrite-qt.help
+          src/qt/ferrite-qt-fext -help > ferrite-qt-fext.help
+          grep -x 'Usage:  ferrite-qt \[command-line options\] *' ferrite-qt.help
+          grep -x 'Usage:  ferrite-qt-fext \[command-line options\] *' ferrite-qt-fext.help
+          diff ferrite-qt.help <(sed 's/^Usage:  ferrite-qt-fext /Usage:  ferrite-qt /' ferrite-qt-fext.help)
+
+      - name: Lints of the OP_RETURN record and the FEXT GUI
+        # The isolation lint also checks the files and lines that the record and the FEXT GUI change, given the range
+        # from the commit before the record's first one (the parent of the first commit that adds a file under
+        # src/opreturn/) to the tested commit, a pull request's own head. That range holds only their changes while
+        # it holds no merge commit; once they are merged with other work, the lint checks the tree alone.
+        env:
+          TIP: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          first=$(git log --diff-filter=A --format=%H -- src/opreturn | tail -n 1)
+          if [ -n "$first" ] && [ -z "$(git rev-list --merges "$first^..$TIP")" ]; then
+            FEXT_ISOLATION_RANGE="$first^..$TIP" test/lint/lint-fext-isolation.sh
+          else
+            echo "::notice::The history since the OP_RETURN record's first commit holds merge commits, so the isolation lint checks the tree only."
+            test/lint/lint-fext-isolation.sh
+          fi
+          test/lint/lint-fext-safety.sh
+
+  gui-depends:
+    name: Linux GUI build and tests against the release Qt (depends)
+    # Qt 5.9.8 of depends, which the releases use, builds with the compiler of Ubuntu 22.04.
+    runs-on: ubuntu-22.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential libtool autotools-dev automake cmake \
+            pkg-config bsdmainutils python3 curl patch ccache
+
+      - name: Restore depends
+        id: depends-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            depends/built
+            depends/sources
+          key: depends-x86_64-pc-linux-gnu-${{ hashFiles('depends/packages/*.mk', 'depends/patches/**', 'depends/hosts/*.mk', 'depends/builders/*.mk', 'depends/Makefile', 'depends/funcs.mk') }}
+
+      - uses: actions/cache@v4
+        with:
+          path: .ccache
+          key: ccache-gui-depends-${{ github.sha }}
+          restore-keys: ccache-gui-depends-
+
+      - name: Build depends
+        id: depends
+        run: make -C depends HOST=x86_64-pc-linux-gnu -j"$(nproc)"
+
+      - name: Save depends
+        # Saved as soon as depends is built, whatever the later steps do, so that a failed build or test of the tree
+        # does not make the next run build depends again. A depends build that failed is not saved.
+        if: always() && steps.depends.outcome == 'success' && steps.depends-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            depends/built
+            depends/sources
+          key: ${{ steps.depends-cache.outputs.cache-primary-key }}
+
+      - name: Configure
+        # The GUI test programs only: the unit tests are run by the job without the GUI.
+        run: ./autogen.sh && ./configure --prefix="$PWD/depends/x86_64-pc-linux-gnu" --disable-tests --enable-gui-tests --disable-bench
+
+      - name: Build
+        run: make -j"$(nproc)"
+
+      - name: Check the binaries
+        run: |
+          test -x src/qt/ferrite-qt
+          test -x src/qt/ferrite-qt-fext
+
+      - name: GUI tests
+        # The release Qt is static and has the minimal platform, which both programs pick themselves. As in the GUI
+        # job, the limit ends a run that waits on a modal error box.
+        run: |
+          src/qt/test/test_ferrite-qt
+          src/qt/test/test_ferrite-qt-fext
         timeout-minutes: 10
