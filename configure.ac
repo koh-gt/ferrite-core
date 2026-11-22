@@ -156,6 +156,12 @@ AC_ARG_ENABLE(gui-tests,
     [use_gui_tests=$enableval],
     [use_gui_tests=$use_tests])
 
+AC_ARG_ENABLE([fext-gui],
+  [AS_HELP_STRING([--disable-fext-gui],
+  [do not build ferrite-qt-fext, the GUI with the FEXT tab (default: build it when the GUI and the wallet are built)])],
+  [build_fext_gui=$enableval],
+  [build_fext_gui=auto])
+
 AC_ARG_ENABLE(bench,
     AS_HELP_STRING([--disable-bench],[do not compile benchmarks (default is to compile)]),
     [use_bench=$enableval],
@@ -1591,6 +1597,20 @@ if test x$bitcoin_enable_qt != xno; then
   fi
 fi
 
+dnl ferrite-qt-fext is ferrite-qt with a FEXT tab, so it needs the GUI and the wallet
+AC_MSG_CHECKING([whether to build ferrite-qt-fext])
+if test "x$bitcoin_enable_qt$enable_wallet" = xyesyes; then
+  if test "x$build_fext_gui" != xno; then
+    build_fext_gui=yes
+  fi
+elif test "x$build_fext_gui" = xyes; then
+  AC_MSG_RESULT([no])
+  AC_MSG_ERROR([ferrite-qt-fext needs the GUI and the wallet. Use --disable-fext-gui to build without it.])
+else
+  build_fext_gui=no
+fi
+AC_MSG_RESULT([$build_fext_gui])
+
 AM_CONDITIONAL([ENABLE_ZMQ], [test "x$use_zmq" = "xyes"])
 
 AC_MSG_CHECKING([whether to build test_ferrite])
@@ -1633,6 +1653,7 @@ AM_CONDITIONAL([ENABLE_TESTS],[test x$BUILD_TEST = xyes])
 AM_CONDITIONAL([ENABLE_FUZZ],[test x$enable_fuzz = xyes])
 AM_CONDITIONAL([ENABLE_QT],[test x$bitcoin_enable_qt = xyes])
 AM_CONDITIONAL([ENABLE_QT_TESTS],[test x$BUILD_TEST_QT = xyes])
+AM_CONDITIONAL([BUILD_FEXT_GUI],[test x$build_fext_gui = xyes])
 AM_CONDITIONAL([ENABLE_BENCH],[test x$use_bench = xyes])
 AM_CONDITIONAL([USE_QRCODE], [test x$use_qr = xyes])
 AM_CONDITIONAL([USE_SSE2], [test x$use_sse2 = xyes])
@@ -1779,6 +1800,7 @@ fi
 echo "  with gui / qt = $bitcoin_enable_qt"
 if test x$bitcoin_enable_qt != xno; then
     echo "    with qr     = $use_qr"
+    echo "    with fext gui = $build_fext_gui"
 fi
 echo "  with zmq      = $use_zmq"
 echo "  with test     = $use_tests"

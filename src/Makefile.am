@@ -35,6 +35,7 @@ LIBBITCOIN_CLI=libbitcoin_cli.a
 LIBBITCOIN_UTIL=libbitcoin_util.a
 LIBBITCOIN_CRYPTO_BASE=crypto/libbitcoin_crypto_base.a
 LIBBITCOINQT=qt/libbitcoinqt.a
+LIBFEXT_QT=qt/libfext_qt.a
 LIBSECP256K1=secp256k1-zkp/libsecp256k1.la
 LIBMW=libmw.a
 

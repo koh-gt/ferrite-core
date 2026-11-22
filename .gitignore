@@ -13,6 +13,7 @@ src/test/fuzz/*
 !src/test/fuzz/*.*
 src/test/test_ferrite
 src/qt/test/test_ferrite-qt
+src/qt/test/test_ferrite-qt-fext
 
 # autoreconf
 Makefile.in
@@ -95,6 +96,7 @@ src/qt/bitcoin-qt.includes
 Makefile
 !depends/Makefile
 src/qt/ferrite-qt
+src/qt/ferrite-qt-fext
 Ferrite-Qt.app
 background.tiff*
 

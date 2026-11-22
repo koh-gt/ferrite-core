@@ -60,9 +60,33 @@ qt_test_test_ferrite_qt_LDADD += $(LIBBITCOIN_CLI) $(LIBBITCOIN_COMMON) $(LIBBIT
 qt_test_test_ferrite_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) $(PTHREAD_FLAGS)
 qt_test_test_ferrite_qt_CXXFLAGS = $(AM_CXXFLAGS) $(QT_PIE_FLAGS)
 
+# test_ferrite-qt-fext: the tests of ferrite-qt-fext, linked as test_ferrite-qt is and with the FEXT library #
+if BUILD_FEXT_GUI
+bin_PROGRAMS += qt/test/test_ferrite-qt-fext
+TESTS += qt/test/test_ferrite-qt-fext
+endif
+
+TEST_QT_FEXT_MOC_CPP = \
+  qt/test/moc_fexthooktests.cpp
+
+TEST_QT_FEXT_H = \
+  qt/test/fexthooktests.h
+
+qt_test_test_ferrite_qt_fext_CPPFLAGS = $(qt_test_test_ferrite_qt_CPPFLAGS)
+qt_test_test_ferrite_qt_fext_SOURCES = \
+  qt/test/fext_test_main.cpp \
+  qt/test/fexthooktests.cpp \
+  $(TEST_QT_FEXT_H)
+nodist_qt_test_test_ferrite_qt_fext_SOURCES = $(TEST_QT_FEXT_MOC_CPP)
+qt_test_test_ferrite_qt_fext_LDADD = $(LIBFEXT_QT) $(qt_test_test_ferrite_qt_LDADD)
+qt_test_test_ferrite_qt_fext_LDFLAGS = $(qt_test_test_ferrite_qt_LDFLAGS)
+qt_test_test_ferrite_qt_fext_CXXFLAGS = $(qt_test_test_ferrite_qt_CXXFLAGS)
+
 CLEAN_FERRITE_QT_TEST = $(TEST_QT_MOC_CPP) qt/test/*.gcda qt/test/*.gcno
 
 CLEANFILES += $(CLEAN_FERRITE_QT_TEST)
+
+CLEANFILES += $(TEST_QT_FEXT_MOC_CPP)
 
 test_ferrite_qt : qt/test/test_ferrite-qt$(EXEEXT)
 

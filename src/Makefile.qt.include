@@ -346,6 +346,41 @@ ferrite_gui_LDADD = $(ferrite_qt_ldadd)
 ferrite_gui_LDFLAGS = $(ferrite_qt_ldflags)
 ferrite_gui_LIBTOOLFLAGS = $(ferrite_qt_libtoolflags)
 
+# ferrite-qt-fext: ferrite-qt with a FEXT tab #
+if BUILD_FEXT_GUI
+bin_PROGRAMS += qt/ferrite-qt-fext
+EXTRA_LIBRARIES += qt/libfext_qt.a
+endif
+
+BITCOIN_QT_FEXT_H = \
+  qt/fext/fextextension.h
+
+BITCOIN_QT_FEXT_CPP = \
+  qt/fext/fextextension.cpp
+
+QT_FEXT_QRC_CPP = qt/fext/qrc_fext.cpp
+QT_FEXT_QRC = qt/fext/fext.qrc
+
+BITCOIN_FEXT_RC = qt/res/ferrite-qt-fext-res.rc
+
+qt_libfext_qt_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BITCOIN_QT_INCLUDES) \
+  $(QT_INCLUDES) $(QT_DBUS_INCLUDES) $(QR_CFLAGS)
+qt_libfext_qt_a_CXXFLAGS = $(AM_CXXFLAGS) $(QT_PIE_FLAGS)
+qt_libfext_qt_a_SOURCES = $(BITCOIN_QT_FEXT_CPP) $(BITCOIN_QT_FEXT_H) $(QT_FEXT_QRC)
+nodist_qt_libfext_qt_a_SOURCES = $(QT_FEXT_QRC_CPP)
+
+$(qt_libfext_qt_a_OBJECTS) $(qt_ferrite_qt_fext_OBJECTS) : | $(QT_MOC)
+
+qt_ferrite_qt_fext_CPPFLAGS = $(ferrite_qt_cppflags)
+qt_ferrite_qt_fext_CXXFLAGS = $(ferrite_qt_cxxflags)
+qt_ferrite_qt_fext_SOURCES = qt/fext/main.cpp
+if TARGET_WINDOWS
+  qt_ferrite_qt_fext_SOURCES += $(BITCOIN_FEXT_RC)
+endif
+qt_ferrite_qt_fext_LDADD = qt/libfext_qt.a $(ferrite_qt_ldadd)
+qt_ferrite_qt_fext_LDFLAGS = $(ferrite_qt_ldflags)
+qt_ferrite_qt_fext_LIBTOOLFLAGS = $(ferrite_qt_libtoolflags)
+
 #locale/foo.ts -> locale/foo.qm
 QT_QM=$(QT_TS:.ts=.qm)
 
@@ -374,6 +409,16 @@ $(QT_QRC_CPP): $(QT_QRC) $(QT_FORMS_H) $(RES_ICONS) $(RES_ANIMATION)
 CLEAN_QT = $(nodist_qt_libbitcoinqt_a_SOURCES) $(QT_QM) $(QT_FORMS_H) qt/*.gcda qt/*.gcno qt/temp_bitcoin_locale.qrc
 
 CLEANFILES += $(CLEAN_QT)
+
+$(QT_FEXT_QRC_CPP): $(QT_FEXT_QRC)
+	@test -f $(RCC)
+	@$(MKDIR_P) $(@D)
+	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(RCC) -name fext $< | \
+	  $(SED) -e '/^\*\*.*Created:/d' -e '/^\*\*.*by:/d' > $@
+
+CLEAN_QT_FEXT = $(nodist_qt_libfext_qt_a_SOURCES) qt/fext/*.gcda qt/fext/*.gcno
+
+CLEANFILES += $(CLEAN_QT_FEXT)
 
 bitcoin_qt_clean: FORCE
 	rm -f $(CLEAN_QT) $(qt_libbitcoinqt_a_OBJECTS) $(qt_ferrite_qt_OBJECTS) qt/ferrite-qt$(EXEEXT) $(LIBBITCOINQT)
