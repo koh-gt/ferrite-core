@@ -195,6 +195,7 @@ BITCOIN_CORE_H = \
   interfaces/chain.h \
   interfaces/handler.h \
   interfaces/node.h \
+  interfaces/opreturn.h \
   interfaces/wallet.h \
   key.h \
   key_io.h \
@@ -230,6 +231,7 @@ BITCOIN_CORE_H = \
   opreturn/log.h \
   opreturn/names.h \
   opreturn/options.h \
+  opreturn/record.h \
   opreturn/script.h \
   optional.h \
   outputtype.h \
@@ -380,6 +382,7 @@ libbitcoin_server_a_SOURCES = \
   opreturn/format.cpp \
   opreturn/log.cpp \
   opreturn/options.cpp \
+  opreturn/record.cpp \
   opreturn/script.cpp \
   policy/fees.cpp \
   policy/rbf.cpp \

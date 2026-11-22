@@ -2,6 +2,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <interfaces/opreturn.h>
 #include <opreturn/log.h>
 #include <opreturn/names.h>
 #include <opreturn/options.h>
@@ -49,17 +50,20 @@ BOOST_AUTO_TEST_CASE(formats_fixed)
             BOOST_CHECK(at + 1 < text.size() && text[at + 1] == 's');
             ++directives;
         }
-        const size_t arguments = (format.a != LogArg::NONE ? 1 : 0) + (format.b != LogArg::NONE ? 1 : 0);
+        const size_t arguments = (format.a != LogArg::NONE ? 1 : 0) + (format.b != LogArg::NONE ? 1 : 0) +
+                                 (format.c != LogArg::NONE ? 1 : 0);
         BOOST_CHECK_EQUAL(directives, arguments);
+        BOOST_CHECK(arguments <= LOG_MAX_ARGUMENTS);
         BOOST_CHECK(format.a != LogArg::NONE || format.b == LogArg::NONE);
+        BOOST_CHECK(format.b != LogArg::NONE || format.c == LogArg::NONE);
 
         // The line is the record's prefix, a space and the text, and Log writes it once with its newline.
-        const std::string line = FormatLogLine(event, 2, 3);
+        const std::string line = FormatLogLine(event, 2, 3, 4);
         BOOST_CHECK(line.compare(0, std::string(LOG_PREFIX).size() + 1, std::string(LOG_PREFIX) + " ") == 0);
         BOOST_CHECK(line.find('\n') == std::string::npos);
         BOOST_CHECK(line.find('%') == std::string::npos);
         const LogLines lines;
-        Log(event, 2, 3);
+        Log(event, 2, 3, 4);
         const std::vector<std::string> written = lines.Containing(LOG_PREFIX);
         if (format.bench && !LogAcceptCategory(BCLog::BENCH)) {
             BOOST_CHECK(written.empty());
@@ -90,6 +94,24 @@ BOOST_AUTO_TEST_CASE(arguments_from_tables)
     BOOST_CHECK_EQUAL(FormatLogLine(LogEvent::STORED_CHOICE_IGNORED, int64_t(Option::MAX_SIZE)),
                       strprintf("%s the stored choice for %s is out of range and is ignored", LOG_PREFIX, OptionName(Option::MAX_SIZE)));
     BOOST_CHECK_EQUAL(FormatLogLine(LogEvent::OPTION_IGNORED, 99), strprintf("%s off, so ? is ignored", LOG_PREFIX));
+
+    // States and fail reasons by their names; a value that is none is "?".
+    const char* const states[]{"OFF", "OPENING", "RUNNING", "BACKFILLING", "PAUSED_LOW_DISK", "STOPPING", "STOPPED", "FAILED"};
+    for (uint8_t i = 0; i < STATE_COUNT; ++i) BOOST_CHECK_EQUAL(FormatLogArgument(LogArg::STATE, i), states[i]);
+    BOOST_CHECK_EQUAL(FormatLogArgument(LogArg::STATE, STATE_COUNT), "?");
+    BOOST_CHECK_EQUAL(FormatLogArgument(LogArg::STATE, -1), "?");
+    const char* const reasons[]{"NONE", "OPEN_FAILED", "NEWER_FORMAT", "OTHER_CHAIN", "WRITE_FAILED", "READ_FAILED", "INTERNAL"};
+    for (uint8_t i = 0; i < FAIL_REASON_COUNT; ++i) BOOST_CHECK_EQUAL(FormatLogArgument(LogArg::REASON, i), reasons[i]);
+    BOOST_CHECK_EQUAL(FormatLogArgument(LogArg::REASON, FAIL_REASON_COUNT), "?");
+    BOOST_CHECK_EQUAL(FormatLogArgument(LogArg::REASON, -1), "?");
+    BOOST_CHECK_EQUAL(FormatLogLine(LogEvent::STATE, int64_t(State::RUNNING)), strprintf("%s state RUNNING", LOG_PREFIX));
+    BOOST_CHECK_EQUAL(FormatLogLine(LogEvent::FAILED, int64_t(FailReason::WRITE_FAILED)), strprintf("%s state FAILED (WRITE_FAILED)", LOG_PREFIX));
+    // The line of a block written takes three numbers: the height, the rows and the microseconds.
+    BOOST_CHECK_EQUAL(FormatLogLine(LogEvent::BLOCK, 120, 3, 456), strprintf("%s block 120, 3 rows, 456 us", LOG_PREFIX));
+    BOOST_CHECK(GetLogEventFormat(LogEvent::BLOCK).bench);
+    BOOST_CHECK(GetLogEventFormat(LogEvent::CS_MAIN_HELD).bench);
+    BOOST_CHECK(!GetLogEventFormat(LogEvent::STATE).bench);
+    BOOST_CHECK(!GetLogEventFormat(LogEvent::FAILED).bench);
 }
 
 BOOST_AUTO_TEST_CASE(no_input_in_log)
