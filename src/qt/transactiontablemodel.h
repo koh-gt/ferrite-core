@@ -11,6 +11,7 @@
 #include <QStringList>
 
 #include <memory>
+#include <string>
 
 namespace interfaces {
 class Handler;
@@ -82,6 +83,14 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const override;
     bool processingQueuedTransactions() const { return fProcessingQueuedTransactions; }
+
+    /** The text shown for an OP_RETURN output instead of its address: "OP_RETURN data (N bytes)", N being the
+        size of its script; type and address are those of its row (TypeRole and AddressRole). In a row of an
+        output sent to or received with an address, or of a payment to oneself, the address is that of the
+        output or, for an output without one, the hex of its script, which for an OP_RETURN output starts with
+        6a, as no address does; other rows hold the transaction's "to" or "from" comment, or nothing. Returns an
+        empty string for any other row. */
+    static QString opReturnSummary(int type, const std::string& address);
 
 private:
     WalletModel *walletModel;

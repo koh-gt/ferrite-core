@@ -153,6 +153,10 @@ void WalletView::processNewTransaction(const QModelIndex& parent, int start, int
     QString type = ttm->index(start, TransactionTableModel::Type, parent).data().toString();
     QModelIndex index = ttm->index(start, 0, parent);
     QString address = ttm->data(index, TransactionTableModel::AddressRole).toString();
+    // Name an OP_RETURN output instead of showing its script as hex.
+    const int type_role = ttm->data(index, TransactionTableModel::TypeRole).toInt();
+    const QString op_return = TransactionTableModel::opReturnSummary(type_role, address.toStdString());
+    if (!op_return.isEmpty()) address = op_return;
     QString label = GUIUtil::HtmlEscape(ttm->data(index, TransactionTableModel::LabelRole).toString());
 
     Q_EMIT incomingTransaction(date, walletModel->getOptionsModel()->getDisplayUnit(), amount, type, address, label, GUIUtil::HtmlEscape(walletModel->getWalletName()));

@@ -356,6 +356,26 @@ QString TransactionTableModel::lookupAddress(const std::string &address, bool to
     return description;
 }
 
+QString TransactionTableModel::opReturnSummary(int type, const std::string& address)
+{
+    // Only these rows hold the encoding of an output's script (DestinationAddr
+    // ::Encode; a payment to oneself joins those of its outputs), which for an
+    // output without an address is the lowercase hex of its script, and an
+    // OP_RETURN script starts with the byte 0x6a. The other rows hold an
+    // address, the transaction's "to" or "from" comment, which may be any
+    // text, or nothing.
+    if (type != WalletTxRecord::SendToAddress && type != WalletTxRecord::RecvWithAddress &&
+        type != WalletTxRecord::SendToSelf) {
+        return QString();
+    }
+    const auto lower_hex = [](char c) { return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'); };
+    if (address.compare(0, 2, "6a") != 0 || address.size() % 2 != 0 ||
+        !std::all_of(address.begin(), address.end(), lower_hex)) {
+        return QString();
+    }
+    return tr("OP_RETURN data (%n byte(s))", "", static_cast<int>(address.size() / 2));
+}
+
 QString TransactionTableModel::formatTxType(const WalletTxRecord *wtx) const
 {
     switch(wtx->type)
@@ -399,6 +419,12 @@ QString TransactionTableModel::formatTxToAddress(const WalletTxRecord *wtx, bool
     if (tooltip) {
         // Mark transactions involving watch-only addresses by adding " (watch-only)"
         watchAddress = wtx->involvesWatchAddress ? QString(" (") + tr("watch-only") + QString(")") : "";
+    }
+
+    // Name an OP_RETURN output instead of showing its script as hex.
+    const QString op_return = opReturnSummary(wtx->type, wtx->address);
+    if (!op_return.isEmpty()) {
+        return op_return + watchAddress;
     }
 
     switch(wtx->type)

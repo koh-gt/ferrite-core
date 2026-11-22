@@ -4068,6 +4068,13 @@ Note:  Since the fee is calculated on a per-byte basis, a fee of &quot;100 satos
         <source>Generated but not accepted</source>
         <translation type="unfinished"></translation>
     </message>
+    <message numerus="yes">
+        <source>OP_RETURN data (%n byte(s))</source>
+        <translation>
+            <numerusform>OP_RETURN data (%n byte)</numerusform>
+            <numerusform>OP_RETURN data (%n bytes)</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+39"/>
         <source>Received with</source>
