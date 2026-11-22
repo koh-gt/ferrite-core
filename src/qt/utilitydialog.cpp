@@ -10,6 +10,7 @@
 
 #include <qt/forms/ui_helpmessagedialog.h>
 
+#include <qt/guiextension.h>
 #include <qt/guiutil.h>
 
 #include <clientversion.h>
@@ -59,6 +60,7 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, bool about) :
     } else {
         setWindowTitle(tr("Command-line options"));
         QString header = "Usage:  ferrite-qt [command-line options]                     \n";
+        if (g_gui_extension) header = g_gui_extension->usageHeader(header);
         QTextCursor cursor(ui->helpMessage->document());
         cursor.insertText(version);
         cursor.insertBlock();

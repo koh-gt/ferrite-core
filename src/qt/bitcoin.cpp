@@ -12,6 +12,7 @@
 #include <chainparams.h>
 #include <qt/clientmodel.h>
 #include <qt/guiconstants.h>
+#include <qt/guiextension.h>
 #include <qt/guiutil.h>
 #include <qt/intro.h>
 #include <qt/networkstyle.h>
@@ -619,6 +620,7 @@ int GuiMain(int argc, char* argv[])
         // This is acceptable because this function only contains steps that are quick to execute,
         // so the GUI thread won't be held up.
         if (app.baseInitialize()) {
+            if (g_gui_extension) g_gui_extension->attachNode(node_context);
             app.requestInitialize();
 #if defined(Q_OS_WIN)
             WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("%1 didn't yet exit safely...").arg(PACKAGE_NAME), (HWND)app.getMainWinId());

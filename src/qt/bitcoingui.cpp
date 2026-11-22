@@ -8,6 +8,7 @@
 #include <qt/clientmodel.h>
 #include <qt/createwalletdialog.h>
 #include <qt/guiconstants.h>
+#include <qt/guiextension.h>
 #include <qt/guiutil.h>
 #include <qt/modaloverlay.h>
 #include <qt/networkstyle.h>
@@ -101,7 +102,7 @@ BitcoinGUI::BitcoinGUI(interfaces::Node& node, const PlatformStyle *_platformSty
     {
         /** Create wallet frame and make it the central widget */
         walletFrame = new WalletFrame(_platformStyle, this);
-        setCentralWidget(walletFrame);
+        setCentralWidget(g_gui_extension ? g_gui_extension->wrapCentralWidget(*this, *walletFrame) : walletFrame);
     } else
 #endif // ENABLE_WALLET
     {
@@ -276,6 +277,7 @@ void BitcoinGUI::createActions()
     historyAction->setCheckable(true);
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(historyAction);
+    if (g_gui_extension) g_gui_extension->addTabActions(*this, *tabGroup);
 
 #ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
@@ -550,6 +552,7 @@ void BitcoinGUI::createToolBars()
         toolbar->addAction(sendCoinsAction);
         toolbar->addAction(receiveCoinsAction);
         toolbar->addAction(historyAction);
+        if (g_gui_extension) g_gui_extension->addToolBarActions(*this, *toolbar);
         overviewAction->setChecked(true);
 
 #ifdef ENABLE_WALLET
@@ -1337,6 +1340,7 @@ void BitcoinGUI::updateWindowTitle()
     if (!m_network_style->getTitleAddText().isEmpty()) {
         window_title += " - " + m_network_style->getTitleAddText();
     }
+    if (g_gui_extension) window_title = g_gui_extension->windowTitle(window_title);
     setWindowTitle(window_title);
 }
 

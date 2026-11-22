@@ -8,8 +8,10 @@
 #include <key.h>
 #include <qt/bitcoin.h>
 #include <qt/bitcoingui.h>
+#include <qt/guiextension.h>
 #include <qt/networkstyle.h>
 #include <qt/rpcconsole.h>
+#include <qt/utilitydialog.h>
 #include <shutdown.h>
 #include <test/util/setup_common.h>
 #include <univalue.h>
@@ -19,12 +21,19 @@
 #include <config/bitcoin-config.h>
 #endif
 
+#ifdef ENABLE_WALLET
+#include <qt/walletframe.h>
+#endif
+
 #include <QAction>
+#include <QActionGroup>
 #include <QEventLoop>
 #include <QLineEdit>
 #include <QScopedPointer>
 #include <QTest>
 #include <QTextEdit>
+#include <QToolBar>
+#include <QWidgetAction>
 #include <QtGlobal>
 #include <QtTest/QtTestWidgets>
 #include <QtTest/QtTestGui>
@@ -95,6 +104,35 @@ void AppTests::appTests()
 void AppTests::guiTests(BitcoinGUI* window)
 {
     HandleCallback callback{"guiTests", *this};
+
+    // No GUI extension is set, so the window is the plain one: the four tab
+    // actions in their exclusive group, the same four on the toolbar, the wallet
+    // frame as the central widget, the plain title and the plain usage line.
+    QVERIFY(g_gui_extension == nullptr);
+    const QList<QActionGroup*> groups = window->findChildren<QActionGroup*>();
+    QCOMPARE(groups.size(), 1);
+    QVERIFY(groups[0]->isExclusive());
+    QStringList tabs;
+    for (const QAction* tab : groups[0]->actions()) tabs << tab->text();
+    QCOMPARE(tabs, (QStringList{"&Overview", "&Send", "&Receive", "&Transactions"}));
+#ifdef ENABLE_WALLET
+    const QToolBar* toolbar = window->findChild<QToolBar*>();
+    QVERIFY(toolbar);
+    QList<QAction*> buttons;
+    for (QAction* button : toolbar->actions()) {
+        if (!qobject_cast<QWidgetAction*>(button)) buttons << button;
+    }
+    QCOMPARE(buttons, groups[0]->actions());
+    QVERIFY(qobject_cast<WalletFrame*>(window->centralWidget()));
+#else
+    QVERIFY(qobject_cast<RPCConsole*>(window->centralWidget()));
+#endif
+    QScopedPointer<const NetworkStyle> style(NetworkStyle::instantiate(Params().NetworkIDString()));
+    QCOMPARE(window->windowTitle(), QString{PACKAGE_NAME} + " - " + style->getTitleAddText());
+    const HelpMessageDialog* help = window->findChild<HelpMessageDialog*>();
+    QVERIFY(help);
+    QVERIFY(help->findChild<QTextEdit*>("helpMessage")->toPlainText().contains("\nUsage:  ferrite-qt [command-line options] "));
+
     connect(window, &BitcoinGUI::consoleShown, this, &AppTests::consoleTests);
     expectCallback("consoleTests");
     QAction* action = window->findChild<QAction*>("openRPCConsoleAction");

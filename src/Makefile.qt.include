@@ -123,6 +123,7 @@ BITCOIN_QT_H = \
   qt/csvmodelwriter.h \
   qt/editaddressdialog.h \
   qt/guiconstants.h \
+  qt/guiextension.h \
   qt/guiutil.h \
   qt/intro.h \
   qt/macdockiconhandler.h \
@@ -225,6 +226,7 @@ BITCOIN_QT_BASE_CPP = \
   qt/bitcoinunits.cpp \
   qt/clientmodel.cpp \
   qt/csvmodelwriter.cpp \
+  qt/guiextension.cpp \
   qt/guiutil.cpp \
   qt/intro.cpp \
   qt/modaloverlay.cpp \

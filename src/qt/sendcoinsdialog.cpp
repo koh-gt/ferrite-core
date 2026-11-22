@@ -13,6 +13,7 @@
 #include <qt/bitcoinunits.h>
 #include <qt/clientmodel.h>
 #include <qt/coincontroldialog.h>
+#include <qt/guiextension.h>
 #include <qt/guiutil.h>
 #include <qt/optionsmodel.h>
 #include <qt/platformstyle.h>
@@ -65,6 +66,7 @@ SendCoinsDialog::SendCoinsDialog(const PlatformStyle *_platformStyle, QWidget *p
     platformStyle(_platformStyle)
 {
     ui->setupUi(this);
+    if (g_gui_extension) g_gui_extension->extendSendPage(*this, *ui->verticalLayout, ui->verticalLayout->indexOf(ui->frameFee));
 
     if (!_platformStyle->getImagesOnButtons()) {
         ui->addButton->setIcon(QIcon());
@@ -300,7 +302,7 @@ bool SendCoinsDialog::PrepareSendText(QString& question_string, QString& informa
 
     updateCoinControlState(*m_coin_control);
 
-    prepareStatus = model->prepareTransaction(*m_current_transaction, *m_coin_control);
+    prepareStatus = g_gui_extension ? g_gui_extension->prepareSend(*this, *model, *m_current_transaction, *m_coin_control) : model->prepareTransaction(*m_current_transaction, *m_coin_control);
 
     // process prepareStatus and on error generate message shown to user
     processSendCoinsReturn(prepareStatus,
@@ -408,6 +410,7 @@ bool SendCoinsDialog::PrepareSendText(QString& question_string, QString& informa
         question_string = question_string.arg("<br /><br />" + formatted.at(0));
     }
 
+    if (g_gui_extension) g_gui_extension->describeSend(*this, *m_current_transaction, question_string, informative_text, detailed_text);
     return true;
 }
 
@@ -504,6 +507,7 @@ void SendCoinsDialog::on_sendButton_clicked()
 
 void SendCoinsDialog::clear()
 {
+    if (g_gui_extension) g_gui_extension->clearSendPage(*this);
     m_current_transaction.reset();
 
     // Clear coin control settings
