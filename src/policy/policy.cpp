@@ -290,6 +290,7 @@ bool IsWitnessStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
 
         // Check policy limits for P2MR spends (BIP 360), as for Taproot script path spends:
         // - No annexes
+        // - No spends at depth zero
         // - MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE limit for stack item size in tapscript leaves
         if (witnessversion == 2 && witnessprogram.size() == WITNESS_V2_P2MR_SIZE && !p2sh) {
             auto stack = MakeSpan(tx.vin[i].scriptWitness.stack);
@@ -302,6 +303,10 @@ bool IsWitnessStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs)
             const auto& control_block = SpanPopBack(stack);
             SpanPopBack(stack); // Ignore script
             if (control_block.empty()) return false; // Empty control block is invalid
+            // A control block of one byte spends a tree whose only leaf is its root (depth zero). Such a spend
+            // succeeds without running the leaf, and BIP 360 keeps it for a later soft fork, so it is nonstandard
+            // whatever its leaf version, like the other forms kept for upgrades. Blocks may still contain it.
+            if (control_block.size() == P2MR_CONTROL_BASE_SIZE) return false;
             if ((control_block[0] & TAPROOT_LEAF_MASK) == TAPROOT_LEAF_TAPSCRIPT) {
                 for (const auto& item : stack) {
                     if (item.size() > MAX_STANDARD_TAPSCRIPT_STACK_ITEM_SIZE) return false;

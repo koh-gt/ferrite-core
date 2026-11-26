@@ -16,7 +16,8 @@ The test checks:
 - spends that follow the rules: a leaf with a key and OP_CHECKSIG (also as the only witness
   spend of a block), a hash lock, a tree whose only leaf is its root, other leaf versions at
   depth one and at depth zero, and a spend with an annex; each one in a block on node 0 and in
-  the mempool of each node, with the result the policy of that node gives;
+  the mempool of each node, with the result the policy of that node gives (a spend at depth
+  zero is valid in blocks and not relayed, like the other forms kept for later upgrades);
 - every way a spend can break the rules, refused in block proposals and through submitblock on
   node 0, and refused in the mempool of every node with its own reason;
 - 120 random witnesses, chosen with a fixed seed, whose block proposals on node 0 give what an
@@ -391,9 +392,14 @@ class P2MRTest(BitcoinTestFramework):
             self.spend(self.tree_utxos.pop(), [PREIMAGE, tree["hash"].script, tree["hash"].control_block]),
             self.spend(self.root_utxos.pop(), [root.script, root.control_block]),
         ]
-        for tx in spends:
+        for tx in spends[:2]:
             # Relayed where the rules apply and where standardness is not required; not standard elsewhere.
             assert_equal(self.mempool_results(tx), [None, None, not_standard])
+        # A spend at depth zero (a control block of one byte, leaf version 0xc0) is valid, but BIP 360 keeps such
+        # spends for a later soft fork: it is not standard where the rules apply. The node that skips standardness
+        # accepts it.
+        assert_equal(len(root.control_block), 1)
+        assert_equal(self.mempool_results(spends[2]), ["bad-witness-nonstandard", None, not_standard])
         # A block whose only spend with a witness is a P2MR spend that checks a signature.
         block = self.mine([spends[0]])
         assert_equal(len(block.vtx), 2)
@@ -411,8 +417,9 @@ class P2MRTest(BitcoinTestFramework):
             self.spend(self.root_other_utxos.pop(), [root_other.script, root_other.control_block]),
         ]
         assert_equal((len(other_leaf.control_block), len(root_other.control_block)), (33, 1))
-        for tx in other:
-            assert_equal(self.mempool_results(tx), [reason(LEAF_VERSION_DISCOURAGED)] * 2 + [not_standard])
+        assert_equal(self.mempool_results(other[0]), [reason(LEAF_VERSION_DISCOURAGED)] * 2 + [not_standard])
+        # At depth zero the witness check of node 0 refuses the spend before its script flags are applied.
+        assert_equal(self.mempool_results(other[1]), ["bad-witness-nonstandard", reason(LEAF_VERSION_DISCOURAGED), not_standard])
         self.mine(other)
 
         self.log.info("An annex is valid in blocks and not standard")
@@ -429,7 +436,7 @@ class P2MRTest(BitcoinTestFramework):
         leaf = tree["large hash"]
         large = [
             self.spend(self.tree_utxos.pop(), [LARGE_PREIMAGE, leaf.script, leaf.control_block]),
-            # The leaf at depth zero is not run, but the limit is the same.
+            # At depth zero (not standard in any case) the leaf is not run.
             self.spend(self.root_utxos.pop(), [bytes(81), root.script, root.control_block]),
         ]
         for tx in large:
@@ -466,10 +473,10 @@ class P2MRTest(BitcoinTestFramework):
             (CONTROL_SIZE, None, self.tree_utxos, [true_leaf.script, deep]),
             (CONTROL_PARITY, None, self.tree_utxos, [true_leaf.script, cleared]),
             (CONTROL_PARITY, "bad-witness-nonstandard", self.tree_utxos, [true_leaf.script, cleared, b"\x50"]),
-            (CONTROL_PARITY, None, self.root_utxos, [root.script, b"\xc0"]),
+            (CONTROL_PARITY, "bad-witness-nonstandard", self.root_utxos, [root.script, b"\xc0"]),
             (MISMATCH, None, self.tree_utxos, [tree["key"].script, true_leaf.control_block]),
             (MISMATCH, None, self.tree_utxos, [true_leaf.script, true_leaf.control_block[:-1] + bytes([true_leaf.control_block[-1] ^ 1])]),
-            (MISMATCH, None, self.root_utxos, [CScript([OP_TRUE]), root.control_block]),
+            (MISMATCH, "bad-witness-nonstandard", self.root_utxos, [CScript([OP_TRUE]), root.control_block]),
             (SCHNORR_SIG, None, self.tree_utxos, wrong_signature),
             (EVAL_FALSE, None, self.tree_utxos, [tree["false"].script, tree["false"].control_block]),
             (CLEANSTACK, None, self.tree_utxos, [b"\x01", true_leaf.script, true_leaf.control_block]),

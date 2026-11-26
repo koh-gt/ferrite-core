@@ -521,7 +521,8 @@ VectorCounts CheckConstructionVectors(const unsigned char* data, size_t size, co
             BOOST_CHECK_MESSAGE(!IsCommitmentError(consensus), strprintf("%s: \"%s\" with block flags", leaf_name, ScriptErrorString(consensus)));
             BOOST_CHECK_MESSAGE(!IsCommitmentError(policy), strprintf("%s: \"%s\" with relay flags", leaf_name, ScriptErrorString(policy)));
             if (leaf.depth == 0) {
-                // A leaf at depth zero is not run. The vectors have such leaves with leaf version 0xc0 only.
+                // A leaf at depth zero is not run. The vectors have such leaves with leaf version 0xc0 only. The spend
+                // is valid under the relay flags too: relay refuses it in IsWitnessStandard, not in the interpreter.
                 BOOST_CHECK_MESSAGE(leaf.version == LEAF_TAPSCRIPT, leaf_name + ": depth-zero leaf with another leaf version");
                 CheckError(consensus, SCRIPT_ERR_OK, leaf_name + " at depth zero (block flags)");
                 CheckError(policy, SCRIPT_ERR_OK, leaf_name + " at depth zero (relay flags)");
@@ -1234,8 +1235,8 @@ BOOST_AUTO_TEST_CASE(type_and_policy)
     }
 
     // The witness of a spend is standard within the limits of a Taproot script path spend: no annex, and in a leaf
-    // with leaf version 0xc0 no element of the initial stack larger than 80 bytes, at any depth. A leaf with another
-    // leaf version has no size limit here; the script flags of relay refuse it.
+    // with leaf version 0xc0 no element of the initial stack larger than 80 bytes. A leaf with another leaf version
+    // has no size limit here; the script flags of relay refuse it. A spend at depth zero is not standard at all.
     const auto witness_standard = [&](const CScript& spent_script, const std::vector<valtype>& witness, const CScript& script_sig = CScript()) {
         CMutableTransaction tx(spending({spent_script}));
         tx.vin[0].scriptSig = script_sig;
@@ -1252,16 +1253,27 @@ BOOST_AUTO_TEST_CASE(type_and_policy)
     BOOST_CHECK(!witness_standard(p2mr, {item_80, item_81, op_true, control}));
     BOOST_CHECK(witness_standard(p2mr, {item_81, op_true, control_other_version}));
     BOOST_CHECK(witness_standard(p2mr, {op_true, valtype(1000, 0x51), control}));
-    // At depth zero the leaf is not run, but the limit is the same.
-    BOOST_CHECK(witness_standard(p2mr, {item_80, op_true, valtype{0xc1}}));
+    // At depth zero (a control block of one byte) the spend succeeds without running the leaf; BIP 360 keeps such
+    // spends for a later soft fork, so none is standard, whatever the leaf version and the stack. They stay valid in
+    // blocks (see the depth-zero cases above, under block flags).
+    BOOST_CHECK(!witness_standard(p2mr, {op_true, valtype{0xc1}}));
+    BOOST_CHECK(!witness_standard(p2mr, {item_80, op_true, valtype{0xc1}}));
     BOOST_CHECK(!witness_standard(p2mr, {item_81, op_true, valtype{0xc1}}));
-    BOOST_CHECK(witness_standard(p2mr, {item_81, op_true, valtype{0xc3}}));
+    BOOST_CHECK(!witness_standard(p2mr, {op_true, valtype{0xc3}}));
+    BOOST_CHECK(!witness_standard(p2mr, {item_81, op_true, valtype{0xc3}}));
+    // The same stack with a control block of 33 bytes (depth 1) is standard.
+    BOOST_CHECK(witness_standard(p2mr, {item_80, op_true, ControlBlock(LEAF_TAPSCRIPT, Siblings(1))}));
     // An annex, with or without other elements.
     BOOST_CHECK(!witness_standard(p2mr, {op_true, control, valtype{0x50}}));
     BOOST_CHECK(!witness_standard(p2mr, {op_true, control, valtype{0x50, 0x01}}));
     BOOST_CHECK(!witness_standard(p2mr, {op_true, control_other_version, valtype{0x50}}));
     BOOST_CHECK(!witness_standard(p2mr, {op_true, valtype{0x50}}));
-    BOOST_CHECK(witness_standard(p2mr, {op_true, control, valtype{0x51}}));
+    // A last element that does not start with 0x50 is not an annex but the control block: of one byte it is depth
+    // zero, of 33 bytes depth 1 (leaf version 0x50, which the script flags of relay refuse).
+    BOOST_CHECK(!witness_standard(p2mr, {op_true, control, valtype{0x51}}));
+    valtype control_51{control};
+    control_51[0] = 0x51;
+    BOOST_CHECK(witness_standard(p2mr, {op_true, control, control_51}));
     // Witnesses that are invalid by consensus: fewer than two elements, an empty control block.
     BOOST_CHECK(!witness_standard(p2mr, {op_true}));
     BOOST_CHECK(!witness_standard(p2mr, {valtype{0x50}}));
