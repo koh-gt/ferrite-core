@@ -581,6 +581,9 @@ public:
      * >0 : is a coinbase transaction which matures in this many blocks
      */
     int GetBlocksToMaturity() const;
+    //! For a coinbase transaction, the number of confirmations after which its outputs are mature in this wallet.
+    //! Requires pwallet->cs_wallet, checked at run time, as for GetDepthInMainChain (see the note there).
+    int GetCoinbaseMaturityConfirmations() const NO_THREAD_SAFETY_ANALYSIS;
     bool isAbandoned() const { return m_confirm.status == CWalletTx::ABANDONED; }
     void setAbandoned()
     {

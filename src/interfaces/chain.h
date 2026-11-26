@@ -222,6 +222,10 @@ public:
     //! Check whether the P2MR rules (BIP 360) apply to the block after the current tip.
     virtual bool isP2MRActiveForNextBlock() = 0;
 
+    //! Height of the first block on the active chain to which coinbase maturity 100 applies, considering the
+    //! blocks up to and including the one after the tip; COINBASE_MATURITY_NOT_ACTIVE if none.
+    virtual int getCoinbaseMaturityActivationHeight() = 0;
+
     //! Check if shutdown requested.
     virtual bool shutdownRequested() = 0;
 
