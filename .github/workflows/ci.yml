@@ -73,7 +73,7 @@ jobs:
             "wallet_import_rescan.py --legacy-wallet" wallet_inactive_hdchains.py
 
   gui:
-    name: Linux GUI build (ferrite-qt)
+    name: Linux GUI build and tests (ferrite-qt)
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
@@ -92,7 +92,7 @@ jobs:
           restore-keys: ccache-gui-
 
       - name: Configure
-        run: ./autogen.sh && ./configure --with-incompatible-bdb --with-gui=qt5 --disable-tests --disable-bench
+        run: ./autogen.sh && ./configure --with-incompatible-bdb --with-gui=qt5 --enable-tests --disable-bench
 
       - name: Build
         run: make -j"$(nproc)"
@@ -101,3 +101,10 @@ jobs:
         run: |
           src/ferrited -version | head -n1
           test -x src/qt/ferrite-qt
+
+      - name: GUI tests
+        # test_ferrite-qt needs no display: it picks Qt's minimal platform itself. It takes seconds; the limit ends
+        # a run that waits on a modal error box (for example when the node of AppTests cannot bind its port), which
+        # does not stop on SIGTERM.
+        run: src/qt/test/test_ferrite-qt
+        timeout-minutes: 10
