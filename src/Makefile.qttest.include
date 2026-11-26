@@ -70,4 +70,4 @@ test_ferrite_qt_check : qt/test/test_ferrite-qt$(EXEEXT) FORCE
 	$(MAKE) check-TESTS TESTS=$^
 
 test_ferrite_qt_clean: FORCE
-	rm -f $(CLEAN_ferrite_QT_TEST) $(qt_test_test_ferrite_qt_OBJECTS)
+	rm -f $(CLEAN_FERRITE_QT_TEST) $(qt_test_test_ferrite_qt_OBJECTS)
