@@ -21,6 +21,12 @@
  */
 static constexpr int64_t MAX_FUTURE_BLOCK_TIME = 2 * 60 * 60;
 
+/** Once the timewarp deployment is active, a block's timestamp must be at least TIMEWARP_MIN_SPAN seconds after the
+ *  timestamp of the block TIMEWARP_SPAN_DEPTH below it, so the rule tightens the block timestamps the difficulty
+ *  calculation uses. */
+static constexpr int TIMEWARP_SPAN_DEPTH = 23;
+static constexpr int64_t TIMEWARP_MIN_SPAN = 480;
+
 /**
  * Timestamp window used as a grace period by code that compares external
  * timestamps (such as timestamps passed to RPCs, or wallet key creation times)

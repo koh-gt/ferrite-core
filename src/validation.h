@@ -332,6 +332,8 @@ bool IsTimewarpEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& p
 int CoinbaseMaturityActivationHeight(const CBlockIndex* pindexPrev, const Consensus::Params& params) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
 /** CoinbaseMaturityActivationHeight for the block that a coins view's spends would go into (as GetSpendHeight). */
 int GetSpendCoinbaseMaturityActivationHeight(const CCoinsViewCache& inputs) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+/** The earliest time the consensus rules allow for the block after pindexPrev. */
+int64_t GetMinimumBlockTime(const CBlockIndex* pindexPrev, const Consensus::Params& params);
 
 /** Update uncommitted block structures (currently: only the witness reserved value). This is safe for submitted blocks. */
 void UpdateUncommittedBlockStructures(CBlock& block, const CBlockIndex* pindexPrev, const Consensus::Params& consensusParams);

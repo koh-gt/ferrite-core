@@ -3668,6 +3668,17 @@ int GetSpendCoinbaseMaturityActivationHeight(const CCoinsViewCache& inputs)
     return CoinbaseMaturityActivationHeight(pindexPrev, Params().GetConsensus());
 }
 
+int64_t GetMinimumBlockTime(const CBlockIndex* pindexPrev, const Consensus::Params& params)
+{
+    assert(pindexPrev != nullptr);
+    const int64_t min_time = pindexPrev->GetMedianTimePast() + 1;
+    const int height = pindexPrev->nHeight + 1;
+    if (height <= TIMEWARP_SPAN_DEPTH || !IsTimewarpEnabled(pindexPrev, params)) return min_time;
+    const CBlockIndex* window_start = pindexPrev->GetAncestor(height - TIMEWARP_SPAN_DEPTH);
+    assert(window_start != nullptr);
+    return std::max(min_time, window_start->GetBlockTime() + TIMEWARP_MIN_SPAN);
+}
+
 void UpdateUncommittedBlockStructures(CBlock& block, const CBlockIndex* pindexPrev, const Consensus::Params& consensusParams)
 {
     int commitpos = GetWitnessCommitmentIndex(block);
@@ -3759,6 +3770,11 @@ static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidatio
     // Check timestamp against prev
     if (block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
         return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "time-too-old", "block's timestamp is too early");
+
+    // Once the timewarp deployment is active, check the timestamp against the block TIMEWARP_SPAN_DEPTH below. Nodes
+    // without this rule accept such a block, so its sender is not punished.
+    if (block.GetBlockTime() < GetMinimumBlockTime(pindexPrev, consensusParams))
+        return state.Invalid(BlockValidationResult::BLOCK_RECENT_CONSENSUS_CHANGE, "time-timewarp-span", "block's timestamp is less than 480 seconds after the block 23 below it");
 
     // Check timestamp
     if (block.GetBlockTime() > nAdjustedTime + MAX_FUTURE_BLOCK_TIME)

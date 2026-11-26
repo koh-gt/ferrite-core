@@ -284,6 +284,7 @@ BITCOIN_TESTS =\
   test/system_tests.cpp \
   test/util_threadnames_tests.cpp \
   test/timedata_tests.cpp \
+  test/timewarp_tests.cpp \
   test/torcontrol_tests.cpp \
   test/transaction_tests.cpp \
   test/txindex_tests.cpp \

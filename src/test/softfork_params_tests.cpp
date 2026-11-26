@@ -332,6 +332,19 @@ BOOST_AUTO_TEST_CASE(constants)
     BOOST_CHECK_EQUAL(COINBASE_MATURITY, 10);
     BOOST_CHECK_EQUAL(COINBASE_MATURITY_EXTENDED, 100);
     BOOST_CHECK_EQUAL(PEGOUT_MATURITY, 6);
+
+    // Block time rules. The future limit of two hours is unchanged. The floor, 480 seconds after the block 23 below,
+    // is a third of 24 target spacings on every network, so the rule tightens the block timestamps the difficulty
+    // calculation uses.
+    BOOST_CHECK_EQUAL(MAX_FUTURE_BLOCK_TIME, 7200);
+    BOOST_CHECK_EQUAL(TIMESTAMP_WINDOW, MAX_FUTURE_BLOCK_TIME);
+    BOOST_CHECK_EQUAL(TIMEWARP_SPAN_DEPTH, 23);
+    BOOST_CHECK_EQUAL(TIMEWARP_MIN_SPAN, 480);
+    for (const std::string& network : {CBaseChainParams::MAIN, CBaseChainParams::TESTNET, CBaseChainParams::REGTEST}) {
+        ArgsManager args;
+        const auto params = CreateChainParams(args, network);
+        BOOST_CHECK_MESSAGE(TIMEWARP_MIN_SPAN == (TIMEWARP_SPAN_DEPTH + 1) * params->GetConsensus().nPowTargetSpacing / 3, network);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
