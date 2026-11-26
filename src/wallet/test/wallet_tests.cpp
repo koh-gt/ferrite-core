@@ -4,12 +4,16 @@
 
 #include <wallet/wallet.h>
 
+#include <algorithm>
 #include <future>
 #include <memory>
 #include <stdint.h>
 #include <vector>
 
+#include <chainparams.h>
+#include <consensus/consensus.h>
 #include <interfaces/chain.h>
+#include <interfaces/wallet.h>
 #include <node/context.h>
 #include <policy/policy.h>
 #include <rpc/server.h>
@@ -339,6 +343,61 @@ BOOST_FIXTURE_TEST_CASE(coin_mark_dirty_immature_credit, TestChain100Setup)
     wtx.MarkDirty();
     BOOST_CHECK(spk_man->AddKeyPubKey(coinbaseKey, coinbaseKey.GetPubKey()));
     BOOST_CHECK_EQUAL(wtx.GetImmatureCredit(), 50*COIN);
+}
+
+/** Regtest on which the coinbasematurity deployment applies to every block, so that every coinbase needs 100 blocks. */
+struct CoinbaseMaturityTestingSetup : public TestingSetup {
+    CoinbaseMaturityTestingSetup() : TestingSetup{CBaseChainParams::REGTEST, {"-vbparams=coinbasematurity:-1:0"}} {}
+};
+
+/** A coinbase in a wallet is mature after maturity_confirmations confirmations: GetCoinbaseMaturityConfirmations,
+ *  GetBlocksToMaturity and IsImmature at every depth up to 120, and the figures the GUI shows (WalletTxStatus). A
+ *  coinbase that is not in the active chain counts as created in the next block. */
+static void CheckWalletCoinbaseMaturity(interfaces::Chain& chain, int maturity_confirmations)
+{
+    const auto wallet = std::make_shared<CWallet>(&chain, "", CreateDummyWalletDatabase());
+    const auto wallet_interface = interfaces::MakeWallet(wallet);
+    CMutableTransaction coinbase;
+    coinbase.vin.resize(1);
+    coinbase.vout.emplace_back(50 * COIN, CScript() << OP_TRUE);
+    BOOST_REQUIRE(CTransaction(coinbase).IsCoinBase());
+    const uint256 genesis = Params().GenesisBlock().GetHash();
+    LOCK(wallet->cs_wallet);
+    CWalletTx* wtx = wallet->AddToWallet(MakeTransactionRef(coinbase), boost::none, {CWalletTx::Status::CONFIRMED, 0, genesis, 0});
+    BOOST_REQUIRE(wtx);
+    const auto check = [&](int depth) {
+        BOOST_CHECK_EQUAL(wtx->GetDepthInMainChain(), depth);
+        BOOST_CHECK_EQUAL(wtx->GetCoinbaseMaturityConfirmations(), maturity_confirmations);
+        BOOST_CHECK_EQUAL(wtx->GetBlocksToMaturity(), std::max(0, maturity_confirmations - depth));
+        BOOST_CHECK_EQUAL(wtx->IsImmature(), depth < maturity_confirmations);
+        interfaces::WalletTxStatus status;
+        interfaces::WalletOrderForm order_form;
+        bool in_mempool;
+        int num_blocks;
+        wallet_interface->getWalletTxDetails(wtx->GetHash(), status, order_form, in_mempool, num_blocks);
+        BOOST_CHECK_EQUAL(status.coinbase_maturity_confirmations, maturity_confirmations);
+        BOOST_CHECK_EQUAL(status.blocks_to_maturity, std::max(0, maturity_confirmations - depth));
+    };
+    // Created in the block at height 0; the wallet's last block is depth - 1.
+    for (int depth = 1; depth <= 120; ++depth) {
+        wallet->SetLastBlockProcessed(depth - 1, genesis);
+        check(depth);
+    }
+    wtx->setUnconfirmed();
+    check(0);
+}
+
+BOOST_FIXTURE_TEST_CASE(coinbase_maturity_without_rule, RegTestingSetup)
+{
+    // The coinbasematurity deployment does not apply (the regtest default): mature after 11 confirmations, one
+    // more than the 10 blocks after which the node accepts a spend.
+    CheckWalletCoinbaseMaturity(*m_node.chain, COINBASE_MATURITY + 1);
+}
+
+BOOST_FIXTURE_TEST_CASE(coinbase_maturity_with_rule, CoinbaseMaturityTestingSetup)
+{
+    // The deployment applies from height 0: mature after 101 confirmations.
+    CheckWalletCoinbaseMaturity(*m_node.chain, COINBASE_MATURITY_EXTENDED + 1);
 }
 
 static int64_t AddTx(ChainstateManager& chainman, CWallet& wallet, uint32_t lockTime, int64_t mockTime, int64_t blockTime)

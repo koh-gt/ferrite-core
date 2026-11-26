@@ -5,6 +5,7 @@
 #include <chain.h>
 #include <chainparams.h>
 #include <chainparamsbase.h>
+#include <consensus/consensus.h>
 #include <consensus/params.h>
 #include <policy/policy.h>
 #include <script/interpreter.h>
@@ -325,6 +326,12 @@ BOOST_AUTO_TEST_CASE(constants)
     BOOST_CHECK_EQUAL(WITNESS_V2_P2MR_SIZE, 32U);
     BOOST_CHECK_EQUAL(P2MR_CONTROL_BASE_SIZE, 1U);
     BOOST_CHECK_EQUAL(P2MR_CONTROL_MAX_SIZE, 4097U);
+
+    // Coinbase maturity: 10 blocks, and 100 for coinbase outputs created once the coinbasematurity deployment is
+    // active. Peg-out outputs of MWEB keep their own maturity.
+    BOOST_CHECK_EQUAL(COINBASE_MATURITY, 10);
+    BOOST_CHECK_EQUAL(COINBASE_MATURITY_EXTENDED, 100);
+    BOOST_CHECK_EQUAL(PEGOUT_MATURITY, 6);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
