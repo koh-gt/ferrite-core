@@ -214,6 +214,8 @@ BASE_SCRIPTS = [
     'rpc_createmultisig.py --descriptors',
     'feature_versionbits_warning.py',
     'feature_p2mr_activation.py',
+    'feature_lockin_delay.py',
+    'feature_lockin_delay_args.py',
     'feature_p2mr.py',
     'wallet_p2mr.py --legacy-wallet',
     'wallet_p2mr.py --descriptors',

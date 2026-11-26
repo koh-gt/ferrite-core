@@ -71,6 +71,7 @@ jobs:
             p2p_send_buffer_timeout.py p2p_timedata.py \
             rpc_misc.py rpc_psbt_prevout_index.py rpc_signrawtransaction_taproot.py \
             feature_p2mr.py feature_p2mr_activation.py "wallet_p2mr.py --legacy-wallet" feature_taproot.py \
+            feature_lockin_delay.py feature_lockin_delay_args.py \
             "wallet_import_rescan.py --legacy-wallet" wallet_inactive_hdchains.py
 
   gui:
