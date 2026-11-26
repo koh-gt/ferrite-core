@@ -21,10 +21,12 @@ namespace Consensus {
 /**
  * Check whether all inputs of this transaction are valid (no double spends and amounts)
  * This does not modify the UTXO set. This does not check scripts and sigs.
+ * @param[in] coinbase_maturity_activation_height  Activation height of the coinbasematurity deployment on the chain
+ *            of the spend (COINBASE_MATURITY_NOT_ACTIVE if it does not apply), as given to GetCoinbaseMaturity.
  * @param[out] txfee Set to the transaction fee if successful.
  * Preconditions: tx.IsCoinBase() is false.
  */
-bool CheckTxInputs(const CTransaction& tx, TxValidationState& state, const CCoinsViewCache& inputs, int nSpendHeight, CAmount& txfee);
+bool CheckTxInputs(const CTransaction& tx, TxValidationState& state, const CCoinsViewCache& inputs, int nSpendHeight, int coinbase_maturity_activation_height, CAmount& txfee);
 } // namespace Consensus
 
 /** Auxiliary functions for transaction validation (ideally should not be exposed) */

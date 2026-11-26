@@ -327,6 +327,12 @@ bool IsP2MREnabled(const CBlockIndex* pindexPrev, const Consensus::Params& param
 /** Check whether the block time rules (the timewarp deployment) apply to the block after pindexPrev. */
 bool IsTimewarpEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& params);
 
+/** Height of the first block on the chain of pindexPrev to which the coinbasematurity deployment applies, considering the
+ *  blocks up to and including the one after pindexPrev; COINBASE_MATURITY_NOT_ACTIVE if it does not apply to that block. */
+int CoinbaseMaturityActivationHeight(const CBlockIndex* pindexPrev, const Consensus::Params& params) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+/** CoinbaseMaturityActivationHeight for the block that a coins view's spends would go into (as GetSpendHeight). */
+int GetSpendCoinbaseMaturityActivationHeight(const CCoinsViewCache& inputs) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+
 /** Update uncommitted block structures (currently: only the witness reserved value). This is safe for submitted blocks. */
 void UpdateUncommittedBlockStructures(CBlock& block, const CBlockIndex* pindexPrev, const Consensus::Params& consensusParams);
 

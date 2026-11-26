@@ -239,11 +239,13 @@ void test_one_input(const std::vector<uint8_t>& buffer)
             const CTransaction transaction{random_mutable_transaction};
             if (ContainsSpentInput(transaction, coins_view_cache)) {
                 // Avoid:
-                // consensus/tx_verify.cpp:171: bool Consensus::CheckTxInputs(const CTransaction &, TxValidationState &, const CCoinsViewCache &, int, CAmount &): Assertion `!coin.IsSpent()' failed.
+                // consensus/tx_verify.cpp:171: bool Consensus::CheckTxInputs(const CTransaction &, TxValidationState &, const CCoinsViewCache &, int, int, CAmount &): Assertion `!coin.IsSpent()' failed.
                 break;
             }
+            const int spend_height = fuzzed_data_provider.ConsumeIntegralInRange<int>(0, std::numeric_limits<int>::max());
+            const int coinbase_maturity_activation_height = fuzzed_data_provider.ConsumeIntegral<int>();
             try {
-                (void)Consensus::CheckTxInputs(transaction, state, coins_view_cache, fuzzed_data_provider.ConsumeIntegralInRange<int>(0, std::numeric_limits<int>::max()), tx_fee_out);
+                (void)Consensus::CheckTxInputs(transaction, state, coins_view_cache, spend_height, coinbase_maturity_activation_height, tx_fee_out);
                 assert(MoneyRange(tx_fee_out));
             } catch (const std::runtime_error&) {
             }

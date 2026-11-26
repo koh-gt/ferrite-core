@@ -410,7 +410,9 @@ static void UpdateMempoolForReorg(CTxMemPool& mempool, DisconnectedBlockTransact
     mempool.UpdateTransactionsFromBlock(vHashUpdate);
 
     // We also need to remove any now-immature transactions
-    mempool.removeForReorg(&::ChainstateActive().CoinsTip(), ::ChainActive().Tip()->nHeight + 1, STANDARD_LOCKTIME_VERIFY_FLAGS);
+    mempool.removeForReorg(&::ChainstateActive().CoinsTip(), ::ChainActive().Tip()->nHeight + 1,
+                           CoinbaseMaturityActivationHeight(::ChainActive().Tip(), ::Params().GetConsensus()),
+                           STANDARD_LOCKTIME_VERIFY_FLAGS);
     // Re-limit mempool size, in case we added any transactions
     LimitMempoolSize(mempool, gArgs.GetArg("-maxmempool", DEFAULT_MAX_MEMPOOL_SIZE) * 1000000, std::chrono::hours{gArgs.GetArg("-mempoolexpiry", DEFAULT_MEMPOOL_EXPIRY)});
 }
@@ -720,7 +722,7 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
         return state.Invalid(TxValidationResult::TX_PREMATURE_SPEND, "non-BIP68-final");
 
     CAmount nFees = 0;
-    if (!Consensus::CheckTxInputs(tx, state, m_view, GetSpendHeight(m_view), nFees)) {
+    if (!Consensus::CheckTxInputs(tx, state, m_view, GetSpendHeight(m_view), GetSpendCoinbaseMaturityActivationHeight(m_view), nFees)) {
         return false; // state filled in by CheckTxInputs
     }
 
@@ -747,7 +749,7 @@ bool MemPoolAccept::PreChecks(ATMPArgs& args, Workspace& ws)
     m_pool.ApplyDelta(hash, nModifiedFees);
 
     // Keep track of transactions that spend a coinbase, which we re-scan
-    // during reorgs to ensure COINBASE_MATURITY is still met.
+    // during reorgs to ensure coinbase maturity is still met.
     bool fSpendsCoinbase = false;
     for (const CTxIn &txin : tx.vin) {
         const Coin &coin = m_view.AccessCoin(txin.prevout);
@@ -2197,6 +2199,9 @@ bool CChainState::ConnectBlock(const CBlock& block, BlockValidationState& state,
     // Get the script flags for this block
     unsigned int flags = GetBlockScriptFlags(pindex, chainparams.GetConsensus());
 
+    // Coinbase outputs created from this height on need the extended maturity
+    const int coinbase_maturity_activation_height = CoinbaseMaturityActivationHeight(pindex->pprev, chainparams.GetConsensus());
+
     int64_t nTime2 = GetTimeMicros(); nTimeForks += nTime2 - nTime1;
     LogPrint(BCLog::BENCH, "    - Fork checks: %.2fms [%.2fs (%.2fms/blk)]\n", MILLI * (nTime2 - nTime1), nTimeForks * MICRO, nTimeForks * MILLI / nBlocksTotal);
 
@@ -2225,7 +2230,7 @@ bool CChainState::ConnectBlock(const CBlock& block, BlockValidationState& state,
         {
             CAmount txfee = 0;
             TxValidationState tx_state;
-            if (!Consensus::CheckTxInputs(tx, tx_state, view, pindex->nHeight, txfee)) {
+            if (!Consensus::CheckTxInputs(tx, tx_state, view, pindex->nHeight, coinbase_maturity_activation_height, txfee)) {
                 // Any transaction validation failure in ConnectBlock is a block consensus failure
                 state.Invalid(BlockValidationResult::BLOCK_CONSENSUS,
                             tx_state.GetRejectReason(), tx_state.GetDebugMessage());
@@ -3627,6 +3632,40 @@ bool IsTimewarpEnabled(const CBlockIndex* pindexPrev, const Consensus::Params& p
 {
     LOCK(cs_main);
     return (VersionBitsState(pindexPrev, params, Consensus::DEPLOYMENT_TIMEWARP, versionbitscache) == ThresholdState::ACTIVE);
+}
+
+int CoinbaseMaturityActivationHeight(const CBlockIndex* pindexPrev, const Consensus::Params& params)
+{
+    AssertLockHeld(cs_main);
+    const Consensus::DeploymentPos pos = Consensus::DEPLOYMENT_COINBASE_MATURITY;
+    // The "since" height of a deployment is 0 for DEFINED and NEVER_ACTIVE as well, so the state is checked first.
+    if (VersionBitsState(pindexPrev, params, pos, versionbitscache) != ThresholdState::ACTIVE) {
+        return COINBASE_MATURITY_NOT_ACTIVE;
+    }
+    if (params.vDeployments[pos].nStartTime == Consensus::BIP9Deployment::ALWAYS_ACTIVE) return 0;
+    // The state is the same for every block of a window and ACTIVE is final, so the first active window can be
+    // found by bisection over the windows up to the one of the block after pindexPrev, which is active.
+    const int period = params.nMinerConfirmationWindow;
+    int low = 0;
+    int high = (pindexPrev->nHeight + 1) / period;
+    while (low < high) {
+        const int mid = low + (high - low) / 2;
+        // The state of the window starting at mid * period is that of the block after its predecessor.
+        const CBlockIndex* window_prev = pindexPrev->GetAncestor(mid * period - 1);
+        if (VersionBitsState(window_prev, params, pos, versionbitscache) == ThresholdState::ACTIVE) {
+            high = mid;
+        } else {
+            low = mid + 1;
+        }
+    }
+    return low * period;
+}
+
+int GetSpendCoinbaseMaturityActivationHeight(const CCoinsViewCache& inputs)
+{
+    AssertLockHeld(cs_main);
+    const CBlockIndex* pindexPrev = LookupBlockIndex(inputs.GetBestBlock());
+    return CoinbaseMaturityActivationHeight(pindexPrev, Params().GetConsensus());
 }
 
 void UpdateUncommittedBlockStructures(CBlock& block, const CBlockIndex* pindexPrev, const Consensus::Params& consensusParams)
