@@ -20,6 +20,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <boost/test/unit_test.hpp>
@@ -41,6 +42,7 @@ void CheckDeployment(const Consensus::BIP9Deployment& got, const Consensus::BIP9
     BOOST_CHECK_MESSAGE(got.nTimeout == expected.nTimeout, strprintf("%s: nTimeout %d, expected %d", context, got.nTimeout, expected.nTimeout));
     BOOST_CHECK_MESSAGE(got.nStartHeight == expected.nStartHeight, strprintf("%s: nStartHeight %d, expected %d", context, got.nStartHeight, expected.nStartHeight));
     BOOST_CHECK_MESSAGE(got.nTimeoutHeight == expected.nTimeoutHeight, strprintf("%s: nTimeoutHeight %d, expected %d", context, got.nTimeoutHeight, expected.nTimeoutHeight));
+    BOOST_CHECK_MESSAGE(got.nLockedInPeriods == expected.nLockedInPeriods, strprintf("%s: nLockedInPeriods %d, expected %d", context, got.nLockedInPeriods, expected.nLockedInPeriods));
 }
 
 /** The deployments of p2mr, coinbasematurity and timewarp, with the bit each one signals on every network. */
@@ -159,6 +161,8 @@ BOOST_AUTO_TEST_CASE(mainnet)
         expected.bit = deployment.bit;
         expected.nStartHeight = start_heights[i];
         expected.nTimeoutHeight = 99999999;
+        // Locked in for 504 windows (20,160 blocks, two weeks of 60-second blocks) before the rules apply.
+        expected.nLockedInPeriods = 504;
         CheckDeployment(consensus.vDeployments[deployment.pos], expected, "mainnet " + deployment.name);
 
         // The name used by getblockchaininfo, getblocktemplate and -vbparams; getblocktemplate sets the bit for
@@ -166,6 +170,45 @@ BOOST_AUTO_TEST_CASE(mainnet)
         BOOST_CHECK_EQUAL(VersionBitsDeploymentInfo[deployment.pos].name, deployment.name);
         BOOST_CHECK(VersionBitsDeploymentInfo[deployment.pos].gbt_force);
     }
+}
+
+BOOST_AUTO_TEST_CASE(locked_in_periods)
+{
+    // Only the three deployments on mainnet stay locked in for more than one window; every other deployment on
+    // every network keeps the single locked-in window that the released nodes use.
+    for (const auto& network : {CBaseChainParams::MAIN, CBaseChainParams::TESTNET, CBaseChainParams::REGTEST}) {
+        ArgsManager args;
+        const auto params = CreateChainParams(args, network);
+        for (int i = 0; i < (int)Consensus::MAX_VERSION_BITS_DEPLOYMENTS; ++i) {
+            const auto pos = static_cast<Consensus::DeploymentPos>(i);
+            const bool delayed = network == CBaseChainParams::MAIN &&
+                                 (pos == Consensus::DEPLOYMENT_P2MR || pos == Consensus::DEPLOYMENT_COINBASE_MATURITY || pos == Consensus::DEPLOYMENT_TIMEWARP);
+            BOOST_CHECK_MESSAGE(params->GetConsensus().vDeployments[i].nLockedInPeriods == (delayed ? 504 : 1),
+                                strprintf("%s %s: nLockedInPeriods %d", network, VersionBitsDeploymentInfo[i].name, params->GetConsensus().vDeployments[i].nLockedInPeriods));
+        }
+    }
+
+    // -vbparams takes the number of locked-in windows as an optional sixth field, for that deployment only.
+    const auto defaults = RegtestParams("");
+    const std::vector<std::pair<std::string, int>> forms{
+        {"p2mr:0:0:144:99999999", 1}, {"p2mr:0:0:144:99999999:1", 1}, {"p2mr:0:0:144:99999999:3", 3},
+        {"p2mr:0:0:144:99999999:504", 504}, {"p2mr:0:0:144:99999999:2147483647", 2147483647}};
+    for (const auto& form : forms) {
+        const std::string& arg = form.first;
+        const int expected = form.second;
+        const auto params = RegtestParams(arg);
+        for (int j = 0; j < (int)Consensus::MAX_VERSION_BITS_DEPLOYMENTS; ++j) {
+            const int want = j == Consensus::DEPLOYMENT_P2MR ? expected : defaults->GetConsensus().vDeployments[j].nLockedInPeriods;
+            BOOST_CHECK_MESSAGE(params->GetConsensus().vDeployments[j].nLockedInPeriods == want,
+                                strprintf("-vbparams=%s, deployment %s", arg, VersionBitsDeploymentInfo[j].name));
+        }
+    }
+    for (const std::string& field : {"0", "-1", "x", "", "1.5", " 2", "2147483648"}) {
+        BOOST_CHECK_EXCEPTION(RegtestParams("p2mr:0:0:144:99999999:" + field), std::runtime_error,
+                              HasReason(strprintf("Invalid nLockedInPeriods (%s), expecting a whole number of at least 1", field)));
+    }
+    BOOST_CHECK_EXCEPTION(RegtestParams("p2mr:0:0:144:99999999:3:1"), std::runtime_error,
+                          HasReason("Version bits parameters malformed, expecting deployment:start:end[:heightstart:heightend[:lockedinperiods]]"));
 }
 
 BOOST_AUTO_TEST_CASE(testnet_starts)

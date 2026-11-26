@@ -82,7 +82,18 @@ ThresholdState AbstractThresholdConditionChecker::GetStateFor(const CBlockIndex*
                 break;
             }
             case ThresholdState::LOCKED_IN: {
-                stateNext = ThresholdState::ACTIVE;
+                // Active once locked in for nLockedInPeriods whole periods, i.e. when the period that many periods
+                // back was locked in already (the states of a branch only move forward, so the periods between were
+                // locked in too). Its entry is in the cache unless that period begins before the start: every later
+                // entry of this branch was stored by a walk like this one. Before the start, GetStateFor stores
+                // DEFINED at once. Either way the result does not depend on what the cache held.
+                const int nLockedInPeriods = LockedInPeriods(params);
+                assert(nLockedInPeriods >= 1);
+                const int64_t nHeightLockedIn = pindexPrev->nHeight - int64_t{nLockedInPeriods} * nPeriod;
+                const CBlockIndex* pindexLockedIn = nHeightLockedIn < 0 ? nullptr : pindexPrev->GetAncestor(static_cast<int>(nHeightLockedIn));
+                if (GetStateFor(pindexLockedIn, params, cache) == ThresholdState::LOCKED_IN) {
+                    stateNext = ThresholdState::ACTIVE;
+                }
                 break;
             }
             case ThresholdState::FAILED:
@@ -177,6 +188,7 @@ protected:
     int64_t EndHeight(const Consensus::Params& params) const override { return params.vDeployments[id].nTimeoutHeight; }
     int Period(const Consensus::Params& params) const override { return params.nMinerConfirmationWindow; }
     int Threshold(const Consensus::Params& params) const override { return params.nRuleChangeActivationThreshold; }
+    int LockedInPeriods(const Consensus::Params& params) const override { return params.vDeployments[id].nLockedInPeriods; }
 
     bool Condition(const CBlockIndex* pindex, const Consensus::Params& params) const override
     {

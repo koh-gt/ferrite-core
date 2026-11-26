@@ -39,6 +39,9 @@ struct BIP9Deployment {
     int64_t nStartHeight = 0;
     /** Timeout/expiry block height for the deployment attempt. Should be a retarget block. */
     int64_t nTimeoutHeight = 0;
+    /** Number of consecutive retarget periods the deployment stays locked in before its rules apply. 1 is the
+     *  BIP 9 behaviour (active from the period after the one that is locked in); at least 1. */
+    int nLockedInPeriods = 1;
 
     /** Constant for nTimeout very far in the future. */
     static constexpr int64_t NO_TIMEOUT = std::numeric_limits<int64_t>::max();

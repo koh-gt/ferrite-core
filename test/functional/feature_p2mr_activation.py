@@ -238,7 +238,8 @@ class P2MRActivationTest(BitcoinTestFramework):
         self.sync_blocks()
         assert_equal(self.deployment(), {
             'type': 'bip8',
-            'bip8': {'status': 'locked_in', 'start_height': START_HEIGHT, 'timeout_height': TIMEOUT_HEIGHT, 'since': START_HEIGHT + 2 * WINDOW},
+            'bip8': {'status': 'locked_in', 'start_height': START_HEIGHT, 'timeout_height': TIMEOUT_HEIGHT, 'since': START_HEIGHT + 2 * WINDOW,
+                     'activation_height': ACTIVATION_HEIGHT},
             'active': False,
         })
         tmpl = self.template()
