@@ -1348,6 +1348,19 @@ void CWallet::transactionRemovedFromMempool(const CTransactionRef& tx, MemPoolRe
     }
 }
 
+// The entry for the spend of one of the wallet's MWEB coins by a transaction that the wallet does not have.
+// It uses the output ID of the coin as its hash. So does the entry for the receipt of a coin that the wallet
+// found in a block without the transaction that created it; where the wallet has that entry, the spend gets a
+// hash of its own. Under the same hash it would not be added, and the coin would be shown as unspent.
+static MWEB::WalletTxInfo SpendOfMWEBCoin(const CWallet& wallet, const mw::Hash& spent_id) EXCLUSIVE_LOCKS_REQUIRED(wallet.cs_wallet)
+{
+    const auto it = wallet.mapWallet.find(uint256(spent_id.vec()));
+    if (it != wallet.mapWallet.end() && it->second.IsPartialMWEB() && it->second.mweb_wtx_info->received_coin) {
+        return MWEB::WalletTxInfo::SpendWithOwnHash(spent_id);
+    }
+    return MWEB::WalletTxInfo(spent_id);
+}
+
 void CWallet::blockConnected(const CBlock& block, int height)
 {
     const uint256& block_hash = block.GetHash();
@@ -1366,9 +1379,15 @@ void CWallet::blockConnected(const CBlock& block, int height)
             if (GetCoin(spent_id, coin) && coin.IsMine() && !IsSpent(spent_id)) {
                 AddToWallet(
                     MakeTransactionRef(),
-                    boost::make_optional<MWEB::WalletTxInfo>(spent_id),
+                    boost::make_optional(SpendOfMWEBCoin(*this, spent_id)),
                     {CWalletTx::Status::CONFIRMED, height, block_hash, 0}
                 );
+
+                // The coin no longer counts in the balances of the entry that received it.
+                CWalletTx* prev = FindPrevTx(spent_id);
+                if (prev != nullptr) {
+                    prev->MarkDirty();
+                }
             }
         }
 
@@ -2199,7 +2218,7 @@ CWallet::ScanResult CWallet::ScanForWalletTransactions(const uint256& start_bloc
                         } else {
                             AddToWallet(
                                 MakeTransactionRef(),
-                                boost::make_optional<MWEB::WalletTxInfo>(spent_id),
+                                boost::make_optional(SpendOfMWEBCoin(*this, spent_id)),
                                 {CWalletTx::Status::CONFIRMED, block_height, block_hash, 0},
                                 nullptr,
                                 false
@@ -3267,6 +3286,10 @@ DBErrors CWallet::ZapSelectTx(std::vector<uint256>& vHashIn, std::vector<uint256
     DBErrors nZapSelectTxRet = WalletBatch(*database).ZapSelectTx(vHashIn, vHashOut);
     for (const uint256& hash : vHashOut) {
         const auto& it = mapWallet.find(hash);
+        // A record that did not load has no entry, and two records under one key give the hash twice.
+        if (it == mapWallet.end()) {
+            continue;
+        }
         wtxOrdered.erase(it->second.m_it_wtxOrdered);
         for (const auto& txin : it->second.GetInputs())
             mapTxSpends.erase(txin.GetIndex());

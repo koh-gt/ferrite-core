@@ -81,20 +81,35 @@ depends-sources.sh
 Fetches every depends source for the Linux, Windows and macOS builds from its own host
 and collects the files that the depends source mirror (`MIRROR_DOWNLOAD_PATH`, see
 [depends/README.md](../../depends/README.md)) does not have yet, each named by its SHA-256
-hash, then prints the command that uploads them. Run it whenever a depends package is
-added or its version changes:
+hash, then prints the command that uploads them:
 
 ```bash
-contrib/devtools/depends-sources.sh /tmp/depends-sources
+contrib/devtools/depends-sources.sh ../depends-sources
 ```
 
-The release has to exist before the first upload. Create it as a pre-release, so that it
-is never shown as the latest Ferrite Core release:
+`--upload` uploads those files itself, with the GitHub CLI (`gh`) signed in to an account
+that may edit the repository's releases. If the `depends-sources` release does not exist
+yet, it is created first, as a pre-release, so that it is never shown as the latest
+Ferrite Core release. `--verify` reads every file back from the mirror and checks its
+hash; the script names each file that is missing or does not match, and fails.
 
 ```bash
-gh release create depends-sources --repo koh-gt/ferrite-core --prerelease \
-    --title "depends sources" --notes "Source files for depends, each named by its SHA-256 hash."
+contrib/devtools/depends-sources.sh --upload --verify ../depends-sources
 ```
+
+Every hash is the one that the depends recipe pins, not the hash of the file at hand. A
+file in the output directory that does not match its pinned hash is named and is never
+uploaded. A file that could not be fetched, because no host serves it any more, is read
+back from the mirror: if the mirror has it, the script only warns, since depends takes
+the file from there; it fails if the mirror lacks the file too. Whenever the download
+failed, the script ends by running `make download` once more, this time with the mirror.
+That run has to pass, and it puts the files that only the mirror has into the output
+directory as well.
+
+The "Depends sources" workflow (`.github/workflows/depends-sources.yml`) runs this
+command on GitHub whenever a depends recipe changes on `ferrite-main` or a `fec-v*`
+branch, and when it is started by hand from the Actions tab for one of those branches.
+Run the script yourself only when the workflow cannot run.
 
 gen-manpages.sh
 ===============

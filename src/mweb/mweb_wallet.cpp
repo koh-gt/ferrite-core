@@ -1,9 +1,18 @@
 #include <mweb/mweb_wallet.h>
+#include <hash.h>
 #include <wallet/wallet.h>
 #include <wallet/coincontrol.h>
 #include <util/bip32.h>
 
 using namespace MWEB;
+
+WalletTxInfo WalletTxInfo::SpendWithOwnHash(const mw::Hash& spent)
+{
+    WalletTxInfo info(spent);
+    // The tag must never change: the hash is the key of the entry in the wallet file.
+    info.hash = (TaggedHash("Ferrite MWEB spent output") << spent).GetSHA256();
+    return info;
+}
 
 bool Wallet::UpgradeCoins()
 {

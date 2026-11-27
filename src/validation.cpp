@@ -1325,7 +1325,8 @@ void CChainState::InitCoinsDB(
         leveldb_name, cache_size_bytes, in_memory, should_wipe);
 
     CBlock block;
-    CBlockIndex* pindex = LookupBlockIndex(CoinsDB().GetBestBlock());
+    // Node start-up already holds cs_main here; test setups do not.
+    CBlockIndex* pindex = WITH_LOCK(::cs_main, return LookupBlockIndex(CoinsDB().GetBestBlock()));
     if (pindex != nullptr) {
         if (!ReadBlockFromDisk(block, pindex, Params().GetConsensus())) {
             // MW: TODO - Throw? return error("AppInitMain(): ReadBlockFromDisk() failed at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash().ToString());

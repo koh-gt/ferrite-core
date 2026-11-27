@@ -2,6 +2,7 @@
 
 #include <consensus/tx_check.h>
 #include <consensus/validation.h>
+#include <mweb/mweb_policy.h>
 #include <policy/policy.h>
 #include <util/check.h>
 #include <util/fees.h>
@@ -9,6 +10,23 @@
 #include <util/translation.h>
 #include <wallet/fees.h>
 #include <wallet/reserve.h>
+
+#include <algorithm>
+
+static size_t CountMWEBCoins(const std::set<CInputCoin>& coins)
+{
+    return std::count_if(coins.cbegin(), coins.cend(), [](const CInputCoin& coin) { return coin.IsMWEB(); });
+}
+
+// Nodes do not relay a transaction with more MWEB inputs than MWEB::MAX_STANDARD_MWEB_TX_INPUTS, so the wallet
+// does not create one: it would stay in the wallet unsent, and the wallet would count its inputs as spent.
+static bilingual_str TooManyMWEBInputsError()
+{
+    return strprintf(
+        _("Transaction would have more than %u MWEB inputs, the most that nodes relay. Send a smaller amount, or first combine coins by sending part of the balance to an MWEB address of this wallet."),
+        MWEB::MAX_STANDARD_MWEB_TX_INPUTS
+    );
+}
 
 Optional<AssembledTx> TxAssembler::AssembleTx(
     const std::vector<CRecipient>& recipients,
@@ -132,6 +150,10 @@ void TxAssembler::CreateTransaction_Locked(
         // Choose coins to use
         if (pick_new_inputs) {
             if (!AttemptCoinSelection(new_tx, amount_needed)) {
+                if (new_tx.mweb_input_limit_hit) {
+                    // Coins that pay the amount were found, but only with more MWEB inputs than the limit.
+                    throw CreateTxError(TooManyMWEBInputsError());
+                }
                 throw CreateTxError(_("Insufficient funds"));
             }
 
@@ -211,6 +233,11 @@ void TxAssembler::CreateTransaction_Locked(
     // Give up if change keypool ran out and change is required
     if (new_tx.change_addr.IsEmpty() && new_tx.change_position != -1) {
         throw CreateTxError(_("Transaction needs a change address, but we can't generate it. Please call keypoolrefill first."));
+    }
+
+    // SelectCoins() keeps to the limit. This makes sure of it at the place where the inputs become final.
+    if (CountMWEBCoins(new_tx.selected_coins) > MWEB::MAX_STANDARD_MWEB_TX_INPUTS) {
+        throw CreateTxError(TooManyMWEBInputsError());
     }
 
     AddTxInputs(new_tx);
@@ -459,6 +486,32 @@ bool TxAssembler::AttemptCoinSelection(InProcessTx& new_tx, const CAmount& nTarg
 
 bool TxAssembler::SelectCoins(InProcessTx& new_tx, const CAmount& nTargetValue, CoinSelectionParams& coin_selection_params) const
 {
+    if (!SelectAvailableCoins(new_tx, nTargetValue, coin_selection_params)) {
+        return false;
+    }
+
+    if (CountMWEBCoins(new_tx.selected_coins) <= MWEB::MAX_STANDARD_MWEB_TX_INPUTS) {
+        return true;
+    }
+
+    // Nodes would not relay a transaction with these inputs. If some inputs were chosen by hand, the choice is
+    // not altered and the selection fails. Otherwise select again with only the largest MWEB coins available, as
+    // many as a transaction may spend: whatever is selected from those is within the limit. The smaller MWEB coins
+    // stay unavailable for the rest of this assembly. A selection that was within the limit is never affected.
+    const bool first_time = !new_tx.mweb_input_limit_hit;
+    new_tx.mweb_input_limit_hit = true;
+    new_tx.selected_coins.clear();
+    new_tx.value_selected = 0;
+    if (!first_time || new_tx.coin_control.HasSelected()) {
+        return false;
+    }
+
+    KeepLargestMWEBCoins(new_tx);
+    return SelectAvailableCoins(new_tx, nTargetValue, coin_selection_params);
+}
+
+bool TxAssembler::SelectAvailableCoins(InProcessTx& new_tx, const CAmount& nTargetValue, CoinSelectionParams& coin_selection_params) const
+{
     new_tx.value_selected = 0;
     if (m_wallet.SelectCoins(new_tx.available_coins, nTargetValue, new_tx.selected_coins, new_tx.value_selected, new_tx.coin_control, coin_selection_params, new_tx.bnb_used)) {
         return true;
@@ -471,6 +524,36 @@ bool TxAssembler::SelectCoins(InProcessTx& new_tx, const CAmount& nTargetValue, 
     }
 
     return false;
+}
+
+void TxAssembler::KeepLargestMWEBCoins(InProcessTx& new_tx) const
+{
+    std::vector<COutputCoin>& coins = new_tx.available_coins;
+
+    // The positions of the MWEB coins, the largest amount first.
+    std::vector<size_t> mweb_coins;
+    for (size_t i = 0; i < coins.size(); i++) {
+        if (coins[i].IsMWEB()) {
+            mweb_coins.push_back(i);
+        }
+    }
+    std::stable_sort(mweb_coins.begin(), mweb_coins.end(), [&coins](size_t a, size_t b) {
+        return coins[a].GetValue() > coins[b].GetValue();
+    });
+
+    std::vector<bool> remove(coins.size(), false);
+    for (size_t n = MWEB::MAX_STANDARD_MWEB_TX_INPUTS; n < mweb_coins.size(); n++) {
+        remove[mweb_coins[n]] = true;
+    }
+
+    std::vector<COutputCoin> kept;
+    kept.reserve(coins.size());
+    for (size_t i = 0; i < coins.size(); i++) {
+        if (!remove[i]) {
+            kept.push_back(coins[i]);
+        }
+    }
+    coins = std::move(kept);
 }
 
 // Return a height-based locktime for new transactions
