@@ -1,0 +1,6 @@
+// Known-bad sample of check 15 of test/lint/lint-fext-safety.sh: the functor form of invokeMethod.
+QMetaObject::invokeMethod(object, [this] { update(); }, Qt::QueuedConnection);
+QMetaObject::invokeMethod(object, &Object::update, Qt::QueuedConnection);
+QMetaObject::invokeMethod (object, [this] { update(); });
+QMetaObject::invokeMethod(object,
+                          [this] { update(); });

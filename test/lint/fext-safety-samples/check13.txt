@@ -1,0 +1,5 @@
+// Known-bad sample of check 13 of test/lint/lint-fext-safety.sh: translation and class names.
+QString text = QObject::tr("text");
+QString text = QCoreApplication::translate("context", "text");
+QString text = QObject::tr ("text");
+class Dialog : public QDialog { Q_OBJECT

@@ -1,2 +1,32 @@
-Known-bad sample of check 9 of test/lint/lint-fext-safety.sh: a wallet call.
-wallet->commitTransaction(tx, {}, {});
+// Known-bad sample of check 9 of test/lint/lint-fext-safety.sh: wallet calls.
+wallet->sendCoins();
+wallet->commitTransaction();
+wallet->lockCoin();
+wallet->unlockCoin();
+wallet->setAddressBook();
+wallet->delAddressBook();
+wallet->signMessage();
+wallet->encryptWallet();
+wallet->changeWalletPassphrase();
+wallet->backupWallet();
+wallet->abandonTransaction();
+wallet->createBumpTransaction();
+wallet->signBumpTransaction();
+wallet->commitBumpTransaction();
+wallet->rebroadcastTransaction();
+wallet->getNewDestination();
+wallet->reserveNewDestination();
+wallet->fillPSBT();
+wallet->addDestData();
+wallet->eraseDestData();
+wallet->executeRpc();
+wallet->RPCConsole();
+wallet->setAddress();
+wallet->pasteEntry();
+wallet->handleURIOrFile();
+wallet->receivedURI();
+model->setWalletLocked(false, passphrase);
+wallet->unlock(passphrase);
+wallet->unlock ( passphrase);
+wallet->unlock(
+    passphrase);

@@ -1,0 +1,19 @@
+// Known-bad sample of check 1 of test/lint/lint-fext-safety.sh: rich text.
+QTextBrowser* browser = new QTextBrowser(this);
+QTextEdit* edit = new QTextEdit(this);
+label->setTextFormat(Qt::RichText);
+label->setTextFormat(Qt::AutoText);
+label->setTextFormat(Qt::MarkdownText);
+view->setHtml(text);
+view->appendHtml(text);
+cursor.insertHtml(text);
+QTextDocumentFragment fragment = QTextDocumentFragment::fromHtml(text);
+QString html = document->toHtml();
+view->setMarkdown(text);
+view->setHtml (text);
+view->setHtml
+    (text);
+  <widget class="QTextBrowser" name="browser"/>
+  <widget class="QTextEdit" name="edit"/>
+   <property name="html">
+   <property name="markdown">

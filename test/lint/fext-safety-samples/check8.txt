@@ -1,2 +1,9 @@
-Known-bad sample of check 8 of test/lint/lint-fext-safety.sh: logging outside the log file.
+// Known-bad sample of check 8 of test/lint/lint-fext-safety.sh: logging outside the log file.
 LogPrintf("a line\n");
+LogPrint(BCLog::QT, "a line\n");
+qDebug() << text;
+qWarning() << text;
+qInfo() << text;
+qCritical() << text;
+std::cout << text;
+std::cerr << text;

@@ -1,0 +1,7 @@
+// Known-bad sample of check 4 of test/lint/lint-fext-safety.sh: opening URLs.
+QDesktopServices::setUrlHandler(scheme, receiver, method);
+browser->openUrl(url);
+QUrl url = QUrl::fromUserInput(text);
+PaymentServer* server = nullptr;
+connect(gui, &BitcoinGUI::receivedURI, this, &Page::open);
+server->handleURIOrFile(text);

@@ -1,2 +1,9 @@
-Known-bad sample of check 10 of test/lint/lint-fext-safety.sh: a regular expression library.
+// Known-bad sample of check 10 of test/lint/lint-fext-safety.sh: regular expressions and thread pools.
 #include <regex>
+std::regex pattern(text);
+QRegExp pattern(text);
+QRegularExpression pattern(text);
+QtConcurrent::run(work);
+QFuture<void> future;
+QThreadPool::globalInstance()->start(task);
+# include <regex>

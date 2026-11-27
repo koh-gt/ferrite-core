@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <widget class="QWidget" name="Known-bad sample of check 2 of test/lint/lint-fext-safety.sh: labels in a form">
+  <layout class="QVBoxLayout" name="layout">
+   <item>
+    <widget class="QLabel" name="noFormat">
+     <property name="text">
+      <string>A label without a text format</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="richFormat">
+     <property name="textFormat">
+      <enum>Qt::RichText</enum>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::LinksAccessibleByMouse</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+</ui>

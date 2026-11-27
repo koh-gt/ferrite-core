@@ -1,0 +1,26 @@
+// Known-bad sample of check 12 of test/lint/lint-fext-safety.sh: text in tooltips, titles and status lines.
+widget->setToolTip(text);
+widget->setStatusTip(text);
+widget->setWhatsThis(text);
+window->setWindowTitle(name);
+tabs->setTabToolTip(0, text);
+box.setInformativeText(text);
+box.setDetailedText(text);
+statusBar()->showMessage(text);
+widget->setAccessibleName(text);
+widget->setAccessibleDescription(text);
+QToolTip::showText(position, text);
+QWhatsThis::showText(position, text);
+item->setData(text, Qt::ToolTipRole);
+combo->setItemData(0, text, Qt::StatusTipRole);
+table->setData(index, text, Qt::WhatsThisRole);
+QToolTip::showText(position, str(text));
+item->setData(ptr(text), Qt::ToolTipRole);
+widget->setToolTip (text);
+tabs->setTabToolTip (0, text);
+QToolTip::showText (position, text);
+item->setData (text, Qt::ToolTipRole);
+widget->setToolTip(
+    text);
+model->setData(index, text,
+               Qt::ToolTipRole);

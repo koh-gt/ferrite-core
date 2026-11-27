@@ -1,0 +1,9 @@
+// Known-bad sample of check 14 of test/lint/lint-fext-safety.sh: chained arg.
+QString text = tr("%1 of %2").arg(a).arg(b);
+QString text = tr("%1 of %2").arg (a) .arg (b);
+QString text = tr("%1 of %2").arg(QString::number(a)).arg(b);
+label->setText(tr("%1 of %2")
+                   .arg(a)
+                   .arg(b));
+QString text = tr("%1 of %2").arg(a)
+    .arg(b);

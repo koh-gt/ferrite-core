@@ -1,0 +1,29 @@
+// Lines that break no check of test/lint/lint-fext-safety.sh, so that its checks are seen not to find too much.
+// FextTextView is a QPlainTextEdit, never a QTextEdit.
+/* Shown with setPlainText, never as a QTextEdit. */
+FextTextView* view = new FextTextView(this);
+view->setPlainText(text);
+#include <primitives/transaction.h>
+#include <policy/policy.h>
+#include <boost/test/unit_test.hpp>
+widget->setToolTip(tr("Copy the text"));
+tabs->setTabToolTip(0, tr("Messages"));
+statusBar()->showMessage(tr("%1 messages").arg(count));
+QToolTip::showText(position, tr("Copied"));
+QString text = tr("%1 of %2").arg(a, b);
+QMetaObject::invokeMethod(object, "update", Qt::QueuedConnection);
+class FextMessageModel : public QAbstractListModel { Q_OBJECT
+std::string filesystem_path;
+const int smaller = a < b ? a : b;
+QString text = displayText(mapped);
+widget->setToolTip ( tr ("Copy the text"));
+tabs->setTabToolTip (0,  tr ("Messages"));
+QToolTip::showText (position, tr ("Copied"));
+widget->setToolTip(
+    tr("Copy the text"));
+label->setText(tr("%1 sent").arg(count) + QStringLiteral(" ") +
+               tr("%1 left").arg(rest));
+lock.unlock();
+wallet->requestUnlock();
+   <property name="plainText">
+   <header>qt/fext/fexttextview.h</header>

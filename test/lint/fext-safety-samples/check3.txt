@@ -1,0 +1,20 @@
+// Known-bad sample of check 3 of test/lint/lint-fext-safety.sh: HTML.
+QString escaped = text.toHtmlEscaped();
+std::string escaped = HtmlEscape(text);
+QString bold = QStringLiteral("<b>") + name;
+QString lines = QStringLiteral("one<br>two");
+QString lines = QStringLiteral("one<br/>two");
+QString span = QStringLiteral("<span style='color:red'>");
+QString paragraph = QStringLiteral("<p>");
+QString rule = QStringLiteral("<hr>");
+QString image = QStringLiteral("<img src='x.png'>");
+QString link = QStringLiteral("<a href='x'>") + name;
+QString bold = QStringLiteral("<B>") + name;
+QString lines = QStringLiteral("one<BR>two");
+QString span = QStringLiteral("<SPAN STYLE='color:red'>");
+QString paragraph = QStringLiteral("<P>");
+QString rule = QStringLiteral("<HR>");
+QString image = QStringLiteral("<IMG SRC='x.png'>");
+QString link = QStringLiteral("<A HREF='x'>") + name;
+    <string>&lt;b&gt;bold&lt;/b&gt;</string>
+    <string>&lt;img src="x.png"/&gt;</string>

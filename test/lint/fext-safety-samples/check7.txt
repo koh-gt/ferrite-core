@@ -1,0 +1,14 @@
+// Known-bad sample of check 7 of test/lint/lint-fext-safety.sh: making text of bytes.
+QString text = QString::fromUtf8(bytes);
+QString text = QString::fromStdString(bytes);
+QString text = QString::fromLatin1(bytes);
+QString text = QString::fromLocal8Bit(bytes);
+QTextCodec* codec = QTextCodec::codecForName("UTF-8");
+QVariant value = QVariant(QByteArray(data, size));
+QVariant value = QVariant::fromValue(QByteArray(data, size));
+QString text = QString::fromUtf8 (bytes);
+QString text = QString::fromLocal8Bit (bytes);
+QVariant value = QVariant{QByteArray(data, size)};
+QVariant value = QVariant ( QByteArray(data, size));
+QVariant value = QVariant::fromValue<QByteArray>(QByteArray(data, size));
+QVariant value = QVariant::fromValue < QByteArray > ( QByteArray(data, size));
