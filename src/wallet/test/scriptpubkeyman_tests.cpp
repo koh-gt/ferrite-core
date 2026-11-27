@@ -109,8 +109,11 @@ BOOST_AUTO_TEST_CASE(StealthAddresses)
     // Set HD seed
     CKey key = DecodeSecret("6usgJoGKXW12i7Ruxy8Z1C5hrRMVGfLmi9NU9uDQJMPXDJ6tQAH");
     CPubKey seed = keyman.DeriveNewSeed(key);
-    keyman.SetHDSeed(seed);
-    keyman.TopUp();
+    {
+        LOCK(wallet.cs_wallet);
+        keyman.SetHDSeed(seed);
+        keyman.TopUp();
+    }
 
     // Check generated MWEB keychain
     mw::Keychain::Ptr mweb_keychain = keyman.GetMWEBKeychain();
@@ -151,8 +154,11 @@ BOOST_AUTO_TEST_CASE(MalformedMWEBOutputKeys)
     LegacyScriptPubKeyMan& keyman = *wallet.GetOrCreateLegacyScriptPubKeyMan();
 
     CKey seed_key = DecodeSecret("6Uc11nRuSyD5xSskBS4Zc2HdwwM9pWPPUqT4yxGkNqJUoDkqbzZ"); // Ferrite encoding (prefix 163) of upstream's 6usgJo... key
-    keyman.SetHDSeed(keyman.DeriveNewSeed(seed_key));
-    keyman.TopUp();
+    {
+        LOCK(wallet.cs_wallet);
+        keyman.SetHDSeed(keyman.DeriveNewSeed(seed_key));
+        keyman.TopUp();
+    }
 
     mw::Keychain::Ptr mweb_keychain = keyman.GetMWEBKeychain();
     BOOST_REQUIRE(mweb_keychain != nullptr);
@@ -252,6 +258,8 @@ BOOST_FIXTURE_TEST_CASE(InactiveHDChainTopUp, KeypoolTenSetup)
     CWallet wallet(chain.get(), "", CreateMockWalletDatabase());
     wallet.SetMinVersion(WalletFeature::FEATURE_HD_SPLIT);
     LegacyScriptPubKeyMan& keyman = *wallet.GetOrCreateLegacyScriptPubKeyMan();
+    // As in the wallet, the key manager's calls run with the wallet lock held.
+    LOCK(wallet.cs_wallet);
 
     CKey old_seed;
     old_seed.MakeNewKey(true);
