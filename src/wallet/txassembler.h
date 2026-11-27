@@ -88,6 +88,7 @@ private:
     );
 
     void VerifyRecipients(const std::vector<CRecipient>& recipients);
+    void VerifyWitnessV2Destinations(const std::vector<CRecipient>& recipients, const CCoinControl& coin_control);
 
     // Adds the output to 'txNew' for each non-MWEB recipient.
     // If the recipient is marked as 'fSubtractFeeFromAmount', 'nFeeRet' will be deducted from the amount.

@@ -25,8 +25,8 @@ static const int32_t VERSIONBITS_NUM_BITS = 29;
 enum class ThresholdState {
     DEFINED,   // First state that each softfork starts out as. The genesis block is by definition in this state for each deployment.
     STARTED,   // For blocks past the starttime.
-    LOCKED_IN, // For at least one retarget period after the first retarget period with STARTED blocks of which at least threshold have the associated bit set in nVersion, until min_activation_height is reached.
-    ACTIVE,    // For all blocks after the LOCKED_IN retarget period (final state)
+    LOCKED_IN, // For the LockedInPeriods() retarget periods (at least one) after the first retarget period with STARTED blocks of which at least threshold have the associated bit set in nVersion.
+    ACTIVE,    // For all blocks after the LOCKED_IN retarget periods (final state)
     FAILED,    // For all blocks once the first retarget period after the timeout time is hit, if LOCKED_IN wasn't already reached (final state)
 };
 
@@ -61,6 +61,8 @@ protected:
     virtual int64_t EndHeight(const Consensus::Params& params) const = 0;
     virtual int Period(const Consensus::Params& params) const =0;
     virtual int Threshold(const Consensus::Params& params) const =0;
+    /** Number of consecutive retarget periods a deployment stays LOCKED_IN before it is ACTIVE; at least 1. */
+    virtual int LockedInPeriods(const Consensus::Params& params) const { return 1; }
 
 public:
     /** Returns the numerical statistics of an in-progress BIP9 softfork in the current period */

@@ -64,11 +64,8 @@ enum class BlockValidationResult {
     BLOCK_RESULT_UNSET = 0,  //!< initial value. Block has not yet been rejected
     BLOCK_CONSENSUS,         //!< invalid by consensus rules (excluding any below reasons)
     /**
-     * Invalid by a change to consensus rules more recent than SegWit.
-     * Currently unused as there are no such consensus rule changes, and any download
-     * sources realistically need to support SegWit in order to provide useful data,
-     * so differentiating between always-invalid and invalid-by-pre-SegWit-soft-fork
-     * is uninteresting.
+     * Invalid by a consensus rule that nodes without the timewarp deployment do not
+     * check (the block time floor); the sender is not punished.
      */
     BLOCK_RECENT_CONSENSUS_CHANGE,
     BLOCK_CACHED_INVALID,    //!< this block was cached as being invalid and we didn't store the reason why

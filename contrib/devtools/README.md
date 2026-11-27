@@ -157,10 +157,48 @@ Read-only scan of a synced node's MWEB history against the MWEB rules added in F
 every MWEB input must match the output it spends, and kernel lock heights above 903,321 must not
 exceed the block height. Kernels that would break the two MWEB rules of the `mwebkernel` soft fork,
 which miners signal for from block 1,250,000, are reported for information. The script only calls `getblockchaininfo`,
-`getblockhash` and `getblock`; it needs Python 3.8+ and no extra packages.
+`getblockhash` and `getblock`; it needs Python 3.8+ and no extra packages. It connects only to the host and port
+of `--rpcurl`: no proxy is used and no redirect is followed.
 
 Example usage (reads the RPC cookie from the default data directory):
 
     python3 contrib/devtools/mweb_history_check.py
     python3 contrib/devtools/mweb_history_check.py --datadir /path/to/datadir
     python3 contrib/devtools/mweb_history_check.py --rpcuser USER --rpcpassword PASS
+
+p2mr\_census.py
+===============
+
+Read-only census of a node's chain for the soft forks of Ferrite Core v4.0.0: every output of
+witness version 2 (an unspent output with a 32-byte program can no longer be spent without a valid
+P2MR script path once the `p2mr` soft fork is active), the spends of coinbase outputs 10 to 99
+blocks after their block (which the `coinbasematurity` soft fork refuses for coinbases created once
+it is active), and the blocks that signal for the soft forks in each window. The script only calls
+`getblockchaininfo`, `getblockhash` and `getblock`, and it connects only to the host and port of
+`--rpcurl`: no proxy is used and no redirect is followed. It needs Python 3.8+ and no extra
+packages. On the computer that runs the node it reads the RPC cookie, or the `rpcuser` and
+`rpcpassword` lines of `ferrite.conf`, from the data directory; `--rpcuser` and `--rpcpassword` are
+shown in the process list to other users of the computer, and without `--rpcpassword` the script
+asks for the password. The report goes to standard output and ends with `RESULT:` lines.
+
+Example usage:
+
+    python3 contrib/devtools/p2mr_census.py > census.txt
+    python3 contrib/devtools/p2mr_census.py --datadir /path/to/datadir --start 1050000 > census.txt
+    python3 contrib/devtools/p2mr_census.py --testnet > census-testnet.txt
+
+timewarp\_count.py
+==================
+
+Read-only count of the blocks whose time is earlier than 480 seconds after the time of the block 23
+below them, which the block time rule of the `timewarp` soft fork refuses once it is active (the
+rule tightens the block timestamps the difficulty calculation uses), and of the blocks whose time
+is ahead of the median time of the 11 blocks after them. By default it reads the last 100,000
+blocks; `--start 24` reads the whole chain. It works on a pruned node. The script only calls
+`getblockchaininfo`, `getblockhash`, `getblockheader` and `getblock`, and it connects and
+authenticates as `p2mr_census.py` does.
+
+Example usage:
+
+    python3 contrib/devtools/timewarp_count.py > timewarp.txt
+    python3 contrib/devtools/timewarp_count.py --start 24 > timewarp.txt

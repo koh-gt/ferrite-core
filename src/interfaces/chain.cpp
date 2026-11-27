@@ -348,6 +348,16 @@ public:
     }
     bool isReadyToBroadcast() override { return !::fImporting && !::fReindex && !isInitialBlockDownload(); }
     bool isInitialBlockDownload() override { return ::ChainstateActive().IsInitialBlockDownload(); }
+    bool isP2MRActiveForNextBlock() override
+    {
+        LOCK(cs_main);
+        return IsP2MREnabled(::ChainActive().Tip(), Params().GetConsensus());
+    }
+    int getCoinbaseMaturityActivationHeight() override
+    {
+        LOCK(cs_main);
+        return CoinbaseMaturityActivationHeight(::ChainActive().Tip(), Params().GetConsensus());
+    }
     bool shutdownRequested() override { return ShutdownRequested(); }
     int64_t getAdjustedTime() override { return GetAdjustedTime(); }
     void initMessage(const std::string& message) override { ::uiInterface.InitMessage(message); }

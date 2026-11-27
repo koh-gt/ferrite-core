@@ -1,0 +1,89 @@
+{
+    "version": 1,
+    "description": "A spend of a P2MR output (BIP 360) with the signature message of BIP 341 and BIP 342. The output commits to a script tree with two leaves at depth 1: leaf 0 is <32-byte key> OP_CHECKSIG and leaf 1 is OP_TRUE, both with leaf version 0xc0. Input 0 of the transaction spends it through leaf 0; input 1 spends a P2WPKH output. sigMsg is the byte string that is hashed with the tag TapSighash: the epoch byte 0x00, the common signature message with ext_flag 1, and the BIP 342 extension (tapleaf hash, key version 0, code separator position 0xffffffff). Each signature is a BIP 340 signature of sigHash made with all-zero auxiliary randomness. The second spending is the same input with an annex as its last witness element. rawSignedTx has the witness of the first spending and a signature for the P2WPKH input.",
+    "given": {
+        "scriptTree": [
+            {
+                "id": 0,
+                "script": "206385b0f499f7d8be116fb1b27e014d8af74bb9c953a0799ae2fa26e5104a9037ac",
+                "leafVersion": 192
+            },
+            {
+                "id": 1,
+                "script": "51",
+                "leafVersion": 192
+            }
+        ],
+        "rawUnsignedTx": "0200000002c7f82e6dc890f5069a1754cea72c5f1f0c9ab929c8198a7691f29c39673511a80000000000fdffffffffe1c6b7b63b1160468db964e2ba6b1e52118e8208778119109d75103dafbd340100000000feffffff01e0220200000000001600142e76575b60723cbb849648cd93cfca8d9933876c00000000",
+        "utxosSpent": [
+            {
+                "scriptPubKey": "522082c3211a815f015e43d00bcc18c12ac5f4fab722aeea9dfacc3731779a107864",
+                "amountSats": 100000
+            },
+            {
+                "scriptPubKey": "0014209c14252c2139d5d3da85a25e659f247b3cc795",
+                "amountSats": 50000
+            }
+        ]
+    },
+    "intermediary": {
+        "leafHashes": [
+            "7ec45898c004e9bd53d7a25f38f0adcb58c07afd534e4ddd7adec351ce8c9f54",
+            "a85b2107f791b26a84e7586c28cec7cb61202ed3d01944d832500f363782d675"
+        ],
+        "merkleRoot": "82c3211a815f015e43d00bcc18c12ac5f4fab722aeea9dfacc3731779a107864"
+    },
+    "expected": {
+        "scriptPubKey": "522082c3211a815f015e43d00bcc18c12ac5f4fab722aeea9dfacc3731779a107864",
+        "scriptPathControlBlocks": [
+            "c1a85b2107f791b26a84e7586c28cec7cb61202ed3d01944d832500f363782d675",
+            "c17ec45898c004e9bd53d7a25f38f0adcb58c07afd534e4ddd7adec351ce8c9f54"
+        ],
+        "rawSignedTx": "02000000000102c7f82e6dc890f5069a1754cea72c5f1f0c9ab929c8198a7691f29c39673511a80000000000fdffffffffe1c6b7b63b1160468db964e2ba6b1e52118e8208778119109d75103dafbd340100000000feffffff01e0220200000000001600142e76575b60723cbb849648cd93cfca8d9933876c034061fd542e6f2193d5df585541a95cd09508d54969f2e60f4c87a8fb658dae1e12c2e61f5035861a7b98e4feccef637a19e3c1fa6478687c18158003abdb1ff10522206385b0f499f7d8be116fb1b27e014d8af74bb9c953a0799ae2fa26e5104a9037ac21c1a85b2107f791b26a84e7586c28cec7cb61202ed3d01944d832500f363782d67502483045022100e16c030605865e83e930c0018d5e7753227ee621536dac2bd622d3b357a7fe9a0220064b35fe659363543489a70b43bf278784f67d0d88b0e913e6af7c7c25ceb3080121031d3fdc5ac6d8edd996e299386ce3d63cd2ed117670d7cedbd096ddbe4611d2c100000000"
+    },
+    "inputSpending": [
+        {
+            "given": {
+                "txinIndex": 0,
+                "leafId": 0,
+                "hashType": 0,
+                "annex": null,
+                "auxRand": "0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "intermediary": {
+                "sigMsg": "00000200000000000000344c5cece8a58a03888c81e5eb079e48dc7c657c331692426fc6736aeba9aab4d1216dcbe7eb3f7c5a5d2e5374a29b739b92b887170e5e3c81af5f2ee621f8dde642899f27ce1bd9e1fd04900980ca9f2b6fcc598bfd31dfb89893f5e0eb9a6fa93f4b957ce93ec35d0365859a3e5f3f6b869bbb2cb5d1876dd40fe810bb16c8ded6a104837c3fcc1d5cb18ed578f244265fe2fb30a3225ee66db44acc568e6102000000007ec45898c004e9bd53d7a25f38f0adcb58c07afd534e4ddd7adec351ce8c9f5400ffffffff",
+                "sigHash": "7a73666f0cfca6da2eb57b712c11e5742b6113268f3eb72469c499afb40958c2"
+            },
+            "expected": {
+                "signature": "61fd542e6f2193d5df585541a95cd09508d54969f2e60f4c87a8fb658dae1e12c2e61f5035861a7b98e4feccef637a19e3c1fa6478687c18158003abdb1ff105",
+                "witness": [
+                    "61fd542e6f2193d5df585541a95cd09508d54969f2e60f4c87a8fb658dae1e12c2e61f5035861a7b98e4feccef637a19e3c1fa6478687c18158003abdb1ff105",
+                    "206385b0f499f7d8be116fb1b27e014d8af74bb9c953a0799ae2fa26e5104a9037ac",
+                    "c1a85b2107f791b26a84e7586c28cec7cb61202ed3d01944d832500f363782d675"
+                ]
+            }
+        },
+        {
+            "given": {
+                "txinIndex": 0,
+                "leafId": 0,
+                "hashType": 0,
+                "annex": "5050324d5220616e6e6578",
+                "auxRand": "0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "intermediary": {
+                "sigMsg": "00000200000000000000344c5cece8a58a03888c81e5eb079e48dc7c657c331692426fc6736aeba9aab4d1216dcbe7eb3f7c5a5d2e5374a29b739b92b887170e5e3c81af5f2ee621f8dde642899f27ce1bd9e1fd04900980ca9f2b6fcc598bfd31dfb89893f5e0eb9a6fa93f4b957ce93ec35d0365859a3e5f3f6b869bbb2cb5d1876dd40fe810bb16c8ded6a104837c3fcc1d5cb18ed578f244265fe2fb30a3225ee66db44acc568e61030000000093c3859901c62470349f78d37b8efdc1e4b6a6be18caa8a4b089887c6ecf7f037ec45898c004e9bd53d7a25f38f0adcb58c07afd534e4ddd7adec351ce8c9f5400ffffffff",
+                "sigHash": "d5844c1c93a443bf1b78ea1398eb684bca111975c28e6219c8e511b6102093b0"
+            },
+            "expected": {
+                "signature": "213618556bab65db34fcf6a4dab96d14c1908ea7d743001f14987a9da4540381761a6572fa3115d094a7905f63534f0d99b3b6a0402bf42ac0944d2c5165b2ce",
+                "witness": [
+                    "213618556bab65db34fcf6a4dab96d14c1908ea7d743001f14987a9da4540381761a6572fa3115d094a7905f63534f0d99b3b6a0402bf42ac0944d2c5165b2ce",
+                    "206385b0f499f7d8be116fb1b27e014d8af74bb9c953a0799ae2fa26e5104a9037ac",
+                    "c1a85b2107f791b26a84e7586c28cec7cb61202ed3d01944d832500f363782d675",
+                    "5050324d5220616e6e6578"
+                ]
+            }
+        }
+    ]
+}

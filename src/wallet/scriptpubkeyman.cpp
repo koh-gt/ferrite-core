@@ -116,6 +116,7 @@ IsMineResult IsMineInner(const LegacyScriptPubKeyMan& keystore, const CScript& s
     case TxoutType::NULL_DATA:
     case TxoutType::WITNESS_UNKNOWN:
     case TxoutType::WITNESS_V1_TAPROOT:
+    case TxoutType::WITNESS_V2_P2MR:
     case TxoutType::WITNESS_MWEB_PEGIN:
     case TxoutType::WITNESS_MWEB_HOGADDR:
         break;

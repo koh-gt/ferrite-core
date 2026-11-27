@@ -103,6 +103,9 @@ static ScriptErrorDesc script_errors[]={
     {SCRIPT_ERR_WITNESS_PUBKEYTYPE, "WITNESS_PUBKEYTYPE"},
     {SCRIPT_ERR_OP_CODESEPARATOR, "OP_CODESEPARATOR"},
     {SCRIPT_ERR_SIG_FINDANDDELETE, "SIG_FINDANDDELETE"},
+    {SCRIPT_ERR_P2MR_WITNESS_SIZE, "P2MR_WITNESS_SIZE"},
+    {SCRIPT_ERR_P2MR_WRONG_CONTROL_SIZE, "P2MR_WRONG_CONTROL_SIZE"},
+    {SCRIPT_ERR_P2MR_CONTROL_PARITY, "P2MR_CONTROL_PARITY"},
 };
 
 static std::string FormatScriptError(ScriptError_t err)
@@ -1576,6 +1579,48 @@ BOOST_AUTO_TEST_CASE(script_checker_missing_data)
         BOOST_CHECK_EQUAL(valid, amount >= 0);
         std::vector<unsigned char> created;
         BOOST_CHECK_EQUAL(MutableTransactionSignatureCreator(&tx, 0, amount, SIGHASH_ALL).CreateSig(keystore, created, pubkey.GetID(), script_code, SigVersion::WITNESS_V0), amount >= 0);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(sign_witness_input_keeps_witness)
+{
+    // When ProduceSignature cannot sign an input, it keeps the input's
+    // witness if the input is marked as a witness input, and removes it
+    // otherwise.
+    const FillableSigningProvider keystore;
+    CMutableTransaction tx;
+    tx.vin.resize(1);
+    tx.vout.resize(1);
+    const MutableTransactionSignatureCreator creator(&tx, 0, 1, SIGHASH_ALL);
+    const std::vector<std::vector<unsigned char>> stack{{0x01, 0x02}, {0x03}};
+
+    // A P2WSH output whose witness script the signer does not know.
+    const CScript p2wsh = GetScriptForDestination(WitnessV0ScriptHash(CScript() << OP_TRUE));
+    for (const bool witness : {false, true}) {
+        SignatureData sigdata;
+        sigdata.witness = witness;
+        sigdata.scriptWitness.stack = stack;
+        BOOST_CHECK(!ProduceSignature(keystore, creator, p2wsh, sigdata));
+        BOOST_CHECK(sigdata.scriptWitness.stack == (witness ? stack : std::vector<std::vector<unsigned char>>{}));
+    }
+
+    // The signer cannot sign for a native Taproot output, but an input that
+    // spends one is a witness input, so its witness is kept. A Taproot
+    // program nested in P2SH is not a Taproot output. The same holds for a
+    // P2MR output (BIP 360), witness version 2 with a 32-byte program.
+    const CScript taproot = CScript() << OP_1 << std::vector<unsigned char>(32, 0x02);
+    const CScript p2mr = CScript() << OP_2 << std::vector<unsigned char>(32, 0x02);
+    for (const CScript& program : {taproot, p2mr}) {
+        FillableSigningProvider p2sh_keystore;
+        BOOST_CHECK(p2sh_keystore.AddCScript(program));
+        const CScript p2sh = GetScriptForDestination(ScriptHash(program));
+        for (const bool native : {true, false}) {
+            SignatureData sigdata;
+            sigdata.scriptWitness.stack = stack;
+            BOOST_CHECK(!ProduceSignature(p2sh_keystore, creator, native ? program : p2sh, sigdata));
+            BOOST_CHECK_EQUAL(sigdata.witness, native);
+            BOOST_CHECK(sigdata.scriptWitness.stack == (native ? stack : std::vector<std::vector<unsigned char>>{}));
+        }
     }
 }
 

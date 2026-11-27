@@ -126,6 +126,35 @@ public:
         // window after it (block 1250080 at the earliest).
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nTimeoutHeight = 99999999; // never*
 
+        // Deployment of P2MR outputs (BIP 360): witness version 2 outputs with a 32-byte program commit to the
+        // Merkle root of a script tree and have no key path. Bit 6 is unused and outside the BIP320 bits 13-28.
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].bit = 6;
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].nStartHeight = 1300000;
+        // When 39 of the 40 blocks in a window signal bit 6, the next 504 windows are locked in and the rules apply from
+        // the window after them (block 1320200 at the earliest).
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].nTimeoutHeight = 99999999; // never*
+        // 504 windows are 20,160 blocks, two weeks of 60-second blocks: time for nodes and miners to upgrade between
+        // lock-in and the first block under the new rules. The same holds for the two deployments below.
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].nLockedInPeriods = 504;
+
+        // Deployment of coinbase maturity 100: coinbase outputs created once the rule is active can be spent only
+        // 100 blocks after their block (10 before). Bit 7 is unused and outside the BIP320 bits 13-28.
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].bit = 7;
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].nStartHeight = 1250000;
+        // Locked in by 39 of 40 signalling blocks for 504 windows; the rule applies from block 1270200 at the earliest.
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].nTimeoutHeight = 99999999; // never*
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].nLockedInPeriods = 504;
+
+        // Deployment of the block time rules: a block's time must be at least 480 seconds after the time of the
+        // block 23 below it. Bit 8 is kept for it and is outside the BIP320 bits 13-28.
+        // The deployment is not scheduled on mainnet in this release: it is never active here, no block signals
+        // for it and getblockchaininfo does not list it. A release that schedules it gives it a start height and
+        // a timeout height in place of the two lines below; it then stays locked in for 504 windows as well.
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].bit = 8;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nLockedInPeriods = 504;
+
         // The best chain should have at least this much work.
 
         consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000006b03e4a31762f086");
@@ -298,6 +327,18 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].bit = 5;
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+
+        // The deployments below are not scheduled on testnet until their start heights are set.
+        // coinbasematurity and timewarp start at the same height, p2mr 1,000 blocks later.
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].bit = 6;
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].bit = 7;
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].bit = 8;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
             
         
         consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000000000000019a894b");
@@ -417,6 +458,18 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nStartTime = Consensus::BIP9Deployment::ALWAYS_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB_KERNEL].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
 
+        // The deployments below are never active on regtest unless a test sets them with
+        // -vbparams=<name>:0:0:<start height>:<timeout height> (signalling) or -vbparams=<name>:-1:0 (always active).
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].bit = 6;
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_P2MR].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].bit = 7;
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].bit = 8;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+
         consensus.nMinimumChainWork = uint256{};
         consensus.defaultAssumeValid = uint256{};
         consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
@@ -471,12 +524,13 @@ public:
     /**
      * Allows modifying the Version Bits regtest parameters.
      */
-    void UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout, int64_t nStartHeight, int64_t nTimeoutHeight)
+    void UpdateVersionBitsParameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout, int64_t nStartHeight, int64_t nTimeoutHeight, int nLockedInPeriods)
     {
         consensus.vDeployments[d].nStartTime = nStartTime;
         consensus.vDeployments[d].nTimeout = nTimeout;
         consensus.vDeployments[d].nStartHeight = nStartHeight;
         consensus.vDeployments[d].nTimeoutHeight = nTimeoutHeight;
+        consensus.vDeployments[d].nLockedInPeriods = nLockedInPeriods;
     }
     void UpdateActivationParametersFromArgs(const ArgsManager& args);
 };
@@ -499,10 +553,10 @@ void CRegTestParams::UpdateActivationParametersFromArgs(const ArgsManager& args)
     for (const std::string& strDeployment : args.GetArgs("-vbparams")) {
         std::vector<std::string> vDeploymentParams;
         boost::split(vDeploymentParams, strDeployment, boost::is_any_of(":"));
-        if (vDeploymentParams.size() < 3 || 5 < vDeploymentParams.size()) {
-            throw std::runtime_error("Version bits parameters malformed, expecting deployment:start:end[:heightstart:heightend]");
+        if (vDeploymentParams.size() < 3 || 6 < vDeploymentParams.size()) {
+            throw std::runtime_error("Version bits parameters malformed, expecting deployment:start:end[:heightstart:heightend[:lockedinperiods]]");
         }
-        int64_t nStartTime, nTimeout, nStartHeight, nTimeoutHeight;
+        int64_t nStartTime, nTimeout, nStartHeight = 0, nTimeoutHeight = 0;
         if (!ParseInt64(vDeploymentParams[1], &nStartTime)) {
             throw std::runtime_error(strprintf("Invalid nStartTime (%s)", vDeploymentParams[1]));
         }
@@ -515,12 +569,16 @@ void CRegTestParams::UpdateActivationParametersFromArgs(const ArgsManager& args)
         if (vDeploymentParams.size() > 4 && !ParseInt64(vDeploymentParams[4], &nTimeoutHeight)) {
             throw std::runtime_error(strprintf("Invalid nTimeoutHeight (%s)", vDeploymentParams[4]));
         }
+        int32_t nLockedInPeriods = 1;
+        if (vDeploymentParams.size() > 5 && (!ParseInt32(vDeploymentParams[5], &nLockedInPeriods) || nLockedInPeriods < 1)) {
+            throw std::runtime_error(strprintf("Invalid nLockedInPeriods (%s), expecting a whole number of at least 1", vDeploymentParams[5]));
+        }
         bool found = false;
         for (int j=0; j < (int)Consensus::MAX_VERSION_BITS_DEPLOYMENTS; ++j) {
             if (vDeploymentParams[0] == VersionBitsDeploymentInfo[j].name) {
-                UpdateVersionBitsParameters(Consensus::DeploymentPos(j), nStartTime, nTimeout, nStartHeight, nTimeoutHeight);
+                UpdateVersionBitsParameters(Consensus::DeploymentPos(j), nStartTime, nTimeout, nStartHeight, nTimeoutHeight, nLockedInPeriods);
                 found = true;
-                LogPrintf("Setting version bits activation parameters for %s to start=%ld, timeout=%ld, start_height=%d, timeout_height=%d\n", vDeploymentParams[0], nStartTime, nTimeout, nStartHeight, nTimeoutHeight);
+                LogPrintf("Setting version bits activation parameters for %s to start=%ld, timeout=%ld, start_height=%d, timeout_height=%d, locked_in_periods=%d\n", vDeploymentParams[0], nStartTime, nTimeout, nStartHeight, nTimeoutHeight, nLockedInPeriods);
                 break;
             }
         }

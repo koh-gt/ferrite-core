@@ -18,6 +18,9 @@ enum DeploymentPos
     DEPLOYMENT_TAPROOT, // Deployment of Schnorr/Taproot (BIPs 340-342)
     DEPLOYMENT_MWEB, // Deployment of MWEB (LIPs 0002-0004)
     DEPLOYMENT_MWEB_KERNEL, // Canonical MWEB kernel features (Litecoin b250b016a and a399fc4ca)
+    DEPLOYMENT_P2MR, // Deployment of Pay-to-Merkle-Root outputs (BIP 360)
+    DEPLOYMENT_COINBASE_MATURITY, // Coinbase outputs mature after 100 blocks
+    DEPLOYMENT_TIMEWARP, // Block time rules for the difficulty window
     // NOTE: Also add new deployments to VersionBitsDeploymentInfo in versionbits.cpp
     MAX_VERSION_BITS_DEPLOYMENTS
 };
@@ -36,6 +39,9 @@ struct BIP9Deployment {
     int64_t nStartHeight = 0;
     /** Timeout/expiry block height for the deployment attempt. Should be a retarget block. */
     int64_t nTimeoutHeight = 0;
+    /** Number of consecutive retarget periods the deployment stays locked in before its rules apply. 1 is the
+     *  BIP 9 behaviour (active from the period after the one that is locked in); at least 1. */
+    int nLockedInPeriods = 1;
 
     /** Constant for nTimeout very far in the future. */
     static constexpr int64_t NO_TIMEOUT = std::numeric_limits<int64_t>::max();

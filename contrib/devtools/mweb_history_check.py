@@ -18,6 +18,7 @@ X1 and P1 are enforced only once the mwebkernel deployment activates (miners sig
 from block 1,250,000 on mainnet); past violations are reported for information.
 
 The script only calls getblockchaininfo, getblockhash and getblock. It changes nothing.
+It connects only to the host and port of --rpcurl: no proxy is used and no redirect is followed.
 
 Usage (Python 3.8+, standard library only), on the machine running ferrited / ferrite-qt (server=1):
   python3 mweb_history_check.py                          # reads the .cookie from the default datadir
@@ -26,16 +27,26 @@ Usage (Python 3.8+, standard library only), on the machine running ferrited / fe
 """
 import argparse
 import base64
+import http.client
+import ipaddress
 import json
 import os
+import re
 import sys
 import time
-import urllib.error
-import urllib.request
+import urllib.parse
 
 LOCK_HEIGHT_GRANDFATHER = 903_321
 PEGOUT_FEATURE_BIT = 0x04
 EXTRA_DATA_FEATURE_BIT = 0x20
+RETRY_WAITS = [1, 2, 4, 8]
+
+
+def is_host_name(host):
+    """A host name the socket module can look up: labels of 1 to 63 letters, digits and hyphens, at most 253
+    characters, a final dot allowed."""
+    labels = (host[:-1] if host.endswith(".") else host).split(".")
+    return len(host) <= 253 and all(re.match(r"[a-z0-9-]{1,63}\Z", label) for label in labels)
 
 
 def default_datadir():
@@ -48,28 +59,56 @@ def default_datadir():
 
 class Rpc:
     def __init__(self, url, user, password):
-        self.url = url
+        # Only http://HOST:PORT/ is accepted, and the URL is never printed: it may hold a password.
+        bad_url = "--rpcurl must have the form http://HOST:PORT/"
+        try:
+            parts = urllib.parse.urlsplit(url)
+            port = parts.port
+        except ValueError:
+            sys.exit(bad_url)
+        if parts.scheme == "https":
+            sys.exit("ferrited serves no TLS; use http:// (through an SSH tunnel for a remote node)")
+        if (parts.scheme != "http" or not parts.hostname or port is None or not 1 <= port <= 65535
+                or "@" in parts.netloc or parts.path not in ("", "/") or "?" in url or "#" in url):
+            sys.exit(bad_url)
+        host = parts.hostname
+        if parts.netloc.startswith("["):
+            try:
+                host = str(ipaddress.IPv6Address(host))
+            except ValueError:
+                sys.exit(bad_url)
+        elif not is_host_name(host):
+            sys.exit(bad_url)
+        self.host, self.port = host, port
         token = base64.b64encode(f"{user}:{password}".encode()).decode()
         self.headers = {"Authorization": "Basic " + token, "Content-Type": "application/json"}
 
     def batch(self, calls):
         body = json.dumps([{"jsonrpc": "1.0", "id": i, "method": m, "params": p}
                            for i, (m, p) in enumerate(calls)]).encode()
-        for attempt in range(5):
+        where = f"{self.host}:{self.port}"
+        for attempt in range(len(RETRY_WAITS) + 1):
+            # Straight to the given host and port: no proxy is consulted and no redirect is followed.
+            conn = http.client.HTTPConnection(self.host, self.port, timeout=600)
             try:
-                req = urllib.request.Request(self.url, data=body, headers=self.headers)
-                with urllib.request.urlopen(req, timeout=600) as resp:
-                    replies = json.loads(resp.read())
-                break
-            except urllib.error.HTTPError as e:
-                if e.code == 401:
+                conn.request("POST", "/", body, self.headers)
+                resp = conn.getresponse()
+                data = resp.read()
+                if resp.status == 200:
+                    replies = json.loads(data)
+                    break
+                if resp.status == 401:
                     sys.exit("RPC authentication failed (HTTP 401): check --datadir or --rpcuser/--rpcpassword.")
-                if attempt == 4:
-                    raise
-            except (urllib.error.URLError, ConnectionError, TimeoutError):
-                if attempt == 4:
-                    raise
-            time.sleep(2 ** attempt)
+                if 300 <= resp.status < 400:
+                    sys.exit(f"{where} answered with HTTP {resp.status}, a redirect, which is not followed.")
+                failure = f"{where} answered with HTTP {resp.status}."
+            except (OSError, http.client.HTTPException):
+                failure = f"cannot reach {where}."
+            finally:
+                conn.close()
+            if attempt == len(RETRY_WAITS):
+                sys.exit(failure)
+            time.sleep(RETRY_WAITS[attempt])
         replies.sort(key=lambda r: r["id"])
         for r in replies:
             if r.get("error"):

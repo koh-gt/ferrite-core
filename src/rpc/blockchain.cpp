@@ -1423,6 +1423,9 @@ static void VBSoftForkDescPushBack(UniValue& softforks, const std::string &name,
 
     int64_t since_height = VersionBitsTipStateSinceHeight(consensusParams, id);
     version_bits.pushKV("since", since_height);
+    if (ThresholdState::LOCKED_IN == thresholdState) {
+        version_bits.pushKV("activation_height", since_height + int64_t{consensusParams.vDeployments[id].nLockedInPeriods} * consensusParams.nMinerConfirmationWindow);
+    }
     if (ThresholdState::STARTED == thresholdState)
     {
         UniValue statsUV(UniValue::VOBJ);
@@ -1480,6 +1483,7 @@ RPCHelpMan getblockchaininfo()
                                     {RPCResult::Type::NUM_TIME, "start_time", "the minimum median time past of a block at which the bit gains its meaning"},
                                     {RPCResult::Type::NUM_TIME, "timeout", "the median time past of a block at which the deployment is considered failed if not yet locked in"},
                                     {RPCResult::Type::NUM, "since", "height of the first block to which the status applies"},
+                                    {RPCResult::Type::NUM, "activation_height", "height of the first block at which the rules are enforced (only for \"locked_in\" status)"},
                                     {RPCResult::Type::NUM, "start_height", "minimum block height at which the bit gains its meaning"},
                                     {RPCResult::Type::NUM, "timeout_height", "block height at which the deployment is considered failed if not yet locked in"},
                                     {RPCResult::Type::OBJ, "statistics", "numeric statistics about BIP9 signalling for a softfork (only for \"started\" status)",
@@ -1546,6 +1550,9 @@ RPCHelpMan getblockchaininfo()
     VBSoftForkDescPushBack(softforks, "taproot", consensusParams, Consensus::DEPLOYMENT_TAPROOT);
     VBSoftForkDescPushBack(softforks, "mweb", consensusParams, Consensus::DEPLOYMENT_MWEB);
     VBSoftForkDescPushBack(softforks, "mwebkernel", consensusParams, Consensus::DEPLOYMENT_MWEB_KERNEL);
+    VBSoftForkDescPushBack(softforks, "p2mr", consensusParams, Consensus::DEPLOYMENT_P2MR);
+    VBSoftForkDescPushBack(softforks, "coinbasematurity", consensusParams, Consensus::DEPLOYMENT_COINBASE_MATURITY);
+    VBSoftForkDescPushBack(softforks, "timewarp", consensusParams, Consensus::DEPLOYMENT_TIMEWARP);
     obj.pushKV("softforks",             softforks);
 
     obj.pushKV("warnings", GetWarnings(false).original);

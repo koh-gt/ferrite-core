@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include <limits>
 #include <mw/consensus/Params.h>
 
 /** The maximum allowed size for a serialized block, in bytes (only for buffer size limits) */
@@ -20,6 +21,18 @@ static const unsigned int MAX_BLOCK_WEIGHT = 4000000;
 static const int64_t MAX_BLOCK_SIGOPS_COST = 80000;
 /** Coinbase transaction outputs can only be spent after this number of new blocks (network rule) */
 static const int COINBASE_MATURITY = 10;
+/** Coinbase transaction outputs created once the coinbasematurity deployment is active can only be spent after
+ *  this number of new blocks (network rule) */
+static const int COINBASE_MATURITY_EXTENDED = 100;
+/** Activation height of the coinbasematurity deployment on a chain on which it does not apply to the block considered */
+static constexpr int COINBASE_MATURITY_NOT_ACTIVE = std::numeric_limits<int>::max();
+
+/** Number of new blocks after which a coinbase output created at creation_height can be spent, on a chain on which the
+ *  coinbasematurity deployment applies from block activation_height (COINBASE_MATURITY_NOT_ACTIVE if it does not apply). */
+constexpr int GetCoinbaseMaturity(int creation_height, int activation_height)
+{
+    return creation_height >= activation_height ? COINBASE_MATURITY_EXTENDED : COINBASE_MATURITY;
+}
 /** MWEB: Pegout transaction outputs can only be spent after this number of new blocks (network rule) */
 static const int PEGOUT_MATURITY = 6;
 

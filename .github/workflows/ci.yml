@@ -67,9 +67,15 @@ jobs:
             mweb_p2p_mutated_compactblock.py mweb_pegout_all.py mweb_pre_activation_hogex_marker.py \
             mweb_reorg.py mweb_wallet_basic.py mweb_weight.py mweb_wtxid_recentrejects.py \
             feature_generated_config.py mempool_datacarrier.py \
+            tool_v4_counts.py \
             p2p_invalid_messages.py p2p_blockfilters.py p2p_node_network_limited.py p2p_large_messages.py \
             p2p_send_buffer_timeout.py p2p_timedata.py \
             rpc_misc.py rpc_psbt_prevout_index.py rpc_signrawtransaction_taproot.py \
+            feature_p2mr.py feature_p2mr_activation.py "wallet_p2mr.py --legacy-wallet" feature_taproot.py \
+            feature_lockin_delay.py feature_lockin_delay_args.py \
+            feature_coinbase_maturity.py feature_coinbase_maturity_activation.py \
+            "feature_coinbase_maturity_activation.py --locked-in-windows=3" \
+            feature_timewarp.py feature_timewarp_activation.py feature_timewarp_branches.py \
             "wallet_import_rescan.py --legacy-wallet" wallet_inactive_hdchains.py
 
   gui:

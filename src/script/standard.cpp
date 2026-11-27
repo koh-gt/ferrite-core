@@ -56,6 +56,7 @@ std::string GetTxnOutputType(TxoutType t)
     case TxoutType::WITNESS_V0_KEYHASH: return "witness_v0_keyhash";
     case TxoutType::WITNESS_V0_SCRIPTHASH: return "witness_v0_scripthash";
     case TxoutType::WITNESS_V1_TAPROOT: return "witness_v1_taproot";
+    case TxoutType::WITNESS_V2_P2MR: return "witness_v2_p2mr";
     case TxoutType::WITNESS_MWEB_PEGIN: return "witness_mweb_pegin";
     case TxoutType::WITNESS_MWEB_HOGADDR: return "witness_mweb_hogaddr";
     case TxoutType::WITNESS_UNKNOWN: return "witness_unknown";
@@ -138,6 +139,11 @@ TxoutType Solver(const CScript& scriptPubKey, std::vector<std::vector<unsigned c
             vSolutionsRet.push_back(std::move(witnessprogram));
             return TxoutType::WITNESS_V1_TAPROOT;
         }
+        if (witnessversion == 2 && witnessprogram.size() == WITNESS_V2_P2MR_SIZE) {
+            vSolutionsRet.push_back(std::vector<unsigned char>{(unsigned char)witnessversion});
+            vSolutionsRet.push_back(std::move(witnessprogram));
+            return TxoutType::WITNESS_V2_P2MR;
+        }
         if (witnessversion == MWEB_PEGIN_WITNESS_VERSION && witnessprogram.size() == WITNESS_MWEB_PEGIN_SIZE) {
             vSolutionsRet.push_back(witnessprogram);
             return TxoutType::WITNESS_MWEB_PEGIN;
@@ -219,7 +225,7 @@ bool ExtractDestination(const CScript& scriptPubKey, CTxDestination& addressRet)
         std::copy(vSolutions[0].begin(), vSolutions[0].end(), hash.begin());
         addressRet = hash;
         return true;
-    } else if (whichType == TxoutType::WITNESS_UNKNOWN || whichType == TxoutType::WITNESS_V1_TAPROOT) {
+    } else if (whichType == TxoutType::WITNESS_UNKNOWN || whichType == TxoutType::WITNESS_V1_TAPROOT || whichType == TxoutType::WITNESS_V2_P2MR) {
         WitnessUnknown unk;
         unk.version = vSolutions[0][0];
         std::copy(vSolutions[1].begin(), vSolutions[1].end(), unk.program);

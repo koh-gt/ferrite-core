@@ -4206,13 +4206,24 @@ int CWalletTx::GetDepthInMainChain() const
     return (pwallet->GetLastBlockHeight() - m_confirm.block_height + 1) * (isConflicted() ? -1 : 1);
 }
 
+int CWalletTx::GetCoinbaseMaturityConfirmations() const
+{
+    assert(IsCoinBase());
+    AssertLockHeld(pwallet->cs_wallet);
+    // A coinbase that is not in the active chain is treated as if it were created in the next block.
+    const int creation_height = GetDepthInMainChain() > 0 ? m_confirm.block_height : pwallet->GetLastBlockHeight() + 1;
+    return GetCoinbaseMaturity(creation_height, pwallet->chain().getCoinbaseMaturityActivationHeight()) + 1;
+}
+
 int CWalletTx::GetBlocksToMaturity() const
 {
     if (!IsCoinBase() && !IsHogEx())
         return 0;
     int chain_depth = std::max(0, GetDepthInMainChain());
     if (IsCoinBase()) {
-        return std::max(0, (COINBASE_MATURITY + 1) - chain_depth);
+        // Coinbases this deep are mature under either maturity, so the node is not asked.
+        if (chain_depth > COINBASE_MATURITY_EXTENDED) return 0;
+        return std::max(0, GetCoinbaseMaturityConfirmations() - chain_depth);
     } else {
         return std::max(0, PEGOUT_MATURITY - chain_depth);
     }

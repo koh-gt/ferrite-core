@@ -849,5 +849,22 @@ def taproot_construct(pubkey, scripts=None):
     leaves = dict((name, TaprootLeafInfo(script, version, merklebranch)) for name, version, script, merklebranch in ret)
     return TaprootInfo(CScript([OP_1, tweaked]), pubkey, negated + 0, tweak, leaves)
 
+P2MRInfo = namedtuple("P2MRInfo", "scriptPubKey,merkle_root,leaves")
+P2MRLeafInfo = namedtuple("P2MRLeafInfo", "script,version,control_block")
+
+def p2mr_construct(scripts):
+    """Construct a P2MR output (BIP 360): witness version 2 with the Merkle root of a script tree as program
+
+    scripts: a list of items as for taproot_construct; a list that holds a single
+             (name, CScript) or (name, CScript, leaf version) tuple gives a tree
+             whose only leaf is its root (depth zero)
+
+    Returns: scriptPubKey, Merkle root, {name:(script, leaf version, control block), ...}
+             The control block is the leaf version with its lowest bit set, then the Merkle path.
+    """
+    ret, h = taproot_tree_helper(scripts)
+    leaves = dict((name, P2MRLeafInfo(script, version, bytes([version | 1]) + merklebranch)) for name, version, script, merklebranch in ret)
+    return P2MRInfo(CScript([OP_2, h]), h, leaves)
+
 def is_op_success(o):
     return o == 0x50 or o == 0x62 or o == 0x89 or o == 0x8a or o == 0x8d or o == 0x8e or (o >= 0x7e and o <= 0x81) or (o >= 0x83 and o <= 0x86) or (o >= 0x95 and o <= 0x99) or (o >= 0xbb and o <= 0xfe)
