@@ -146,11 +146,13 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_COINBASE_MATURITY].nLockedInPeriods = 504;
 
         // Deployment of the block time rules: a block's time must be at least 480 seconds after the time of the
-        // block 23 below it. Bit 8 is unused and outside the BIP320 bits 13-28.
+        // block 23 below it. Bit 8 is kept for it and is outside the BIP320 bits 13-28.
+        // The deployment is not scheduled on mainnet in this release: it is never active here, no block signals
+        // for it and getblockchaininfo does not list it. A release that schedules it gives it a start height and
+        // a timeout height in place of the two lines below; it then stays locked in for 504 windows as well.
         consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].bit = 8;
-        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nStartHeight = 1250000;
-        // Locked in by 39 of 40 signalling blocks for 504 windows; the rules apply from block 1270200 at the earliest.
-        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nTimeoutHeight = 99999999; // never*
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+        consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TIMEWARP].nLockedInPeriods = 504;
 
         // The best chain should have at least this much work.

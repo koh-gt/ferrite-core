@@ -152,15 +152,36 @@ BOOST_AUTO_TEST_CASE(mainnet)
     BOOST_REQUIRE_EQUAL(consensus.nMinerConfirmationWindow, 40U);
     BOOST_REQUIRE_EQUAL(consensus.nRuleChangeActivationThreshold, 39U);
 
-    // Height-based (start and timeout times 0), signalling from the start height, with no deadline.
-    const std::vector<int64_t> start_heights{1300000, 1250000, 1250000};
+    // p2mr and coinbasematurity are height-based (start and timeout times 0), signalling from the start height, with
+    // no deadline. timewarp is not scheduled on mainnet: it is never active, so no block signals for it.
+    const int64_t NOT_SCHEDULED = -1;
+    const std::vector<int64_t> start_heights{1300000, 1250000, NOT_SCHEDULED};
     BOOST_REQUIRE_EQUAL(start_heights.size(), NEW_DEPLOYMENTS.size());
     for (size_t i = 0; i < NEW_DEPLOYMENTS.size(); ++i) {
         const NewDeployment& deployment = NEW_DEPLOYMENTS[i];
         Consensus::BIP9Deployment expected;
         expected.bit = deployment.bit;
-        expected.nStartHeight = start_heights[i];
-        expected.nTimeoutHeight = 99999999;
+        if (start_heights[i] == NOT_SCHEDULED) {
+            BOOST_CHECK_EQUAL(deployment.name, "timewarp");
+            expected.nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
+            expected.nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
+            // Whatever the blocks signal, the state never leaves FAILED and block templates never set the bit.
+            LOCK(cs_main);
+            ScopedVersionBitsCacheClear clear_cache_at_end;
+            std::vector<CBlockIndex> chain(3 * consensus.nMinerConfirmationWindow);
+            for (size_t height = 0; height < chain.size(); ++height) {
+                chain[height].nHeight = height;
+                chain[height].pprev = height > 0 ? &chain[height - 1] : nullptr;
+                chain[height].nVersion = VERSIONBITS_TOP_BITS | VersionBitsMask(consensus, deployment.pos);
+                chain[height].BuildSkip();
+            }
+            BOOST_CHECK(VersionBitsState(&chain.back(), consensus, deployment.pos, versionbitscache) == ThresholdState::FAILED);
+            BOOST_CHECK(!IsTimewarpEnabled(&chain.back(), consensus));
+            BOOST_CHECK_EQUAL(ComputeBlockVersion(&chain.back(), consensus) & VersionBitsMask(consensus, deployment.pos), 0U);
+        } else {
+            expected.nStartHeight = start_heights[i];
+            expected.nTimeoutHeight = 99999999;
+        }
         // Locked in for 504 windows (20,160 blocks, two weeks of 60-second blocks) before the rules apply.
         expected.nLockedInPeriods = 504;
         CheckDeployment(consensus.vDeployments[deployment.pos], expected, "mainnet " + deployment.name);
