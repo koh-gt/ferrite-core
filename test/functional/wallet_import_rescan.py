@@ -132,7 +132,8 @@ IMPORT_NODES = [ImportNode(*fields) for fields in itertools.product((False, True
 # Rescans start at the earliest block up to 2 hours before the key timestamp.
 TIMESTAMP_WINDOW = 2 * 60 * 60
 
-AMOUNT_DUST = 0.00000546
+# Ferrite's dust threshold for a P2PKH output: its dust relay fee is ten times Bitcoin Core's.
+AMOUNT_DUST = 0.00005460
 
 
 def get_rand_amount():
