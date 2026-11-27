@@ -43,7 +43,7 @@ cd "$(dirname "$0")/../.." || exit 1
 EXIT_CODE=0
 
 # Files that may include the record's headers and name its namespace, as git grep prints them ("path:line:").
-OWN_FILES='^src/(opreturn/[^:]+|rpc/opreturn\.(h|cpp)|interfaces/opreturn\.h|fext/[^:]+|qt/fext/[^:]+|test/opreturn_[a-z0-9_]+\.cpp|test/util/opreturn\.(h|cpp)|test/fuzz/opreturn_[a-z0-9_]+\.cpp|bench/opreturn_[a-z0-9_]+\.cpp|qt/test/fext[a-z0-9_]*\.(h|cpp)):'
+OWN_FILES='^src/(opreturn/[^:]+|rpc/opreturn\.(h|cpp)|interfaces/opreturn\.h|fext/[^:]+|qt/fext/[^:]+|test/opreturn_[a-z0-9_]+\.cpp|test/util/opreturn\.(h|cpp)|test/fuzz/opreturn_[a-z0-9_]+\.cpp|bench/opreturn_[a-z0-9_]+\.cpp|test/fext_[a-z0-9_]+\.cpp|qt/test/fext[a-z0-9_]*\.(h|cpp)):'
 
 # Files that may include the FEXT GUI's headers and name its namespace, as git grep prints them.
 FEXT_OWN_FILES='^src/(fext/[^:]+|qt/fext/[^:]+|test/fext_[a-z0-9_]+\.cpp|test/util/fext[a-z0-9_]*\.(h|cpp)|test/fuzz/fext_[a-z0-9_]+\.cpp|bench/fext_[a-z0-9_]+\.cpp|qt/test/fext[a-z0-9_]*\.(h|cpp)):'

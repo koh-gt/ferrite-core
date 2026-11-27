@@ -424,10 +424,12 @@ if !ENABLE_WALLET
 libbitcoin_server_a_SOURCES += dummywallet.cpp
 endif
 
-# the code of the FEXT GUI that does not use Qt: the text rules and their Unicode tables #
+# the code of the FEXT GUI that does not use Qt: the text rules and their Unicode tables, the record queries #
 libfext_node_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libfext_node_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libfext_node_a_SOURCES = \
+  fext/query.cpp \
+  fext/query.h \
   fext/text.cpp \
   fext/text.h \
   fext/unicode_data.cpp \
