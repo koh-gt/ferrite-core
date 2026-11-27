@@ -122,9 +122,10 @@ NEW_FILES+='|src/qt/guiextension\.(h|cpp)|src/fext/[^ ]+|src/qt/fext/[^ ]+|src/q
 
 # Existing files a commit range may change: the record's, then the FEXT GUI's (the build files and .gitignore, the
 # four files with the GUI's calls, the FEXT letter icon, the files that name OP_RETURN outputs in the transaction
-# list and the English catalogue that holds the plural of that name, and the tests of the plain GUI).
+# list and the English catalogue that holds the plural of that name, the tests of the plain GUI, and the
+# description of the unit tests' data, which names the licence of the Unicode data file).
 CHANGED_FILES='^(src/init\.cpp|src/rpc/client\.cpp|src/Makefile\.am|src/Makefile\.test\.include|src/Makefile\.test_util\.include|src/Makefile\.bench\.include|test/lint/check-rpc-mappings\.py|test/functional/test_runner\.py|\.github/workflows/ci\.yml|doc/[^ ]+'
-CHANGED_FILES+='|configure\.ac|Makefile\.am|\.gitignore|src/Makefile\.qt\.include|src/Makefile\.qttest\.include|share/setup\.nsi\.in|contrib/devtools/gen-manpages\.sh|src/qt/(bitcoin|bitcoingui|utilitydialog|sendcoinsdialog)\.cpp|src/qt/res/icons/fext_letter\.png|src/qt/transactiontablemodel\.(h|cpp)|src/qt/walletview\.cpp|src/qt/locale/bitcoin_en\.ts|src/qt/test/(apptests|rpcnestedtests)\.cpp|src/qt/test/wallettests\.(h|cpp))$'
+CHANGED_FILES+='|configure\.ac|Makefile\.am|\.gitignore|src/Makefile\.qt\.include|src/Makefile\.qttest\.include|share/setup\.nsi\.in|contrib/devtools/gen-manpages\.sh|src/qt/(bitcoin|bitcoingui|utilitydialog|sendcoinsdialog)\.cpp|src/qt/res/icons/fext_letter\.png|src/qt/transactiontablemodel\.(h|cpp)|src/qt/walletview\.cpp|src/qt/locale/bitcoin_en\.ts|src/qt/test/(apptests|rpcnestedtests)\.cpp|src/qt/test/wallettests\.(h|cpp)|src/test/data/README\.md)$'
 
 trim() {
     sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'

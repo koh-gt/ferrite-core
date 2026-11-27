@@ -82,6 +82,7 @@ src/qt/bitcoin-qt.includes
 
 *.json.h
 *.raw.h
+*.txt.h
 
 # Only ignore unexpected patches
 *.patch

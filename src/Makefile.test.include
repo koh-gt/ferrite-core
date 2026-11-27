@@ -53,6 +53,7 @@ FUZZ_TARGETS = \
   test/fuzz/fee_rate \
   test/fuzz/fee_rate_deserialize \
   test/fuzz/fees \
+  test/fuzz/fext_text \
   test/fuzz/flat_file_pos_deserialize \
   test/fuzz/flatfile \
   test/fuzz/float \
@@ -187,7 +188,10 @@ JSON_TEST_FILES = \
 RAW_TEST_FILES = \
   test/data/asmap.raw
 
-GENERATED_TEST_FILES = $(JSON_TEST_FILES:.json=.json.h) $(RAW_TEST_FILES:.raw=.raw.h)
+FEXT_TEST_FILES = \
+  test/data/fext_grapheme_break_test.txt
+
+GENERATED_TEST_FILES = $(JSON_TEST_FILES:.json=.json.h) $(RAW_TEST_FILES:.raw=.raw.h) $(FEXT_TEST_FILES:.txt=.txt.h)
 
 BITCOIN_TEST_SUITE = \
   test/main.cpp \
@@ -237,6 +241,7 @@ BITCOIN_TESTS =\
   test/cuckoocache_tests.cpp \
   test/denialofservice_tests.cpp \
   test/descriptor_tests.cpp \
+  test/fext_text_tests.cpp \
   test/flatfile_tests.cpp \
   test/fs_tests.cpp \
   test/getarg_tests.cpp \
@@ -360,9 +365,9 @@ BITCOIN_TESTS += \
   libmw/test/tests/node/Test_Reorg.cpp \
   libmw/test/tests/wallet/Test_Keychain.cpp
 
-test_test_ferrite_SOURCES = $(BITCOIN_TEST_SUITE) $(BITCOIN_TESTS) $(JSON_TEST_FILES) $(RAW_TEST_FILES)
+test_test_ferrite_SOURCES = $(BITCOIN_TEST_SUITE) $(BITCOIN_TESTS) $(JSON_TEST_FILES) $(RAW_TEST_FILES) $(FEXT_TEST_FILES)
 test_test_ferrite_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(TESTDEFS) $(EVENT_CFLAGS) $(LIBMW_CPPFLAGS) -I$(srcdir)/libmw/test/framework/include
-test_test_ferrite_LDADD = $(LIBTEST_UTIL)
+test_test_ferrite_LDADD = $(LIBFEXT_NODE) $(LIBTEST_UTIL)
 if ENABLE_WALLET
 test_test_ferrite_LDADD += $(LIBBITCOIN_WALLET)
 endif
@@ -681,6 +686,12 @@ test_fuzz_fees_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 test_fuzz_fees_LDADD = $(FUZZ_SUITE_LD_COMMON)
 test_fuzz_fees_LDFLAGS = $(FUZZ_SUITE_LDFLAGS_COMMON)
 test_fuzz_fees_SOURCES = test/fuzz/fees.cpp
+
+test_fuzz_fext_text_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+test_fuzz_fext_text_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+test_fuzz_fext_text_LDADD = $(LIBFEXT_NODE) $(FUZZ_SUITE_LD_COMMON)
+test_fuzz_fext_text_LDFLAGS = $(FUZZ_SUITE_LDFLAGS_COMMON)
+test_fuzz_fext_text_SOURCES = test/fuzz/fext_text.cpp
 
 test_fuzz_flat_file_pos_deserialize_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) -DFLAT_FILE_POS_DESERIALIZE=1
 test_fuzz_flat_file_pos_deserialize_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
@@ -1393,6 +1404,15 @@ endif
 	@$(MKDIR_P) $(@D)
 	@{ \
 	 echo "static unsigned const char $(*F)_raw[] = {" && \
+	 $(HEXDUMP) -v -e '8/1 "0x%02x, "' -e '"\n"' $< | $(SED) -e 's/0x  ,//g' && \
+	 echo "};"; \
+	} > "$@.new" && mv -f "$@.new" "$@"
+	@echo "Generated $@"
+
+%.txt.h: %.txt
+	@$(MKDIR_P) $(@D)
+	@{ \
+	 echo "static unsigned const char $(*F)_txt[] = {" && \
 	 $(HEXDUMP) -v -e '8/1 "0x%02x, "' -e '"\n"' $< | $(SED) -e 's/0x  ,//g' && \
 	 echo "};"; \
 	} > "$@.new" && mv -f "$@.new" "$@"

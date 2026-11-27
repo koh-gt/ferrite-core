@@ -36,6 +36,7 @@ LIBBITCOIN_UTIL=libbitcoin_util.a
 LIBBITCOIN_CRYPTO_BASE=crypto/libbitcoin_crypto_base.a
 LIBBITCOINQT=qt/libbitcoinqt.a
 LIBFEXT_QT=qt/libfext_qt.a
+LIBFEXT_NODE=libfext_node.a
 LIBSECP256K1=secp256k1-zkp/libsecp256k1.la
 LIBMW=libmw.a
 
@@ -80,6 +81,9 @@ EXTRA_LIBRARIES += \
   $(LIBBITCOIN_WALLET_TOOL) \
   $(LIBBITCOIN_ZMQ) \
   $(LIBMW)
+
+# The code of the FEXT GUI that does not use Qt. No node program links it.
+EXTRA_LIBRARIES += $(LIBFEXT_NODE)
 
 lib_LTLIBRARIES = $(LIBBITCOINCONSENSUS)
 
@@ -419,6 +423,15 @@ endif
 if !ENABLE_WALLET
 libbitcoin_server_a_SOURCES += dummywallet.cpp
 endif
+
+# the code of the FEXT GUI that does not use Qt: the text rules and their Unicode tables #
+libfext_node_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
+libfext_node_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+libfext_node_a_SOURCES = \
+  fext/text.cpp \
+  fext/text.h \
+  fext/unicode_data.cpp \
+  fext/unicode_data.h
 
 if ENABLE_ZMQ
 libbitcoin_zmq_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(ZMQ_CFLAGS)
