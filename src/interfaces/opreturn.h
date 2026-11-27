@@ -291,6 +291,17 @@ public:
                                            const opreturn::VisibilityRef& visibility) = 0;
     virtual opreturn::ReadResult findTransaction(const uint256& txid, opreturn::TxKey& out,
                                                  const opreturn::VisibilityRef& visibility) = 0;
+    /**
+     * A visible height with rows whose block time is at least `time`, such that the visible height with rows below
+     * it, if there is one, has a block time below `time`. While the block times rise with the heights, that is the
+     * lowest visible height with rows whose block time is at least `time`. Block times may also go back a little,
+     * and then it is one of the heights where the times pass `time`, near the lowest. NOT_FOUND only when no visible
+     * height has rows or the highest visible height with rows has a block time below `time`. A binary search over
+     * the record's block entries: two seeks for each halving of the visible heights, and two more for each range of
+     * the coverage without rows that a halving passes, so a coverage of many ranges makes it slower (with the most
+     * ranges a coverage holds, tens of milliseconds).
+     */
+    virtual opreturn::ReadResult findHeightForTime(int64_t time, int32_t& out, const opreturn::VisibilityRef& visibility) = 0;
 
     /**
      * Waits at most timeout_ms until the node's best block as it was when the call began (or, once the node has left
@@ -306,10 +317,11 @@ public:
 
     //! For a program that shows the record in a GUI. Any thread; never waits: the record's worker does the work.
     //! Switching off stops the record and keeps its files; switching on opens them again. Asked while the worker
-    //! ends its run, a switch is made once the run has ended (the last one asked counts).
+    //! ends its run, a switch is made once the run has ended (the last one asked counts). Before init has loaded the
+    //! record (its chain client's load()), a switch does nothing.
     virtual void setRecordEnabled(bool enabled) = 0;
     //! Deletes the record and starts a new one at the node's tip; asked while the worker ends its run, or after the
-    //! record failed, once the run has ended.
+    //! record failed, once the run has ended. Before init has loaded the record, it does nothing.
     virtual void requestRebuild() = 0;
 
     /**

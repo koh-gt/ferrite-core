@@ -256,6 +256,7 @@ BITCOIN_TESTS =\
   test/netbase_tests.cpp \
   test/opreturn_format_tests.cpp \
   test/opreturn_log_tests.cpp \
+  test/opreturn_node_tests.cpp \
   test/opreturn_options_tests.cpp \
   test/opreturn_record_tests.cpp \
   test/opreturn_script_tests.cpp \

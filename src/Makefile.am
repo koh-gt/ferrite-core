@@ -230,8 +230,10 @@ BITCOIN_CORE_H = \
   opreturn/format.h \
   opreturn/log.h \
   opreturn/names.h \
+  opreturn/node.h \
   opreturn/options.h \
   opreturn/record.h \
+  opreturn/registry.h \
   opreturn/script.h \
   optional.h \
   outputtype.h \
@@ -381,8 +383,10 @@ libbitcoin_server_a_SOURCES = \
   opreturn/coverage.cpp \
   opreturn/format.cpp \
   opreturn/log.cpp \
+  opreturn/node.cpp \
   opreturn/options.cpp \
   opreturn/record.cpp \
+  opreturn/registry.cpp \
   opreturn/script.cpp \
   policy/fees.cpp \
   policy/rbf.cpp \

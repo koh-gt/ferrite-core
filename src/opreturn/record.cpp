@@ -825,15 +825,19 @@ void Record::load()
     if (!m_options.record) {
         LOCK(m_mutex);
         SetState(State::OFF);
+        m_loaded = true;
         return;
     }
     try {
-        if (!Open(m_options.reindex)) return;
+        const bool opened = Open(m_options.reindex);
         LOCK(m_mutex);
-        if (m_state == State::FAILED || m_stopping) return;
+        m_loaded = true;
+        if (!opened || m_state == State::FAILED || m_stopping) return;
         StartWorker(Job::OPEN);
     } catch (...) {
         Fail(FailReason::INTERNAL);
+        LOCK(m_mutex);
+        m_loaded = true;
     }
 }
 
@@ -1760,7 +1764,7 @@ void Record::start()
 void Record::setRecordEnabled(bool enabled)
 {
     LOCK(m_mutex);
-    if (m_stopping) return;
+    if (m_stopping || !m_loaded) return;
     if (m_worker_running && m_ending) {
         // The worker is ending its run: the switch waits for the end, the last one asked counting.
         m_switch_pending = enabled ? Pending::ON : Pending::OFF;
@@ -1779,7 +1783,7 @@ void Record::setRecordEnabled(bool enabled)
 void Record::requestRebuild()
 {
     LOCK(m_mutex);
-    if (m_stopping) return;
+    if (m_stopping || !m_loaded) return;
     if (!m_worker_running) {
         StartWorker(Job::REBUILD);
     } else {
@@ -2336,6 +2340,91 @@ ReadResult Record::FindTransaction(Reader& reader, const Visibility& v, const ui
     return ReadResult::FOUND;
 }
 
+ReadResult Record::findHeightForTime(int64_t time, int32_t& out, const VisibilityRef& visibility)
+{
+    const VisibilityRef v = UseVisibility(visibility);
+    Reader reader(*this);
+    try {
+        return FindHeightForTime(reader, *v, time, out);
+    } catch (const ReadError&) {
+        FailedRead failed;
+        failed.call = FailedRead::Call::HEIGHT_FOR_TIME;
+        failed.time = time;
+        ReadFailed(failed);
+        return ReadResult::FAILED;
+    }
+}
+
+ReadResult Record::FindHeightForTime(Reader& reader, const Visibility& v, int64_t time, int32_t& out)
+{
+    if (!reader.Open() || !v.coverage) return ReadResult::NOT_FOUND;
+    // The visible heights, as ranges in height order, and the place of each visible height among them: range i
+    // holds the places ends[i - 1] (0 for the first) up to ends[i] - 1.
+    std::vector<HeightRange> visible;
+    std::vector<int64_t> ends;
+    int64_t places = 0;
+    for (const HeightRange& range : *v.coverage) {
+        const int32_t lo = std::max({range.lo, v.floor, 0});
+        const int32_t hi = std::min(range.hi, v.live_tip);
+        if (lo > hi) continue;
+        visible.push_back({lo, hi});
+        places += int64_t{hi} - lo + 1;
+        ends.push_back(places);
+    }
+    struct Entry {
+        int32_t height;
+        int64_t time;
+    };
+    // The first block entry at a visible height at or above the height of `place`, if there is one. In a covered
+    // height the rows are there exactly when the block entry is, so no row may lie between the height the search
+    // starts at and the entry it finds, or the end of the range when it finds none.
+    const auto first_from = [&](int64_t place, Entry& entry) {
+        for (size_t i = std::upper_bound(ends.begin(), ends.end(), place) - ends.begin(); i < visible.size(); ++i) {
+            const int64_t start = i == 0 ? 0 : ends[i - 1];
+            const int32_t from = int32_t(visible[i].lo + std::max<int64_t>(place - start, 0));
+            int32_t found = -1;
+            BlockMeta meta;
+            reader.Seek(KeyBytes(HeightKey(prefix::BLOCK, from)));
+            if (reader.Prefix() == prefix::BLOCK) {
+                HeightKey key{prefix::BLOCK, 0};
+                reader.KeyAs(key);
+                if (key.height <= visible[i].hi) {
+                    found = key.height;
+                    reader.Value(meta);
+                }
+            }
+            const Optional<RowKey> row = reader.FirstRowFrom({from, 0});
+            if (found >= 0) {
+                if (!row || *row != RowKey{found, 0}) throw ReadError();
+                entry = {found, int64_t{meta.time}};
+                return true;
+            }
+            if (row && row->height <= visible[i].hi) throw ReadError();
+        }
+        return false;
+    };
+    // Each place stands for the first entry at or above it. The place below `lo`, unless `lo` is 0, stands for an
+    // entry older than `time`; the place `hi`, unless it is `places`, stands for `answer`: an entry at least that
+    // new, or none.
+    int64_t lo = 0;
+    int64_t hi = places;
+    Optional<int32_t> answer;
+    while (lo < hi) {
+        const int64_t mid = lo + (hi - lo) / 2;
+        Entry entry;
+        const bool have = first_from(mid, entry);
+        if (have && entry.time < time) {
+            lo = mid + 1;
+        } else {
+            hi = mid;
+            answer = have ? Optional<int32_t>{entry.height} : nullopt;
+        }
+    }
+    if (!answer) return ReadResult::NOT_FOUND;
+    out = *answer;
+    return ReadResult::FOUND;
+}
+
 void Record::Confirm(const FailedRead& failed)
 {
     // A reader of its own, which sees the database as it is now, and the snapshot that is current now. The worker is
@@ -2373,6 +2462,11 @@ void Record::Confirm(const FailedRead& failed)
     case FailedRead::Call::FIND: {
         TxKey out;
         FindTransaction(reader, *v, failed.txid, out);
+        return;
+    }
+    case FailedRead::Call::HEIGHT_FOR_TIME: {
+        int32_t out;
+        FindHeightForTime(reader, *v, failed.time, out);
         return;
     }
     }

@@ -211,6 +211,7 @@ public:
                                const VisibilityRef& visibility) override;
     ReadResult readBlock(int32_t height, BlockView& out, const VisibilityRef& visibility) override;
     ReadResult findTransaction(const uint256& txid, TxKey& out, const VisibilityRef& visibility) override;
+    ReadResult findHeightForTime(int64_t time, int32_t& out, const VisibilityRef& visibility) override;
     bool waitForTip(int timeout_ms) override;
     void setRecordEnabled(bool enabled) override;
     void requestRebuild() override;
@@ -231,7 +232,7 @@ public:
     //! A read of a reader's that failed: the call and its arguments, which the worker makes again, with the snapshot
     //! that is current when it does.
     struct FailedRead {
-        enum class Call : uint8_t { ROWS, ROW, SCRIPT, TRANSACTION, BLOCK, FIND };
+        enum class Call : uint8_t { ROWS, ROW, SCRIPT, TRANSACTION, BLOCK, FIND, HEIGHT_FOR_TIME };
         Call call{Call::ROW};
         RowRequest rows;      //!< ROWS, without its snapshot
         RowKey key;           //!< ROW, SCRIPT
@@ -241,6 +242,7 @@ public:
         TxKey tx;             //!< TRANSACTION
         int32_t height{-1};   //!< BLOCK
         uint256 txid;         //!< FIND
+        int64_t time{0};      //!< HEIGHT_FOR_TIME
     };
 
 private:
@@ -291,6 +293,7 @@ private:
                                size_t max_spent_script, TxView& out);
     ReadResult ReadBlock(Reader& reader, const Visibility& v, int32_t height, BlockView& out);
     ReadResult FindTransaction(Reader& reader, const Visibility& v, const uint256& txid, TxKey& out);
+    ReadResult FindHeightForTime(Reader& reader, const Visibility& v, int64_t time, int32_t& out);
     VisibilityRef UseVisibility(const VisibilityRef& given);
     bool CaughtUp(const CBlockIndex* target) const EXCLUSIVE_LOCKS_REQUIRED(m_mutex);
 
@@ -328,6 +331,8 @@ private:
     //! m_rebuild_requested, which the end of the run acts on.
     Pending m_switch_pending GUARDED_BY(m_mutex){Pending::NONE};
     bool m_worker_running GUARDED_BY(m_mutex){false};
+    //! load() has run: a switch or a rebuild asked before it does nothing.
+    bool m_loaded GUARDED_BY(m_mutex){false};
     bool m_crashed GUARDED_BY(m_mutex){false};
     std::thread m_worker GUARDED_BY(m_mutex);
     //! Reads that readers saw fail, for the worker to make again.

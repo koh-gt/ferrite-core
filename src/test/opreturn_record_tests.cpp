@@ -38,6 +38,7 @@
 #include <chrono>
 #include <fstream>
 #include <future>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <set>
@@ -199,15 +200,17 @@ struct RecordSetup : public TestChain100Setup {
         return Spend({coin}, outputs);
     }
 
+    //! A block on `prev`, at the time given, or at a time a little after prev's when it is 0.
     std::shared_ptr<CBlock> MakeBlock(const CBlockIndex* prev, const std::vector<CMutableTransaction>& txs,
-                                      const std::vector<CTxOut>& coinbase_outputs = {})
+                                      const std::vector<CTxOut>& coinbase_outputs = {}, uint32_t time = 0)
     {
         // Built from an empty pool, so that the coinbase claims no fee of transactions it does not hold.
         CTxMemPool empty_pool;
         std::unique_ptr<CBlockTemplate> block_template = BlockAssembler(empty_pool, Params()).CreateNewBlock(m_script);
         auto block = std::make_shared<CBlock>(block_template->block);
         block->hashPrevBlock = prev->GetBlockHash();
-        block->nTime = prev->nTime + 1 + (m_salt++ % 3);
+        const uint32_t step = 1 + (m_salt++ % 3);
+        block->nTime = time ? time : prev->nTime + step;
         block->vtx.resize(1);
         for (const CMutableTransaction& tx : txs) block->vtx.push_back(MakeTransactionRef(tx));
         unsigned int extra_nonce = m_salt;
@@ -4227,6 +4230,131 @@ BOOST_AUTO_TEST_CASE(spent_scripts_after_a_crash)
         BOOST_CHECK_EQUAL(meta.logical_bytes, stored.total);
     }
     BOOST_CHECK(all_counted());
+}
+
+BOOST_AUTO_TEST_CASE(height_for_time)
+{
+    // A date becomes a height through the record's own block entries. The answer is a visible height with rows whose
+    // block time is at least the time asked, whose next lower visible height with rows has an older block; while the
+    // block times rise, the lowest such height. Heights that are not visible (outside the coverage, below the floor,
+    // above the record's tip) never count, and NOT_FOUND comes only when the newest visible block with rows is older.
+    std::shared_ptr<Record> record = Start();
+    int32_t out = -1;
+    // An empty record: nothing to find, at any time.
+    Catch(*record);
+    for (const int64_t time : {int64_t{0}, int64_t{Tip()->nTime}, std::numeric_limits<int64_t>::max(), std::numeric_limits<int64_t>::min()}) {
+        BOOST_CHECK(record->findHeightForTime(time, out, nullptr) == ReadResult::NOT_FOUND);
+    }
+    // Blocks with and without rows. The times rise, but twice fall back by less than the median of the blocks before
+    // them allows (a block's time must only pass that median).
+    const uint32_t base = Tip()->nTime + 100;
+    const std::vector<std::pair<int, bool>> plan{{0, true},   {10, false}, {20, true},  {40, true},  {30, true},  {50, false},
+                                                 {60, true},  {25, true},  {70, false}, {80, true},  {90, true},  {100, false},
+                                                 {110, true}, {105, true}, {120, true}};
+    // The height, time and whether it has rows, of each block mined.
+    struct Mined {
+        int32_t height;
+        int64_t time;
+        bool rows;
+    };
+    std::vector<Mined> mined;
+    for (const auto& step : plan) {
+        std::vector<CTxOut> outputs;
+        if (step.second) outputs.emplace_back(0, OpReturn(strprintf("at %d", step.first)));
+        const CBlockIndex* index = Process(MakeBlock(Tip(), {}, outputs, base + step.first));
+        BOOST_REQUIRE(index == Tip());
+        mined.push_back({index->nHeight, int64_t{index->nTime}, step.second});
+    }
+    Catch(*record);
+    const VisibilityRef now = record->getVisibility();
+
+    // Checks every time from before the first block to after the last against what the snapshot shows.
+    const auto check = [&](const VisibilityRef& v, const std::string& what) {
+        std::vector<Mined> entries;
+        for (const Mined& m : mined) {
+            if (m.rows && v->IsVisible(m.height)) entries.push_back(m);
+        }
+        bool sorted = true;
+        for (size_t i = 1; i < entries.size(); ++i) sorted = sorted && entries[i - 1].time <= entries[i].time;
+        for (int64_t time = int64_t{base} - 3; time <= int64_t{base} + 123; ++time) {
+            const ReadResult result = record->findHeightForTime(time, out, v);
+            const std::string at = strprintf("%s at %d", what, time - base);
+            BOOST_REQUIRE_MESSAGE(result != ReadResult::FAILED, at);
+            if (result == ReadResult::NOT_FOUND) {
+                BOOST_CHECK_MESSAGE(entries.empty() || entries.back().time < time, at);
+                continue;
+            }
+            const auto it = std::find_if(entries.begin(), entries.end(), [&](const Mined& m) { return m.height == out; });
+            BOOST_REQUIRE_MESSAGE(it != entries.end(), strprintf("%s: %d is no visible height with rows", at, out));
+            BOOST_CHECK_MESSAGE(it->time >= time, at);
+            BOOST_CHECK_MESSAGE(it == entries.begin() || std::prev(it)->time < time, at);
+            if (sorted) {
+                const auto lowest = std::find_if(entries.begin(), entries.end(), [&](const Mined& m) { return m.time >= time; });
+                BOOST_CHECK_MESSAGE(it == lowest, at);
+            }
+        }
+        // Before every block: the lowest visible height with rows. After every block: nothing.
+        if (!entries.empty()) {
+            BOOST_CHECK(record->findHeightForTime(std::numeric_limits<int64_t>::min(), out, v) == ReadResult::FOUND && out == entries.front().height);
+            BOOST_CHECK(record->findHeightForTime(entries.back().time + 1, out, v) == ReadResult::NOT_FOUND);
+        }
+        BOOST_CHECK(record->findHeightForTime(std::numeric_limits<int64_t>::max(), out, v) == ReadResult::NOT_FOUND);
+    };
+    check(now, "all");
+    // With the times not in order, the search still lands where they pass the time asked: for base + 26 the times
+    // pass it from base + 20 to base + 40 and from base + 25 to base + 80; for base + 105 only from base + 90 to
+    // base + 110, as base + 105 itself follows a newer block.
+    const auto height_of = [&](int offset) {
+        for (size_t i = 0; i < plan.size(); ++i) {
+            if (plan[i].first == offset) return mined[i].height;
+        }
+        return -1;
+    };
+    BOOST_CHECK(record->findHeightForTime(base + 26, out, now) == ReadResult::FOUND);
+    BOOST_CHECK(out == height_of(40) || out == height_of(80));
+    BOOST_CHECK(record->findHeightForTime(base + 105, out, now) == ReadResult::FOUND);
+    BOOST_CHECK_EQUAL(out, height_of(110));
+
+    // Gaps, a floor and a lower tip, as snapshots: each must only see what it shows.
+    const auto snapshot = [&](std::vector<HeightRange> coverage, int32_t floor, int32_t live_tip) {
+        auto v = std::make_shared<Visibility>(*now);
+        v->coverage = std::make_shared<const std::vector<HeightRange>>(std::move(coverage));
+        v->floor = floor;
+        v->live_tip = live_tip;
+        return VisibilityRef{v};
+    };
+    const int32_t first = mined.front().height;
+    const int32_t last = mined.back().height;
+    check(snapshot({{first, first + 2}, {first + 5, first + 5}, {first + 9, last}}, -1, last), "gaps");
+    check(snapshot({{first, last}}, first + 4, last), "floor");
+    check(snapshot({{first, last}}, first + 4, last - 3), "floor and tip");
+    check(snapshot({{first + 1, first + 1}, {first + 6, first + 6}, {first + 12, first + 12}}, -1, last), "single heights");
+    check(snapshot({{first + 1, first + 1}, {first + 5, first + 5}, {first + 8, first + 8}, {first + 11, last}}, -1, last), "ranges without rows first");
+    check(snapshot({{first + 1, first + 1}, {first + 5, first + 5}, {first + 8, first + 8}, {first + 11, first + 11}}, -1, last), "only ranges without rows");
+    check(snapshot({}, -1, last), "nothing covered");
+    check(snapshot({{first, last}}, last + 1, last), "everything below the floor");
+    check(snapshot({{first, last}}, -1, -1), "no tip");
+
+    // A block entry lost while its rows are there, that of base + 80, where the search for base + 55 passes: in a
+    // snapshot whose range ends at that height the search finds no entry in the range but rows, and in the record's
+    // own it finds the next entry with rows before it. Each read fails and is counted; the worker makes the same
+    // read with the record's snapshot, finds the same, and the record fails.
+    record->stop();
+    const int32_t lost = height_of(80);
+    {
+        CDBWrapper db(m_path, 1 << 20, false, false, true);
+        BOOST_REQUIRE(db.Erase(HeightKey(prefix::BLOCK, lost)));
+    }
+    record = Start();
+    const uint64_t errors = record->getStatus().read_errors;
+    BOOST_CHECK(record->findHeightForTime(base + 55, out, snapshot({{first, lost}, {lost + 2, last}}, -1, last)) == ReadResult::FAILED);
+    BOOST_CHECK_EQUAL(record->getStatus().read_errors, errors + 1);
+    BOOST_CHECK(WaitUntil([&] { return record->getStatus().state == State::FAILED; }));
+    BOOST_CHECK(record->getStatus().reason == FailReason::READ_FAILED);
+    BOOST_CHECK(record->findHeightForTime(base + 55, out, nullptr) == ReadResult::FAILED);
+    BOOST_CHECK_EQUAL(record->getStatus().read_errors, errors + 2);
+    record->stop();
+    BOOST_CHECK(record->findHeightForTime(base, out, nullptr) == ReadResult::NOT_FOUND);
 }
 
 BOOST_AUTO_TEST_CASE(any_key_is_a_record)
