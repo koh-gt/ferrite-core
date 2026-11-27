@@ -66,7 +66,7 @@ jobs:
             mweb_p2p_mutated_block_submitblock.py mweb_p2p_mutated_block_unlinked_dup.py \
             mweb_p2p_mutated_compactblock.py mweb_pegout_all.py mweb_pre_activation_hogex_marker.py \
             mweb_reorg.py mweb_wallet_basic.py mweb_weight.py mweb_wtxid_recentrejects.py \
-            feature_generated_config.py mempool_datacarrier.py \
+            feature_fext_plain_programs.py feature_fext_record.py feature_generated_config.py mempool_datacarrier.py \
             p2p_invalid_messages.py p2p_blockfilters.py p2p_node_network_limited.py p2p_large_messages.py \
             p2p_send_buffer_timeout.py p2p_timedata.py \
             rpc_misc.py rpc_psbt_prevout_index.py rpc_signrawtransaction_taproot.py \
@@ -152,6 +152,62 @@ jobs:
             test/lint/lint-fext-isolation.sh
           fi
           test/lint/lint-fext-safety.sh
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Functional tests with ferrite-qt-fext as the node
+        # The functional tests of the job above, run again with ferrite-qt-fext as the node, so that each of them also
+        # passes with the OP_RETURN index on. A test that expects an error or a warning at start-up cannot run here,
+        # as the GUI shows them in a box that waits for a click. Two such tests are left out, and the step fails if the
+        # list holds any other: feature_generated_config.py, whose start-up warning about a section of ferrite.conf is
+        # part of what it checks, and feature_fext_plain_programs.py, which checks the programs that keep no index and
+        # skips itself here. Each node keeps its GUI settings in a directory of its own. Afterwards every start of
+        # every node must show the index running where it is on and not where it is off, and no node may show that
+        # the index failed (contrib/devtools/fext-node-logs.py).
+        timeout-minutes: 60
+        env:
+          FEXT_PROGRAM: ${{ github.workspace }}/src/qt/ferrite-qt-fext
+          QT_QPA_PLATFORM: minimal
+        run: |
+          pip install blake3
+          export XDG_CONFIG_HOME="$RUNNER_TEMP/fext-config" XDG_RUNTIME_DIR="$RUNNER_TEMP/fext-runtime"
+          mkdir -p "$XDG_CONFIG_HOME" "$RUNNER_TEMP/fext-bin" && mkdir -m 700 -p "$XDG_RUNTIME_DIR"
+          # The node program the tests start: ferrite-qt-fext, with the GUI settings of the node whose data
+          # directory it is given in <data directory>-gui-settings, so that no two nodes share them.
+          cat > "$RUNNER_TEMP/fext-bin/ferrite-qt-fext" <<'EOF'
+          #!/bin/sh
+          for arg in "$@"; do
+            case "$arg" in -datadir=*) XDG_CONFIG_HOME="${arg#-datadir=}-gui-settings" ;; esac
+          done
+          export XDG_CONFIG_HOME
+          exec "$FEXT_PROGRAM" "$@"
+          EOF
+          chmod +x "$RUNNER_TEMP/fext-bin/ferrite-qt-fext"
+          export BITCOIND="$RUNNER_TEMP/fext-bin/ferrite-qt-fext"
+          tests=()
+          left_out=()
+          while IFS= read -r test; do
+            if grep -q -E 'assert_start_raises_init_error|expected_stderr' "test/functional/${test%% *}"; then
+              left_out+=("$test")
+            else
+              tests+=("$test")
+            fi
+          done < <(python3 -I -c '
+          import re, shlex
+          step = open(".github/workflows/ci.yml").read().split("      - name: Functional tests\n", 1)[1]
+          tests = re.search(r"test_runner\.py[^\n]*\\\n((?:[^\n]*\\\n)*[^\n]*)", step).group(1)
+          print("\n".join(shlex.split(tests.replace("\\\n", " "))))')
+          echo "Left out: ${left_out[*]}"
+          if [ "$(printf '%s\n' "${left_out[@]}" | sort | xargs)" != "feature_fext_plain_programs.py feature_generated_config.py" ] ||
+             [ "${#tests[@]}" = 0 ]; then
+            echo "::error::The tests to leave out are not the two that the step names, or no test is left to run"
+            exit 1
+          fi
+          python3 test/functional/test_runner.py -j"$(nproc)" --combinedlogslen=200 --nocleanup \
+            --tmpdirprefix="$RUNNER_TEMP/fext-node" "${tests[@]}"
+          python3 contrib/devtools/fext-node-logs.py "$RUNNER_TEMP/fext-node"
 
   gui-depends:
     name: Linux GUI build and tests against the release Qt (depends)
