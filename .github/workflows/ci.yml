@@ -119,7 +119,9 @@ jobs:
         run: contrib/devtools/fext-symbol-check.sh
 
       - name: Help of the two GUI programs
-        # ferrite-qt-fext prints the help of ferrite-qt, with its own name in the usage line.
+        # ferrite-qt-fext prints the help of ferrite-qt with its own name in the usage line and with the options of the
+        # OP_RETURN index, each once. Without those options' lines (an option's name, its text and the empty line
+        # after it) the two are the same, so no other option differs, and the index's second names are not shown.
         env:
           QT_QPA_PLATFORM: minimal
         run: |
@@ -127,7 +129,12 @@ jobs:
           src/qt/ferrite-qt-fext -help > ferrite-qt-fext.help
           grep -x 'Usage:  ferrite-qt \[command-line options\] *' ferrite-qt.help
           grep -x 'Usage:  ferrite-qt-fext \[command-line options\] *' ferrite-qt-fext.help
-          diff ferrite-qt.help <(sed 's/^Usage:  ferrite-qt-fext /Usage:  ferrite-qt /' ferrite-qt-fext.help)
+          for option in -opreturnindex '-opreturnmaxsize=<n>' -opreturnreindex; do
+            test "$(grep -c -x -F -e "  $option" ferrite-qt-fext.help)" = 1
+          done
+          awk '/^  -opreturn(index|maxsize=<n>|reindex)$/ { skip = 1 } !skip { print } skip && /^$/ { skip = 0 }' \
+            ferrite-qt-fext.help > ferrite-qt-fext-without-index.help
+          diff ferrite-qt.help <(sed 's/^Usage:  ferrite-qt-fext /Usage:  ferrite-qt /' ferrite-qt-fext-without-index.help)
 
       - name: Lints of the OP_RETURN record and the FEXT GUI
         # The isolation lint also checks the files and lines that the record and the FEXT GUI change, given the range

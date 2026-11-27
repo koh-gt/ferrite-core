@@ -9,12 +9,14 @@
 #  - ferrited, ferrite-qt, ferrite-node, ferrite-gui, ferrite-cli, ferrite-tx and ferrite-wallet have no symbol
 #    whose name contains "fext" in any case;
 #  - ferrite-qt-fext has the symbols of its GUI extension (FextExtension), and symbols of the namespace fext exactly
-#    when it links the FEXT node library (src/Makefile.qt.include adds $(LIBFEXT_NODE) to its LDADD); until then it
-#    holds only the FEXT GUI's own classes;
+#    when it links the FEXT node library (src/Makefile.qt.include adds $(LIBFEXT_NODE) to its LDADD). It links the
+#    library once its FEXT tab uses the library's code, and from then on the check requires those symbols; until then
+#    the program holds the FEXT GUI's own classes and none of the namespace fext;
 #  - ferrite-cli, ferrite-tx and ferrite-wallet have no symbol of the namespace opreturn;
-#  - ferrited, ferrite-qt, ferrite-qt-fext, ferrite-node and ferrite-gui have symbols of the namespace opreturn
-#    exactly when src/init.cpp makes the record (opreturn::Construct). Until it does, nothing in them refers to the
-#    record and the linker leaves its code out.
+#  - ferrited, ferrite-qt, ferrite-node and ferrite-gui have symbols of the namespace opreturn exactly when
+#    src/init.cpp makes the record (opreturn::Construct). Until it does, nothing in them refers to the record and the
+#    linker leaves its code out;
+#  - ferrite-qt-fext has them exactly when src/init.cpp or its GUI extension (src/qt/fext/) makes the record.
 #
 # Usage: contrib/devtools/fext-symbol-check.sh [<build directory>]
 # The build directory defaults to the top of the source tree. A program that was not built is reported and
@@ -30,6 +32,11 @@ if grep -q -F 'opreturn::Construct(' "${TOP}/src/init.cpp"; then
     RECORD_LINKED=1
 else
     RECORD_LINKED=0
+fi
+if [ "${RECORD_LINKED}" = 1 ] || cat "${TOP}"/src/qt/fext/*.cpp 2>/dev/null | grep -q -F 'opreturn::Construct('; then
+    FEXT_RECORD_LINKED=1
+else
+    FEXT_RECORD_LINKED=0
 fi
 if grep -q -E '^qt_ferrite_qt_fext_LDADD[[:space:]]*\+?=.*\$\(LIBFEXT_NODE\)' "${TOP}/src/Makefile.qt.include"; then
     FEXT_NODE_LINKED=1
@@ -76,7 +83,7 @@ check() {
         failed=1
     fi
     if [ "${expected}" = 1 ] && [ "${record}" = 0 ]; then
-        echo "${program}: no symbol of the namespace opreturn, although src/init.cpp makes the record"
+        echo "${program}: no symbol of the namespace opreturn, although it makes the record"
         failed=1
     elif [ "${expected}" = 0 ] && [ "${record}" != 0 ]; then
         echo "${program}: ${record} symbols of the namespace opreturn:"
@@ -95,7 +102,7 @@ check() {
 for program in ferrited qt/ferrite-qt ferrite-node qt/ferrite-gui; do
     check "${program}" "${RECORD_LINKED}" 0
 done
-check qt/ferrite-qt-fext "${RECORD_LINKED}" 1
+check qt/ferrite-qt-fext "${FEXT_RECORD_LINKED}" 1
 for program in ferrite-cli ferrite-tx ferrite-wallet; do
     check "${program}" 0 0
 done

@@ -5,10 +5,16 @@
 #include <qt/fext/fextextension.h>
 
 #include <logging.h>
+#include <opreturn/names.h>
+#include <opreturn/node.h>
 #include <qt/walletframe.h>
 #include <qt/walletmodel.h>
 
+#include <limits>
+
+#include <QSettings>
 #include <QString>
+#include <QVariant>
 
 namespace {
 //! The hooks' names in the log, in the order of FextExtension::Hook.
@@ -60,9 +66,51 @@ void FextExtension::guarded(Hook hook, Body body)
     }
 }
 
+opreturn::StoredChoices FextExtension::ReadStoredChoices(const QSettings& settings)
+{
+    opreturn::StoredChoices stored;
+    // A settings file in the INI format and the Windows registry give a stored boolean back as its text.
+    const QVariant record{settings.value(QStringLiteral("fext/record"))};
+    if (record.type() == QVariant::Bool) {
+        stored.record = record.toBool();
+    } else if (record.type() == QVariant::String) {
+        const QString text{record.toString()};
+        if (text == QStringLiteral("true")) stored.record = true;
+        if (text == QStringLiteral("false")) stored.record = false;
+    }
+    // ... and a whole number as its decimal text.
+    const QVariant max_size{settings.value(QStringLiteral("fext/maxSize"))};
+    bool ok{false};
+    qlonglong mib{0};
+    switch (max_size.type()) {
+    case QVariant::Int:
+    case QVariant::LongLong:
+    case QVariant::String:
+        mib = max_size.toLongLong(&ok);
+        break;
+    case QVariant::UInt:
+    case QVariant::ULongLong: {
+        const qulonglong value{max_size.toULongLong(&ok)};
+        ok = ok && value <= qulonglong(std::numeric_limits<qlonglong>::max());
+        mib = qlonglong(value);
+        break;
+    }
+    default:
+        break;
+    }
+    if (ok) stored.max_size_mib = static_cast<int64_t>(mib);
+    return stored;
+}
+
 void FextExtension::attachNode(NodeContext& node)
 {
-    guarded(Hook::ATTACH_NODE, [] {});
+    guarded(Hook::ATTACH_NODE, [&node] {
+        // The record and its chain client, with the tab's stored choices under the options set explicitly. A value of
+        // an option that may not be set stops start-up at the client's verify(), which init calls next.
+        if (!opreturn::Construct(node, ReadStoredChoices(QSettings{}))) {
+            LogPrintf("FEXT: %s could not be made\n", opreturn::RECORD_NOUN);
+        }
+    });
 }
 
 QWidget* FextExtension::wrapCentralWidget(BitcoinGUI& gui, WalletFrame& frame)

@@ -5,16 +5,23 @@
 #ifndef BITCOIN_QT_FEXT_FEXTEXTENSION_H
 #define BITCOIN_QT_FEXT_FEXTEXTENSION_H
 
+#include <opreturn/options.h>
 #include <qt/guiextension.h>
 
 #ifndef ENABLE_WALLET
 #error "ferrite-qt-fext is built only with the wallet"
 #endif
 
+QT_BEGIN_NAMESPACE
+class QSettings;
+QT_END_NAMESPACE
+
 /**
- * What ferrite-qt-fext adds to the GUI of ferrite-qt. For now that is its name, in the window title and in the usage
- * line of the command-line help; every other hook leaves the program as ferrite-qt is, and the Send page builds its
- * transaction with WalletModel::prepareTransaction, as ferrite-qt does.
+ * What ferrite-qt-fext adds to the GUI of ferrite-qt. For now that is the OP_RETURN record, which attachNode makes
+ * for the node with the FEXT tab's stored choices, and the program's name, in the window title and in the usage line
+ * of the command-line help; every other hook leaves the program as ferrite-qt is, and the Send page builds its
+ * transaction with WalletModel::prepareTransaction, as ferrite-qt does. The record belongs to the node's chain
+ * client, which init starts and stops; the extension holds no reference to it.
  *
  * No exception leaves a hook: each body runs inside a guard that catches every exception, writes one line to the
  * log and then gives what ferrite-qt would have: the bare wallet frame, the title or usage line it was given,
@@ -51,6 +58,14 @@ public:
     void describeSend(SendCoinsDialog& dialog, WalletModelTransaction& transaction,
         QString& question, QString& informative, QString& detailed) override;
     void clearSendPage(SendCoinsDialog& dialog) override;
+
+    /**
+     * The FEXT tab's choices for the OP_RETURN record stored in the GUI settings: whether to keep it (fext/record,
+     * a boolean) and its size limit in MiB (fext/maxSize, a whole number), each read in the form QSettings stores
+     * it in. A value of another type counts as no choice; whether a size limit may be set is for the record's
+     * options to say (opreturn::ResolveOptions).
+     */
+    static opreturn::StoredChoices ReadStoredChoices(const QSettings& settings);
 
 protected:
     //! Called first inside each hook's guard. It does nothing; a test overrides it to make a hook throw.

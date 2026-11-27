@@ -15,7 +15,10 @@
 #include <cstdlib>
 
 #include <QApplication>
+#include <QDir>
 #include <QObject>
+#include <QSettings>
+#include <QTemporaryDir>
 #include <QTest>
 
 #if defined(QT_STATICPLUGIN)
@@ -60,6 +63,16 @@ int main(int argc, char* argv[])
     #else
         setenv("QT_QPA_PLATFORM", "minimal:enable_fonts", /* overwrite */ 0);
     #endif
+
+    // The GUI settings that the tests read, write and remove are kept in a directory of their own, which outlives the
+    // application and is removed at the end, so that the tests never read or change the user's settings.
+    const QTemporaryDir settings_dir{QDir::tempPath() + "/test_ferrite-qt-fext-settings-XXXXXX"};
+    if (!settings_dir.isValid()) {
+        qCritical("No directory for the GUI settings: %s", qPrintable(settings_dir.errorString()));
+        return EXIT_FAILURE;
+    }
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+    QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, settings_dir.path());
 
     // Don't remove this, it's needed to access
     // QApplication:: and QCoreApplication:: in the tests

@@ -24,8 +24,8 @@ class Node;
 constexpr char GUI_MAIN_SETTINGS_VARIABLE[] = "FEXT_HOOK_TESTS_GUI_MAIN_SETTINGS";
 
 /** GuiMain with an extension whose attachNode writes to stdout whether GuiMain calls it on the GUI thread, after the
- *  node's base initialization and before the node is started, and then ends the program at once. The GUI settings go
- *  to settings_dir. */
+ *  node's base initialization and before the node is started, and the FEXT tab's stored choice for the record that it
+ *  reads there, and then ends the program at once. The GUI settings go to settings_dir. */
 int GuiMainReportingAttachNode(int argc, char* argv[], const char* settings_dir);
 
 /** How ferrite-qt-fext's GUI extension changes the GUI of ferrite-qt. */
@@ -44,10 +44,17 @@ public:
     BitcoinGUI& makeWindow();
 
 private Q_SLOTS:
+    void initTestCase();
     void titleAndUsage();
     void sendPageHooksInert();
     void throwingHooks();
     void attachNodeCall();
+    void optionsRegistered();
+    void resolveAtH2();
+    void noTabWithoutWallet();
+    void pageWithoutRecord();
+    void destroyWithoutAboutToQuit();
+    void recordConstructedForGuiHost();
     void cleanupTestCase();
 
 private:

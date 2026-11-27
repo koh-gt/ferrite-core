@@ -3,10 +3,12 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <opreturn/node.h>
 #include <qt/bitcoin.h>
 #include <qt/fext/fextextension.h>
 #include <qt/guiextension.h>
 
+#include <util/system.h>
 #include <util/translation.h>
 #include <util/url.h>
 
@@ -28,6 +30,11 @@ static FextExtension g_fext_extension;
 int main(int argc, char* argv[])
 {
     g_gui_extension = &g_fext_extension;
+    // The program shows the OP_RETURN record. It is the record's GUI host, so that the record is kept by default, and
+    // the record's options are registered before GuiMain parses the arguments, so that the command line, the settings
+    // file and ferrite.conf can set them and -help shows them.
+    opreturn::SetGuiHost();
+    opreturn::AddArgs(gArgs);
     Q_INIT_RESOURCE(fext);
     return GuiMain(argc, argv);
 }
